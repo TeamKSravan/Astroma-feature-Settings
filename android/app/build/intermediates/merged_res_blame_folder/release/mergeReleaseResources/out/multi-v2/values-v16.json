@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.astroma.app-mergeReleaseResources-48:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/776e1f2ef2fd636dc8226db9caa8b20a/transformed/appcompat-1.7.0/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    }
+                }
+            ]
+        }
+    ]
+}

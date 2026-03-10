@@ -1,0 +1,1 @@
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/RelWithDebInfo/613o2315/obj/x86

@@ -1,0 +1,295 @@
+{
+    "welcome": {
+        "welcome": "Welcome",
+        "your": "Your journey is written in the cosmos.",
+        "let": " Let Astroma guide you",
+        "get": "Get Started"
+    },
+    "name": {
+        "name": "Enter Name",
+        "next": "Next",
+        "credentials": "Enter Credentials"
+    },
+    "birth": {
+        "birth": "Enter Date of Birth"
+    },
+    "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "submit": "Submit",
+        "gender": "Gender Details (Optional)"
+    },
+    "place": {
+        "place": "Enter Place of Birth",
+        "city": "Enter Birth City",
+        "enterLatitude": "Enter latitude (e.g., 28.61 N)",
+        "enterLongitude": "Enter longitude (e.g., 77.20 E)",
+        "noCitiesFound": "No cities found",
+        "automatic": "Automatic",
+        "manual": "Manual"
+    },
+    "time": {
+        "time": "Enter Time of Birth",
+        "date": "Enter Date of Birth"
+    },
+    "home": {
+        "hello": "Hello,",
+        "overview": "Overview",
+        "chatWithAi": "Chat With Ai",
+        "more": "Read More",
+        "less": "Read Less",
+        "sunSign": "Sun Sign:",
+        "moonSign": "Moon Sign:",
+        "luckyNumber": "Lucky Number:",
+        "luckyColor": "Lucky Color:",
+        "luckyTime": "Lucky Time:"
+    },
+    "ai": {
+        "ai": "Ai Astrologer",
+        "ask": "Ask the stars anything",
+        "personal": "Personalized astrology insights based on your birth chart",
+        "chat": "Personalized chat with AI Astrologer",
+        "get": "Get answer to your long awaited Questions",
+        "free": "Free Trial",
+        "ques1": "1 Question",
+        "ques10": "10 Questions",
+        "add": "Add Coins"
+    },
+    "login": {
+        "login": "Login to Astroma",
+        "ema": "Email",
+        "email": "Enter Email",
+        "enterPhone": "Enter Phone Number",
+        "phone": "Phone Number",
+        "auth": "Authentication",
+        "code": "We've sent a Verification Code to your registered mobile number.",
+        "didnt": "Didn’t receive the OTP? ",
+        "resend": "Resend Code",
+        "loginn": "Login",
+        "emailRequired": "Please enter your email",
+        "invalidEmail": "Please enter a valid email address",
+        "otpSent": "OTP has been sent to your Mobile Number",
+        "genericError": "Something went wrong. Please try again"
+    },
+    "emptyCredits": {
+        "title": "You don't have enough credit points. Add coins to continue",
+        "button": "Add Coins"
+    },
+    "chatHistory": {
+        "deletedSuccess": "Chat history deleted successfully",
+        "title": "Chat History",
+        "newChat": "New Chat",
+        "searchChats": "Search Chats",
+        "noHistory": "No chat history available",
+        "deleteTitle": "Delete Chat History",
+        "deleteDescription": "Are you sure you want to delete this chat history?"
+    },
+    "userList": {
+        "maxUsers": "You can only add up to 10 secondary users.",
+        "me": "Me",
+        "add": "Add"
+    },
+    "compat": {
+        "compat": "Compatibility & Compare",
+        "com": "Compatibility",
+        "compare": "Compare",
+        "love": "Love Compatibility",
+        "generate": "Generate Report",
+        "personalise": "Personalized Report",
+        "selectType": "Select type",
+        "compatibilityReport": "Compatibility Report",
+        "compareReport": "Compare Report",
+        "compatibilityReports": "Compatibility Reports",
+        "compareReports": "Compare Reports",
+        "generatedReports": "Generated Reports"
+    },
+    "delete": {
+        "title": "Delete Profile?",
+        "arelog": "Are you sure you want to Delete this profile?",
+        "cancel": "Cancel",
+        "delete": "Delete"
+    },
+    "exitChat": {
+        "title": "Exit Chat?",
+        "arelog": "Are you sure you want to Exit this chat?",
+        "cancel": "Stay in Chat",
+        "exit": "Exit Chat"
+    },
+    "deleteUser": {
+        "title": "Delete Account?",
+        "arelog": "Are you sure you want to Delete this account?",
+        "cancel": "Cancel",
+        "delete": "Delete"
+    },
+    "logout": {
+        "confirm": "Confirm Logout?",
+        "arelog": "Are you sure you want to log out?",
+        "cancel": "Cancel",
+        "logout": "Logout"
+    },
+    "order": {
+        "title": "Order Summary",
+        "subtitle": "Your personalized plan summary",
+        "purchaseSummary": "Purchase Summary",
+        "amount": "Amount",
+        "paynow": "Pay Now",
+        "cancel": "Cancel",
+        "order": "Order",
+        "total": "Total",
+        "subscription": "Subscription",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "monthlySubscription": "Monthly Subscription",
+        "coins": "1000 Coins",
+        "asPerPlan": "As per plan",
+        "coinsCost": "Coins Cost",
+        "subscriptionCost": "Subscription Cost",
+        "subtotal": "Subtotal",
+        "tax": "Tax"
+    },
+    "settings": {
+        "title": "Settings",
+        "notification": "Notification",
+        "rateUs": "Rate Us",
+        "contactUs": "Contact Us",
+        "transactionHistory": "Transaction History",
+        "userProfile": "User Profiles",
+        "changeLanguage": "Change Language",
+        "logout": "Logout",
+        "english": "English",
+        "hindi": "Hindi"
+    },
+    "transactionHistory": {
+        "title": "Transaction History",
+        "sortBy": "Sort By",
+        "availableCoins": "Available Coins",
+        "transaction": "Transaction",
+        "purchase": "Purchase",
+        "coins": "Coins",
+        "newestFirst": "Newest First",
+        "oldestFirst": "Oldest First",
+        "coinsHighToLow": "Coins High to Low",
+        "coinsLowToHigh": "Coins Low to High",
+        "purchaseOnly": "Purchase Only",
+        "consumedOnly": "Consumed Only",
+        "clearAll": "Reset",
+        "noTransactions": "No transactions available"
+    },
+    "userProfile": {
+        "title": "User Profiles",
+        "deletedSuccess": "Profile deleted successfully",
+        "deletedFailed": "Failed to delete profile"
+    },
+    "profile": {
+        "profile": "Profile",
+        "editProfile": "Edit Profile",
+        "edit": "Edit",
+        "fullName": "Full Name",
+        "phoneNo": "Phone No.",
+        "gender": "Gender",
+        "dateOfBirth": "Date of Birth",
+        "placeOfBirth": "Place of Birth",
+        "timeOfBirth": "Time of Birth",
+        "deleteAc": "Delete Account",
+        "verify": "Verify",
+        "saveChanges": "Save Changes",
+        "invalidName": "Please enter a valid name",
+        "invalidDateOfBirth": "Please enter a valid date of birth in yyyy-mm-dd format",
+        "invalidPlaceOfBirth": "Please enter a valid place of birth",
+        "invalidTimeOfBirth": "Please enter a valid time of birth",
+        "invalidGender": "Please select a valid gender",
+        "invalidCountry": "Please select a valid country",
+        "dateOfBirthRequired": "Date of birth is required",
+        "enterDate": "Enter Date"
+    },
+    "wallet": {
+        "availableCoins": "Available Coins",
+        "plans": "Plans",
+        "specialOfferBanner": "Special offer Get 200 coins in $ 20",
+        "specialOffer": "Special Offer",
+        "addCoins": "Add Coins",
+        "coins10": "10 Coins",
+        "coins100": "100 Coins",
+        "coins200": "200 Coins",
+        "coins1000": "1000 Coins",
+        "yearlySubscription": "Yearly Subscription",
+        "enterAmount": "Enter Amount",
+        "enterNoOfCoins": "Enter no. of coins"
+    },
+    "otpVerification": {
+        "title": "OTP Verification",
+        "description": "We've sent a 6-digit OTP to your new mobile number. Please enter it below to confirm your number change.",
+        "didntReceive": "Didn't receive the OTP?",
+        "resendCode": "Resend Code",
+        "verifyOtp": "Verify OTP"
+    },
+    "editUserProfile": {
+        "title": "Edit User's Profile",
+        "description": "Edit your user profile",
+        "saveChanges": "Save Changes"
+    },
+    "report": {
+        "congratulations": "Congratulations!",
+        "successMessage": "Your report has been generated successfully.",
+        "close": "Close",
+        "viewReport": "View Report",
+        "exploreReports": "Explore Reports",
+        "downloads": "Downloads",
+        "noCompatibilityReports": "No reports available yet",
+        "noDownloadedReports": "No Reports Found.",
+        "welcomeBonus": "Welcome Bonus added in your Wallet",
+        "defaultTitle": "Report"
+    },
+    "editConversation": {
+        "title": "Edit Conversation title",
+        "label": "Title",
+        "placeholder": "Enter title",
+        "saveChanges": "Save Changes",
+        "errorEmpty": "Title cannot be empty",
+        "errorMinLength": "Title must be at least 2 characters long",
+        "errorMaxLength": "Title cannot exceed 100 characters",
+        "errorSame": "Title must be different from the current title",
+        "errorInvalid": "Please enter a valid title",
+        "successMessage": "Conversation updated successfully",
+        "errorMessage": "Failed to update conversation"
+    },
+    "filters": {
+        "title": "Filters",
+        "reset": "Reset",
+        "apply": "Apply",
+        "categories": "Categories",
+        "applied": "Filters applied",
+        "resetSuccess": "Filters reset"
+    },
+    "chat": {
+        "typeMessage": "Type your message here...",
+        "consultingStars": "Consulting the stars...",
+        "copySuccess": "Message copied to clipboard",
+        "copyFailed": "Failed to copy message"
+    },
+    "timezone": {
+        "timezone": "Timezone",
+        "selectTimezone": "Select your timezone",
+        "searchTimezone": "Search timezone"
+    },
+    "language": {
+        "language": "Language",
+        "selectLanguage": "Select language",
+        "english": "English",
+        "hindi": "Hindi",
+    },
+    "common": {
+        "search": "Search",
+        "delete": "Delete",
+        "edit": "Edit",
+        "somethingWentWrong": "Something went wrong.",
+        "noInternet": "No internet connection. Please check your network.",
+        "connectionError": "Connection failed. Please check your internet or try again."
+    },
+    "lucky": {
+        "number": "LUCKY NUMBER",
+        "color": "LUCKY COLOR",
+        "time": "LUCKY TIME"
+    }
+}

@@ -1,0 +1,15 @@
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-iap/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-keyboard-controller/android/src/main/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt
+/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt

@@ -1,0 +1,1 @@
+export const AstrologyApiKey = 'NjQ3MTQ0OjJjZGNjNzcwYWY3NzgxOTZlNDg5OTZlMThjYjcwOWE1YTRiN2NmMjE'

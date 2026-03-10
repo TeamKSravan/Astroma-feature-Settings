@@ -1,0 +1,223 @@
+[
+  {
+    "level_": 0,
+    "message_": "Start JSON generation. Platform version: 24 min SDK version: arm64-v8a",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "rebuilding JSON /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/arm64-v8a/android_gradle_build.json due to:",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "- a file changed",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "  - /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/arm64-v8a/prefab_config.json (LAST_MODIFIED_CHANGED)",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "/Users/sravi/.gradle/jdks/eclipse_adoptium-17-aarch64-os_x.2/jdk-17.0.14+7/Contents/Home/bin/java \\\n  --class-path \\\n  /Users/sravi/.gradle/caches/modules-2/files-2.1/com.google.prefab/cli/2.1.0/aa32fec809c44fa531f01dcfb739b5b3304d3050/cli-2.1.0-all.jar \\\n  com.google.prefab.cli.AppKt \\\n  --build-system \\\n  cmake \\\n  --platform \\\n  android \\\n  --abi \\\n  arm64-v8a \\\n  --os-version \\\n  24 \\\n  --stl \\\n  c++_shared \\\n  --ndk-version \\\n  27 \\\n  --output \\\n  /var/folders/k3/988pj24x0mg2j670gy2132bm0000gn/T/agp-prefab-staging2047481277989599113/staged-cli-output \\\n  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-nitro-modules/o4y405b2 \\\n  /Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab \\\n  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-reanimated/3376k217 \\\n  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-worklets/6c2k2g4t \\\n  /Users/sravi/.gradle/caches/8.13/transforms/be75acca8cdf1dd9901d92451a5d8a7f/transformed/hermes-android-0.82.0-debug/prefab \\\n  /Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab\n",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "Received process result: 0",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "keeping json folder \u0027/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/arm64-v8a\u0027 but regenerating project",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "executing cmake /Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/cmake \\\n  -H/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup \\\n  -DCMAKE_SYSTEM_NAME\u003dAndroid \\\n  -DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON \\\n  -DCMAKE_SYSTEM_VERSION\u003d24 \\\n  -DANDROID_PLATFORM\u003dandroid-24 \\\n  -DANDROID_ABI\u003darm64-v8a \\\n  -DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a \\\n  -DANDROID_NDK\u003d/Users/sravi/Library/Android/sdk/ndk/27.1.12297006 \\\n  -DCMAKE_ANDROID_NDK\u003d/Users/sravi/Library/Android/sdk/ndk/27.1.12297006 \\\n  -DCMAKE_TOOLCHAIN_FILE\u003d/Users/sravi/Library/Android/sdk/ndk/27.1.12297006/build/cmake/android.toolchain.cmake \\\n  -DCMAKE_MAKE_PROGRAM\u003d/Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/ninja \\\n  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a \\\n  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a \\\n  -DCMAKE_BUILD_TYPE\u003dDebug \\\n  -DCMAKE_FIND_ROOT_PATH\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/prefab/arm64-v8a/prefab \\\n  -B/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/arm64-v8a \\\n  -GNinja \\\n  -DPROJECT_BUILD_DIR\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build \\\n  -DPROJECT_ROOT_DIR\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android \\\n  -DREACT_ANDROID_DIR\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid \\\n  -DANDROID_STL\u003dc++_shared \\\n  -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES\u003dON\n",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "/Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/cmake \\\n  -H/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup \\\n  -DCMAKE_SYSTEM_NAME\u003dAndroid \\\n  -DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON \\\n  -DCMAKE_SYSTEM_VERSION\u003d24 \\\n  -DANDROID_PLATFORM\u003dandroid-24 \\\n  -DANDROID_ABI\u003darm64-v8a \\\n  -DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a \\\n  -DANDROID_NDK\u003d/Users/sravi/Library/Android/sdk/ndk/27.1.12297006 \\\n  -DCMAKE_ANDROID_NDK\u003d/Users/sravi/Library/Android/sdk/ndk/27.1.12297006 \\\n  -DCMAKE_TOOLCHAIN_FILE\u003d/Users/sravi/Library/Android/sdk/ndk/27.1.12297006/build/cmake/android.toolchain.cmake \\\n  -DCMAKE_MAKE_PROGRAM\u003d/Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/ninja \\\n  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a \\\n  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a \\\n  -DCMAKE_BUILD_TYPE\u003dDebug \\\n  -DCMAKE_FIND_ROOT_PATH\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/prefab/arm64-v8a/prefab \\\n  -B/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/arm64-v8a \\\n  -GNinja \\\n  -DPROJECT_BUILD_DIR\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build \\\n  -DPROJECT_ROOT_DIR\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/android \\\n  -DREACT_ANDROID_DIR\u003d/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid \\\n  -DANDROID_STL\u003dc++_shared \\\n  -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES\u003dON\n",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "Received process result: 0",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "Exiting generation of /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/arm64-v8a/compile_commands.json.bin normally",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "done executing cmake",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "deleted unexpected build output /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a/libjsi.so in incremental regenerate",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "deleted unexpected build output /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a/libfbjni.so in incremental regenerate",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "deleted unexpected build output /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a/libc++_shared.so in incremental regenerate",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "deleted unexpected build output /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/arm64-v8a/libreactnative.so in incremental regenerate",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  },
+  {
+    "level_": 0,
+    "message_": "JSON generation completed without problems",
+    "file_": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+    "tag_": "debug|arm64-v8a",
+    "diagnosticCode_": 0,
+    "memoizedIsInitialized": 1,
+    "unknownFields": {
+      "fields": {}
+    },
+    "memoizedSize": -1,
+    "memoizedHashCode": 0
+  }
+]

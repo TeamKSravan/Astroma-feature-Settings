@@ -1,0 +1,27 @@
+{
+  "installationFolder": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/build/intermediates/prefab_package/release/prefab",
+  "gradlePath": ":react-native-worklets",
+  "packageInfo": {
+    "packageName": "react-native-worklets",
+    "packageVersion": "0.7.1",
+    "packageSchemaVersion": 2,
+    "packageDependencies": [],
+    "modules": [
+      {
+        "moduleName": "worklets",
+        "moduleHeaders": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/build/prefab-headers/worklets",
+        "moduleExportLibraries": [],
+        "abis": [
+          {
+            "abiName": "x86_64",
+            "abiApi": 24,
+            "abiNdkMajor": 27,
+            "abiStl": "c++_shared",
+            "abiLibrary": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/build/intermediates/cxx/RelWithDebInfo/2l40o30o/obj/x86_64/libworklets.so",
+            "abiAndroidGradleBuildJsonFile": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/.cxx/RelWithDebInfo/2l40o30o/x86_64/android_gradle_build.json"
+          }
+        ]
+      }
+    ]
+  }
+}

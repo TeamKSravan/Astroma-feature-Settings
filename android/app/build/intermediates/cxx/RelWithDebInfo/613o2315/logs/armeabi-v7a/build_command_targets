@@ -1,0 +1,8 @@
+/Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/ninja \
+  -C \
+  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/armeabi-v7a \
+  appmodules \
+  react_codegen_reactnativekeyboardcontroller \
+  react_codegen_rnscreens \
+  react_codegen_rnsvg \
+  react_codegen_safeareacontext

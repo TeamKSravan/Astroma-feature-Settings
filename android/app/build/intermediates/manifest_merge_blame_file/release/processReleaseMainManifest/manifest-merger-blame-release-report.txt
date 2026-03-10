@@ -1,0 +1,277 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.astroma"
+4    android:versionCode="5"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="36" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:3:5-67
+11-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:3:22-64
+12    <uses-permission android:name="com.android.vending.BILLING" />
+12-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:4:5-67
+12-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:4:22-64
+13
+14    <queries>
+14-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:7:5-17:15
+15        <intent>
+15-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:8:9-10:18
+16            <action android:name="org.chromium.intent.action.PAY" />
+16-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:9:13-69
+16-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:9:21-66
+17        </intent>
+18        <intent>
+18-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:11:9-13:18
+19            <action android:name="org.chromium.intent.action.IS_READY_TO_PAY" />
+19-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:12:13-81
+19-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:12:21-78
+20        </intent>
+21        <intent>
+21-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:14:9-16:18
+22            <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS" />
+22-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:15:13-88
+22-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:15:21-85
+23        </intent>
+24        <intent>
+24-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:13:9-15:18
+25            <action android:name="com.android.vending.billing.InAppBillingService.BIND" />
+25-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:14:13-91
+25-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:14:21-88
+26        </intent>
+27    </queries>
+28
+29    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+29-->[:react-native-fs] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-fs/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:7:5-81
+29-->[:react-native-fs] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-fs/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:7:22-78
+30    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+31
+32    <permission
+32-->[androidx.core:core:1.13.1] /Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+33        android:name="com.astroma.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+33-->[androidx.core:core:1.13.1] /Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+34        android:protectionLevel="signature" />
+34-->[androidx.core:core:1.13.1] /Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+35
+36    <uses-permission android:name="com.astroma.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+36-->[androidx.core:core:1.13.1] /Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+36-->[androidx.core:core:1.13.1] /Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+37    <!-- <uses-sdk android:minSdkVersion="14"/> -->
+38    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+38-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:24:5-79
+38-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:24:22-76
+39
+40    <application
+41        android:name="com.astroma.MainApplication"
+41-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:7:7-38
+42        android:allowBackup="false"
+42-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:11:7-34
+43        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+43-->[androidx.core:core:1.13.1] /Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+44        android:extractNativeLibs="false"
+45        android:icon="@mipmap/ic_launcher"
+45-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:9:7-41
+46        android:label="@string/app_name"
+46-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:8:7-39
+47        android:roundIcon="@mipmap/ic_launcher_round"
+47-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:10:7-52
+48        android:supportsRtl="true"
+48-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:14:7-33
+49        android:theme="@style/AppTheme"
+49-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:12:7-38
+50        android:usesCleartextTraffic="false" >
+50-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:13:7-61
+51        <activity
+51-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:15:7-26:18
+52            android:name="com.astroma.MainActivity"
+52-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:16:9-37
+53            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+53-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:18:9-118
+54            android:exported="true"
+54-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:21:9-32
+55            android:label="@string/app_name"
+55-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:17:9-41
+56            android:launchMode="singleTask"
+56-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:19:9-40
+57            android:windowSoftInputMode="adjustResize" >
+57-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:20:9-51
+58            <intent-filter>
+58-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:22:9-25:25
+59                <action android:name="android.intent.action.MAIN" />
+59-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:23:13-65
+59-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:23:21-62
+60
+61                <category android:name="android.intent.category.LAUNCHER" />
+61-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:24:13-73
+61-->/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/src/main/AndroidManifest.xml:24:23-70
+62            </intent-filter>
+63        </activity>
+64
+65        <provider
+65-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:20:9-28:20
+66            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
+66-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:21:13-83
+67            android:authorities="com.astroma.fileprovider"
+67-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:22:13-64
+68            android:exported="false"
+68-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:23:13-37
+69            android:grantUriPermissions="true" >
+69-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:24:13-47
+70            <meta-data
+70-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:25:13-27:63
+71                android:name="android.support.FILE_PROVIDER_PATHS"
+71-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:26:17-67
+72                android:resource="@xml/file_provider_paths" />
+72-->[:react-native-webview] /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/intermediates/merged_manifest/release/processReleaseManifest/AndroidManifest.xml:27:17-60
+73        </provider>
+74
+75        <meta-data
+75-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:19:9-21:37
+76            android:name="com.google.android.play.billingclient.version"
+76-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:20:13-73
+77            android:value="7.0.0" />
+77-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:21:13-34
+78
+79        <activity
+79-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:23:9-27:75
+80            android:name="com.android.billingclient.api.ProxyBillingActivity"
+80-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:24:13-78
+81            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+81-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:25:13-96
+82            android:exported="false"
+82-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:26:13-37
+83            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+83-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:27:13-72
+84        <activity
+84-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:28:9-32:75
+85            android:name="com.android.billingclient.api.ProxyBillingActivityV2"
+85-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:29:13-80
+86            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+86-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:30:13-96
+87            android:exported="false"
+87-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:31:13-37
+88            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+88-->[com.android.billingclient:billing:7.0.0] /Users/sravi/.gradle/caches/8.13/transforms/b2c6c8be8807322b40ee283cc2038cbb/transformed/billing-7.0.0/AndroidManifest.xml:32:13-72
+89        <activity
+89-->[com.google.android.gms:play-services-base:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/2d9d8e49869d35c0d77fd18c3b68226c/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:9-22:45
+90            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+90-->[com.google.android.gms:play-services-base:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/2d9d8e49869d35c0d77fd18c3b68226c/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:19-85
+91            android:exported="false"
+91-->[com.google.android.gms:play-services-base:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/2d9d8e49869d35c0d77fd18c3b68226c/transformed/play-services-base-18.3.0/AndroidManifest.xml:22:19-43
+92            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+92-->[com.google.android.gms:play-services-base:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/2d9d8e49869d35c0d77fd18c3b68226c/transformed/play-services-base-18.3.0/AndroidManifest.xml:21:19-78
+93
+94        <meta-data
+94-->[com.google.android.gms:play-services-basement:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ea3857e59e0b43df25d6dd1c965b41e0/transformed/play-services-basement-18.3.0/AndroidManifest.xml:21:9-23:69
+95            android:name="com.google.android.gms.version"
+95-->[com.google.android.gms:play-services-basement:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ea3857e59e0b43df25d6dd1c965b41e0/transformed/play-services-basement-18.3.0/AndroidManifest.xml:22:13-58
+96            android:value="@integer/google_play_services_version" />
+96-->[com.google.android.gms:play-services-basement:18.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ea3857e59e0b43df25d6dd1c965b41e0/transformed/play-services-basement-18.3.0/AndroidManifest.xml:23:13-66
+97
+98        <provider
+98-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+99            android:name="androidx.startup.InitializationProvider"
+99-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+100            android:authorities="com.astroma.androidx-startup"
+100-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+101            android:exported="false" >
+101-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+102            <meta-data
+102-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+103                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+103-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+104                android:value="androidx.startup" />
+104-->[androidx.emoji2:emoji2:1.3.0] /Users/sravi/.gradle/caches/8.13/transforms/ecf13a4605d35e16bff74a898dcda969/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+105            <meta-data
+105-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/sravi/.gradle/caches/8.13/transforms/2599218fa7d5bb27c03f778066e0913a/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+106                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+106-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/sravi/.gradle/caches/8.13/transforms/2599218fa7d5bb27c03f778066e0913a/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+107                android:value="androidx.startup" />
+107-->[androidx.lifecycle:lifecycle-process:2.6.2] /Users/sravi/.gradle/caches/8.13/transforms/2599218fa7d5bb27c03f778066e0913a/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+108            <meta-data
+108-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+109                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+109-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+110                android:value="androidx.startup" />
+110-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+111        </provider>
+112
+113        <receiver
+113-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+114            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+114-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+115            android:directBootAware="false"
+115-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+116            android:enabled="true"
+116-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+117            android:exported="true"
+117-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+118            android:permission="android.permission.DUMP" >
+118-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+119            <intent-filter>
+119-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+120                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+120-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+120-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+121            </intent-filter>
+122            <intent-filter>
+122-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+123                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+123-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+123-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+124            </intent-filter>
+125            <intent-filter>
+125-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+126                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+126-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+126-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+127            </intent-filter>
+128            <intent-filter>
+128-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+129                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+129-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+129-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/sravi/.gradle/caches/8.13/transforms/07d88d938f49a82db47d39a50793fad0/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+130            </intent-filter>
+131        </receiver>
+132
+133        <service
+133-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:28:9-34:19
+134            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+134-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:29:13-103
+135            android:exported="false" >
+135-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:30:13-37
+136            <meta-data
+136-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:31:13-33:39
+137                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+137-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:32:17-94
+138                android:value="cct" />
+138-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/e8a57500398221dd4eba6590903eb460/transformed/transport-backend-cct-3.1.8/AndroidManifest.xml:33:17-36
+139        </service>
+140        <service
+140-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:26:9-30:19
+141            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+141-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:27:13-117
+142            android:exported="false"
+142-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:28:13-37
+143            android:permission="android.permission.BIND_JOB_SERVICE" >
+143-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:29:13-69
+144        </service>
+145
+146        <receiver
+146-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:32:9-34:40
+147            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+147-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:33:13-132
+148            android:exported="false" />
+148-->[com.google.android.datatransport:transport-runtime:3.1.8] /Users/sravi/.gradle/caches/8.13/transforms/b3c438547b60ebb2eb747248192f6f2c/transformed/transport-runtime-3.1.8/AndroidManifest.xml:34:13-37
+149
+150        <meta-data
+150-->[com.facebook.soloader:soloader:0.12.1] /Users/sravi/.gradle/caches/8.13/transforms/3b8a1b345a6e2deb936916c92093a5d4/transformed/soloader-0.12.1/AndroidManifest.xml:12:9-14:37
+151            android:name="com.facebook.soloader.enabled"
+151-->[com.facebook.soloader:soloader:0.12.1] /Users/sravi/.gradle/caches/8.13/transforms/3b8a1b345a6e2deb936916c92093a5d4/transformed/soloader-0.12.1/AndroidManifest.xml:13:13-57
+152            android:value="false" />
+152-->[com.facebook.soloader:soloader:0.12.1] /Users/sravi/.gradle/caches/8.13/transforms/3b8a1b345a6e2deb936916c92093a5d4/transformed/soloader-0.12.1/AndroidManifest.xml:14:13-34
+153    </application>
+154
+155</manifest>

@@ -1,0 +1,4 @@
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir

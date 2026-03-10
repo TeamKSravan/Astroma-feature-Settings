@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.astroma.app-mergeDebugResources-47:/values-v29/values-v29.xml",
+            "map": [
+                {
+                    "source": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-keyboard-controller/android/build/intermediates/packaged_res/debug/packageDebugResources/values-v29/values-v29.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "4",
+                        "endColumns": "10",
+                        "endOffsets": "135"
+                    }
+                }
+            ]
+        }
+    ]
+}

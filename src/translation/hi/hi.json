@@ -1,0 +1,293 @@
+{
+  "welcome": {
+    "welcome": "स्वागत है",
+    "your": "आपकी यात्रा ब्रह्मांड में लिखी है।",
+    "let": " अस्त्रोमा आपका मार्गदर्शन करें",
+    "get": "शुरू करें"
+  },
+  "name": {
+    "name": "नाम दर्ज करें",
+    "next": "अगला",
+    "credentials": "साख दर्ज करें"
+  },
+  "birth": {
+    "birth": "जन्म तिथि दर्ज करें"
+  },
+  "gender": {
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य",
+    "submit": "जमा करें",
+    "gender": "लिंग विवरण (वैकल्पिक)"
+  },
+  "place": {
+    "place": "जन्म स्थान दर्ज करें",
+    "city": "जन्म शहर दर्ज करें",
+    "enterLatitude": "अक्षांश दर्ज करें (उदाहरण: 28.6139° N या -28.6139)",
+    "enterLongitude": "देशांतर दर्ज करें (उदाहरण: 77.2090° E या -77.2090)",
+    "noCitiesFound": "कोई शहर नहीं मिला",
+    "automatic": "स्वचालित",
+    "manual": "मैनुअल"
+  },
+  "time": {
+    "time": "जन्म समय दर्ज करें",
+    "date": "जन्म तिथि दर्ज करें"
+  },
+  "home": {
+    "hello": "नमस्ते,",
+    "overview": "अवलोकन",
+    "chatWithAi": "AI के साथ चैट करें",
+    "more": "अधिक पढ़ें",
+    "less": "कम पढ़ें",
+    "sunSign": "सूर्य राशि:",
+    "moonSign": "चंद्र राशि:",
+    "luckyNumber": "लकी नंबर:",
+    "luckyColor": "लकी रंग:",
+    "luckyTime": "लकी समय:"
+  },
+  "chat": {
+    "typeMessage": "अपना संदेश यहाँ लिखें...",
+    "consultingStars": "तारों से परामर्श...",
+    "copySuccess": "संदेश क्लिपबोर्ड पर कॉपी हो गया",
+    "copyFailed": "संदेश कॉपी करने में विफल"
+  },
+  "filters": {
+    "title": "फ़िल्टर",
+    "reset": "रीसेट",
+    "apply": "लागू करें",
+    "categories": "श्रेणियाँ",
+    "applied": "फ़िल्टर लागू हो गए",
+    "resetSuccess": "फ़िल्टर रीसेट"
+  },
+  "timezone": {
+    "timezone": "समय क्षेत्र",
+    "selectTimezone": "अपना समय क्षेत्र चुनें",
+    "searchTimezone": "समय क्षेत्र खोजें"
+  },
+  "language": {
+    "language": "भाषा",
+    "selectLanguage": "अपनी भाषा चुनें",
+    "english": "अंग्रेज़ी",
+    "hindi": "हिंदी"
+  },
+  "common": {
+    "search": "खोजें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "somethingWentWrong": "कुछ गलत हो गया।",
+    "noInternet": "इंटरनेट कनेक्शन नहीं है। कृपया अपना नेटवर्क जांचें।",
+    "connectionError": "कनेक्शन विफल। कृपया अपना इंटरनेट जांचें या पुनः प्रयास करें।"
+  },
+  "lucky": {
+    "number": "लकी नंबर",
+    "color": "लकी रंग",
+    "time": "लकी समय"
+  },
+  "ai": {
+    "ai": "AI ज्योतिषी",
+    "ask": "तारों से कुछ भी पूछें",
+    "personal": "आपकी कुंडली के आधार पर व्यक्तिगत ज्योतिष जानकारी",
+    "chat": "AI ज्योतिषी के साथ व्यक्तिगत चैट",
+    "get": "अपने लंबे समय से प्रतीक्षित प्रश्नों के उत्तर पाएं",
+    "free": "निःशुल्क परीक्षण",
+    "ques1": "1 प्रश्न",
+    "ques10": "10 प्रश्न",
+    "add": "सिक्के जोड़ें"
+  },
+  "login": {
+    "login": "अस्त्रोमा में लॉगिन करें",
+    "ema": "ईमेल",
+    "email": "ईमेल दर्ज करें",
+    "enterPhone": "फोन नंबर दर्ज करें",
+    "phone": "फोन नंबर",
+    "auth": "प्रमाणीकरण",
+    "code": "हमने आपके पंजीकृत मोबाइल नंबर पर सत्यापन कोड भेज दिया है।",
+    "didnt": "OTP प्राप्त नहीं हुआ? ",
+    "resend": "कोड पुनः भेजें",
+    "loginn": "लॉगिन",
+    "emailRequired": "कृपया अपना ईमेल दर्ज करें",
+    "invalidEmail": "कृपया मान्य ईमेल पता दर्ज करें",
+    "otpSent": "OTP आपके मोबाइल नंबर पर भेज दिया गया है",
+    "genericError": "कुछ गलत हो गया। कृपया पुनः प्रयास करें"
+  },
+  "emptyCredits": {
+    "title": "आपके पास पर्याप्त क्रेडिट पॉइंट नहीं हैं। जारी रखने के लिए सिक्के जोड़ें",
+    "button": "सिक्के जोड़ें"
+  },
+  "chatHistory": {
+    "deletedSuccess": "चैट इतिहास सफलतापूर्वक हटा दिया गया",
+    "title": "चैट इतिहास",
+    "newChat": "नई चैट",
+    "searchChats": "चैट खोजें",
+    "noHistory": "कोई चैट इतिहास उपलब्ध नहीं है",
+    "deleteTitle": "चैट इतिहास हटाएं",
+    "deleteDescription": "क्या आप वाकई इस चैट इतिहास को हटाना चाहते हैं?"
+  },
+  "userList": {
+    "maxUsers": "आप केवल 10 माध्यमिक उपयोगकर्ता तक जोड़ सकते हैं।",
+    "me": "मैं",
+    "add": "जोड़ें"
+  },
+  "compat": {
+    "compat": "अनुकूलता और तुलना",
+    "com": "अनुकूलता",
+    "compare": "तुलना",
+    "love": "प्रेम अनुकूलता",
+    "generate": "रिपोर्ट बनाएं",
+    "personalise": "व्यक्तिगत रिपोर्ट",
+    "selectType": "प्रकार चुनें",
+    "compatibilityReport": "अनुकूलता रिपोर्ट",
+    "compareReport": "तुलना रिपोर्ट",
+    "compatibilityReports": "अनुकूलता रिपोर्ट",
+    "compareReports": "तुलना रिपोर्ट",
+    "generatedReports": "जनरेट की गई रिपोर्ट"
+  },
+  "delete": {
+    "title": "प्रोफ़ाइल हटाएं?",
+    "arelog": "क्या आप वाकई इस प्रोफ़ाइल को हटाना चाहते हैं?",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं"
+  },
+  "exitChat": {
+    "title": "चैट से बाहर निकलें?",
+    "arelog": "क्या आप वाकई इस चैट से बाहर निकलना चाहते हैं?",
+    "cancel": "चैट में रहें",
+    "exit": "चैट से बाहर निकलें"
+  },
+  "deleteUser": {
+    "title": "खाता हटाएं?",
+    "arelog": "क्या आप वाकई इस खाते को हटाना चाहते हैं?",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं"
+  },
+  "logout": {
+    "confirm": "लॉगआउट की पुष्टि करें?",
+    "arelog": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
+    "cancel": "रद्द करें",
+    "logout": "लॉग आउट"
+  },
+  "order": {
+    "title": "ऑर्डर सारांश",
+    "subtitle": "आपकी व्यक्तिगत योजना सारांश",
+    "purchaseSummary": "खरीद सारांश",
+    "amount": "राशि",
+    "paynow": "अभी भुगतान करें",
+    "cancel": "रद्द करें",
+    "order": "ऑर्डर",
+    "total": "कुल",
+    "subscription": "सदस्यता",
+    "monthly": "मासिक",
+    "yearly": "वार्षिक",
+    "monthlySubscription": "मासिक सदस्यता",
+    "coins": "1000 सिक्के",
+    "asPerPlan": "योजना के अनुसार",
+    "coinsCost": "सिक्कों की लागत",
+    "subscriptionCost": "सदस्यता लागत",
+    "subtotal": "उप-योग",
+    "tax": "कर"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "notification": "सूचना",
+    "rateUs": "हमें रेट करें",
+    "contactUs": "संपर्क करें",
+    "transactionHistory": "लेनदेन इतिहास",
+    "userProfile": "उपयोगकर्ता प्रोफ़ाइल",
+    "changeLanguage": "भाषा बदलें",
+    "logout": "लॉग आउट",
+    "english": "अंग्रेज़ी",
+    "hindi": "हिंदी"
+  },
+  "transactionHistory": {
+    "title": "लेनदेन इतिहास",
+    "sortBy": "इसके अनुसार क्रमबद्ध करें",
+    "availableCoins": "उपलब्ध सिक्के",
+    "transaction": "लेनदेन",
+    "purchase": "खरीद",
+    "coins": "सिक्के",
+    "newestFirst": "नवीनतम पहले",
+    "oldestFirst": "सबसे पुराना पहले",
+    "coinsHighToLow": "सिक्के उच्च से निम्न",
+    "coinsLowToHigh": "सिक्के निम्न से उच्च",
+    "purchaseOnly": "केवल खरीद",
+    "consumedOnly": "केवल उपयोग",
+    "clearAll": "रीसेट",
+    "noTransactions": "कोई लेनदेन उपलब्ध नहीं है"
+  },
+  "userProfile": {
+    "title": "उपयोगकर्ता प्रोफ़ाइल"
+  },
+  "profile": {
+    "profile": "प्रोफ़ाइल",
+    "editProfile": "प्रोफ़ाइल संपादित करें",
+    "edit": "संपादित करें",
+    "fullName": "पूरा नाम",
+    "phoneNo": "फोन नं.",
+    "gender": "लिंग",
+    "dateOfBirth": "जन्म तिथि",
+    "placeOfBirth": "जन्म स्थान",
+    "timeOfBirth": "जन्म समय",
+    "deleteAc": "खाता हटाएं",
+    "verify": "सत्यापित करें",
+    "saveChanges": "परिवर्तन सहेजें",
+    "invalidName": "कृपया मान्य नाम दर्ज करें",
+    "invalidDateOfBirth": "कृपया yyyy-mm-dd प्रारूप में मान्य जन्म तिथि दर्ज करें",
+    "invalidPlaceOfBirth": "कृपया मान्य जन्म स्थान दर्ज करें",
+    "invalidTimeOfBirth": "कृपया मान्य जन्म समय दर्ज करें",
+    "invalidGender": "कृपया मान्य लिंग चुनें",
+    "invalidCountry": "कृपया मान्य देश चुनें",
+    "dateOfBirthRequired": "जन्म तिथि आवश्यक है",
+    "enterDate": "तिथि दर्ज करें"
+  },
+  "wallet": {
+    "availableCoins": "उपलब्ध सिक्के",
+    "plans": "प्लान",
+    "specialOfferBanner": "विशेष ऑफर $20 में 200 सिक्के पाएं",
+    "specialOffer": "विशेष ऑफर",
+    "addCoins": "सिक्के जोड़ें",
+    "coins10": "10 सिक्के",
+    "coins100": "100 सिक्के",
+    "coins200": "200 सिक्के",
+    "coins1000": "1000 सिक्के",
+    "yearlySubscription": "वार्षिक सदस्यता",
+    "enterAmount": "राशि दर्ज करें",
+    "enterNoOfCoins": "सिक्कों की संख्या दर्ज करें"
+  },
+  "otpVerification": {
+    "title": "OTP सत्यापन",
+    "description": "हमने आपके नए मोबाइल नंबर पर 6 अंकों का OTP भेजा है। कृपया अपना नंबर बदलने की पुष्टि के लिए नीचे दर्ज करें।",
+    "didntReceive": "OTP प्राप्त नहीं हुआ?",
+    "resendCode": "कोड पुनः भेजें",
+    "verifyOtp": "OTP सत्यापित करें"
+  },
+  "editUserProfile": {
+    "title": "उपयोगकर्ता प्रोफ़ाइल संपादित करें",
+    "description": "अपनी उपयोगकर्ता प्रोफ़ाइल संपादित करें",
+    "saveChanges": "परिवर्तन सहेजें"
+  },
+  "report": {
+    "congratulations": "बधाई हो!",
+    "successMessage": "आपकी रिपोर्ट सफलतापूर्वक बनाई गई है।",
+    "close": "बंद करें",
+    "viewReport": "रिपोर्ट देखें",
+    "exploreReports": "रिपोर्ट एक्सप्लोर करें",
+    "downloads": "डाउनलोड",
+    "noCompatibilityReports": "अभी तक कोई रिपोर्ट उपलब्ध नहीं है",
+    "noDownloadedReports": "कोई रिपोर्ट नहीं मिली।",
+    "welcomeBonus": "आपके वॉलेट में वेलकम बोनस जोड़ा गया",
+    "defaultTitle": "रिपोर्ट"
+  },
+  "editConversation": {
+    "title": "वार्तालाप शीर्षक संपादित करें",
+    "label": "शीर्षक",
+    "placeholder": "शीर्षक दर्ज करें",
+    "saveChanges": "परिवर्तन सहेजें",
+    "errorEmpty": "शीर्षक खाली नहीं हो सकता",
+    "errorMinLength": "शीर्षक कम से कम 2 अक्षर का होना चाहिए",
+    "errorMaxLength": "शीर्षक 100 अक्षरों से अधिक नहीं हो सकता",
+    "errorSame": "शीर्षक वर्तमान शीर्षक से अलग होना चाहिए",
+    "errorInvalid": "कृपया मान्य शीर्षक दर्ज करें",
+    "successMessage": "वार्तालाप सफलतापूर्वक अपडेट हुआ",
+    "errorMessage": "वार्तालाप अपडेट करने में विफल"
+  }
+}

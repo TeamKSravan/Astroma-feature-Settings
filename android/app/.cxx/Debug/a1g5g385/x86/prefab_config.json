@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "prefabPath": "/Users/sravi/.gradle/caches/modules-2/files-2.1/com.google.prefab/cli/2.1.0/aa32fec809c44fa531f01dcfb739b5b3304d3050/cli-2.1.0-all.jar",
+  "packages": [
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-nitro-modules/android/build/intermediates/prefab_package/debug/prefab",
+    "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-reanimated/android/build/intermediates/prefab_package/debug/prefab",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/build/intermediates/prefab_package/debug/prefab",
+    "/Users/sravi/.gradle/caches/8.13/transforms/be75acca8cdf1dd9901d92451a5d8a7f/transformed/hermes-android-0.82.0-debug/prefab",
+    "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab"
+  ]
+}

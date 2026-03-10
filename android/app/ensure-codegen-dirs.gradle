@@ -1,0 +1,35 @@
+// Ensures codegen jni dirs exist before CMake runs (fixes "which is not an existing directory").
+// Creates stub SHARED libs so add_subdirectory never fails and target_link_libraries works.
+def rootDir = project.rootProject.projectDir
+if (rootDir.name == 'android') rootDir = rootDir.parentFile
+
+def codegenStubs = [
+    ["node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni", "react_codegen_rnasyncstorage"],
+    ["node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni", "react_codegen_rnclipboard"],
+    ["node_modules/lottie-react-native/android/build/generated/source/codegen/jni", "react_codegen_lottiereactnative"],
+    ["node_modules/react-native-date-picker/android/build/generated/source/codegen/jni", "react_codegen_RNDatePickerSpecs"],
+    ["node_modules/react-native-iap/android/build/generated/source/codegen/jni", "react_codegen_RNIap"],
+    ["node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni", "react_codegen_NitroModulesSpec"],
+    ["node_modules/react-native-pager-view/android/build/generated/source/codegen/jni", "react_codegen_pagerview"],
+    ["node_modules/react-native-reanimated/android/build/generated/source/codegen/jni", "react_codegen_rnreanimated"],
+    ["node_modules/react-native-webview/android/build/generated/source/codegen/jni", "react_codegen_RNCWebViewSpec"],
+    ["node_modules/react-native-worklets/android/build/generated/source/codegen/jni", "react_codegen_rnworklets"],
+]
+
+codegenStubs.each { relPath, libName ->
+    def dir = new File(rootDir, relPath)
+    def cmakeLists = new File(dir, "CMakeLists.txt")
+    def needStub = !dir.exists() || (cmakeLists.exists() && cmakeLists.text.contains("INTERFACE"))
+    if (needStub) {
+        dir.mkdirs()
+        new File(dir, "stub.cpp").withWriter { w ->
+            w << "// Stub for New Arch codegen; real codegen replaces this dir.\n"
+            w << "void react_codegen_stub_ensure_symbol() {}\n"
+        }
+        new File(dir, "CMakeLists.txt").withWriter { w ->
+            w << "cmake_minimum_required(VERSION 3.13)\n"
+            w << "add_library(${libName} SHARED stub.cpp)\n"
+            w << "target_include_directories(${libName} PUBLIC \${CMAKE_CURRENT_SOURCE_DIR})\n"
+        }
+    }
+}

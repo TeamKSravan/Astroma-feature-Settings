@@ -1,0 +1,4 @@
+#Tue Mar 10 11:40:43 IST 2026
+base.0=/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/dex/release/minifyReleaseWithR8/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex

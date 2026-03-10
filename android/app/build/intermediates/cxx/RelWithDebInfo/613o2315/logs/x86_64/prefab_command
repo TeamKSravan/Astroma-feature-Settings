@@ -1,0 +1,24 @@
+/Users/sravi/.gradle/jdks/eclipse_adoptium-17-aarch64-os_x.2/jdk-17.0.14+7/Contents/Home/bin/java \
+  --class-path \
+  /Users/sravi/.gradle/caches/modules-2/files-2.1/com.google.prefab/cli/2.1.0/aa32fec809c44fa531f01dcfb739b5b3304d3050/cli-2.1.0-all.jar \
+  com.google.prefab.cli.AppKt \
+  --build-system \
+  cmake \
+  --platform \
+  android \
+  --abi \
+  x86_64 \
+  --os-version \
+  24 \
+  --stl \
+  c++_shared \
+  --ndk-version \
+  27 \
+  --output \
+  /var/folders/k3/988pj24x0mg2j670gy2132bm0000gn/T/agp-prefab-staging10447552553691317871/staged-cli-output \
+  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-nitro-modules/5x3pz536 \
+  /Users/sravi/.gradle/caches/8.13/transforms/31e0f7f2036363594f850a6d0047e18b/transformed/react-android-0.82.0-release/prefab \
+  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-reanimated/3376k217 \
+  /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-worklets/6r433t96 \
+  /Users/sravi/.gradle/caches/8.13/transforms/240dc146c215a89bf05a01f607c07233/transformed/hermes-android-0.82.0-release/prefab \
+  /Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab

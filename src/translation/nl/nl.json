@@ -1,0 +1,21 @@
+{
+  "report": {
+    "congratulations": "Gefeliciteerd!",
+    "successMessage": "Uw rapport is succesvol gegenereerd.",
+    "close": "Sluiten",
+    "viewReport": "Rapport Bekijken"
+  },
+  "editConversation": {
+    "title": "Gesprekstitel bewerken",
+    "label": "titel",
+    "placeholder": "Voer titel in",
+    "saveChanges": "Wijzigingen opslaan",
+    "errorEmpty": "Titel mag niet leeg zijn",
+    "errorMinLength": "Titel moet minimaal 2 tekens lang zijn",
+    "errorMaxLength": "Titel mag niet langer zijn dan 100 tekens",
+    "errorSame": "Titel moet verschillen van de huidige titel",
+    "errorInvalid": "Voer een geldige titel in",
+    "successMessage": "Gesprek succesvol bijgewerkt",
+    "errorMessage": "Gesprek bijwerken mislukt"
+  }
+}

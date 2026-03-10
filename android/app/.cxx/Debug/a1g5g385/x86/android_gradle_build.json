@@ -1,0 +1,154 @@
+{
+  "buildFiles": [
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-iap/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-keyboard-controller/android/src/main/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-webview/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/sravi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "appmodules",
+      "output": "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libappmodules.so",
+      "runtimeFiles": [
+        "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_reactnativekeyboardcontroller.so",
+        "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_safeareacontext.so",
+        "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_rnscreens.so",
+        "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_rnsvg.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    },
+    "react_codegen_NitroModulesSpec::@472a82f9c57d3d3b8644": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_NitroModulesSpec"
+    },
+    "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_RNCWebViewSpec"
+    },
+    "react_codegen_RNDatePickerSpecs::@c00f981c6e74346c63d4": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_RNDatePickerSpecs"
+    },
+    "react_codegen_RNIap::@91a736e576f79a9e87b9": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_RNIap"
+    },
+    "react_codegen_lottiereactnative::@0fa4dc904d7e359a99fb": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_lottiereactnative"
+    },
+    "react_codegen_pagerview::@7032a8921530ec438d60": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_pagerview"
+    },
+    "react_codegen_reactnativekeyboardcontroller::@dc50c79f19fba14eeefd": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_reactnativekeyboardcontroller",
+      "output": "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_reactnativekeyboardcontroller.so",
+      "runtimeFiles": [
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so"
+      ]
+    },
+    "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnasyncstorage"
+    },
+    "react_codegen_rnclipboard::@6385240493dfcaf22ab7": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnclipboard"
+    },
+    "react_codegen_rnreanimated::@8afabad14bfffa3f8b9a": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnreanimated"
+    },
+    "react_codegen_rnscreens::@25bcbd507e98d3a854ad": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnscreens",
+      "output": "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_rnscreens.so",
+      "runtimeFiles": [
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so"
+      ]
+    },
+    "react_codegen_rnsvg::@4f40eb209d0c0b4a3b65": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnsvg",
+      "output": "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_rnsvg.so",
+      "runtimeFiles": [
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so"
+      ]
+    },
+    "react_codegen_rnworklets::@68f58d84d4754f193387": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_rnworklets"
+    },
+    "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_safeareacontext",
+      "output": "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/Debug/a1g5g385/obj/x86/libreact_codegen_safeareacontext.so",
+      "runtimeFiles": [
+        "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/sravi/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/sravi/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}
