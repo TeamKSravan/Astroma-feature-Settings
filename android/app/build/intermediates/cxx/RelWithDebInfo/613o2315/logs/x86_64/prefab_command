@@ -15,7 +15,7 @@
   --ndk-version \
   27 \
   --output \
-  /var/folders/k3/988pj24x0mg2j670gy2132bm0000gn/T/agp-prefab-staging10447552553691317871/staged-cli-output \
+  /var/folders/k3/988pj24x0mg2j670gy2132bm0000gn/T/agp-prefab-staging15446543474063607080/staged-cli-output \
   /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-nitro-modules/5x3pz536 \
   /Users/sravi/.gradle/caches/8.13/transforms/31e0f7f2036363594f850a6d0047e18b/transformed/react-android-0.82.0-release/prefab \
   /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/build/intermediates/cxx/refs/react-native-reanimated/3376k217 \

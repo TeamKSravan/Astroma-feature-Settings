@@ -139,3 +139,5 @@ export { default as Lucky } from '../assets/svgs/lucky.svg';
 export { default as Moon } from '../assets/svgs/moon.svg';
 export { default as NewChatIcon } from '../assets/svgs/newchaticon.svg';
 export { default as Reset } from '../assets/svgs/refresh.svg';
+export { default as DownloadSuccessIcon } from '../assets/svgs/downloadsuccess.svg';
+export { default as UserAddIcon } from '../assets/svgs/user_add.svg';

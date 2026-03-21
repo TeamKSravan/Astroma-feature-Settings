@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeReleaseResources-48:/values-he/values-he.xml",
+            "outputFile": "com.astroma.app-mergeReleaseResources-56:/values-he/values-he.xml",
             "map": [
                 {
                     "source": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/release/packageReleaseResources/values-he/values-he.xml",

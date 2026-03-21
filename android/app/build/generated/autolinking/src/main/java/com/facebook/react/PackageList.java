@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 // @react-native-clipboard/clipboard
 import com.reactnativecommunity.clipboard.ClipboardPackage;
+// @react-native-community/netinfo
+import com.reactnativecommunity.netinfo.NetInfoPackage;
 // lottie-react-native
 import com.airbnb.android.react.lottie.LottiePackage;
 // react-native-date-picker
@@ -90,6 +92,7 @@ public class PackageList {
       new MainReactPackage(mConfig),
       new AsyncStoragePackage(),
       new ClipboardPackage(),
+      new NetInfoPackage(),
       new LottiePackage(),
       new DatePickerPackage(),
       new RNFSPackage(),

@@ -1,7 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -128,6 +128,8 @@ dependencies {
    
     implementation("com.facebook.react:react-android")
     implementation 'com.android.billingclient:billing:6.0.1'
+    implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
+    implementation("com.google.firebase:firebase-analytics")
 //    implementation "com.google.android.gms:play-services-base:18.1.0"
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

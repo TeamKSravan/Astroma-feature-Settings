@@ -121,7 +121,7 @@ export const useProfileStore = create<ProfileState>()(
                 try {
                     const response = (await AxiosBase.get(byID ? `/user/profile/${byID}` : `/user/profile/`)) as ApiBody;
                     const userData = response?.result ?? null;
-                    console.log('Response from getUserProfile', userData?.result);
+                    console.log('Response from getUserProfile', userData);
                     set({ secondaryUserdata: userData });
                     setLoading(false);
                     return { success: true, data: userData };
@@ -163,7 +163,10 @@ export const useProfileStore = create<ProfileState>()(
                         }
                         : null;
                     setLoading(false);
-                    set({ selectedUser: selectedUserPayload });
+                    set(state => ({
+                        selectedUser: selectedUserPayload,
+                        secondaryUserdata: [...(state.secondaryUserdata ?? []), selectedUserPayload],
+                    }));
                     return { success: true, data: selectedUserPayload };
                 } catch (error: any) {
                     const errorMessage =

@@ -1,28 +1,12 @@
-import {
-  Image,
-  Platform,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
 import i18n from '../../../translation/i18n';
 import { colors } from '../../../constants/colors';
-import {
-  fonts,
-  height,
-  signs,
-  width,
-  zodiacSigns,
-} from '../../../constants/fonts';
+import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
-import { Add, Coin, Left, Profile1, Right, Setting, Yellow } from '../../../constants/svgpath';
-import LuckySection from '../../../components/LuckySection';
+import { Left, Right, Setting } from '../../../constants/svgpath';
 import CustomButton from '../../../components/CustomButton';
 import CoinComponent from '../../../components/CoinComponent';
 import ReceiveBonusModal from '../../../components/modals/ReceiveBonus';
@@ -35,17 +19,14 @@ import ZodicSign from '../../../components/ZodicSign';
 import UserList from '../../../components/UserList';
 import { useWalletStore } from '../../../store/useWalletStore';
 import NotificationBell from '../../../components/NotificationBell';
-import { ToastMessage } from '../../../components/ToastMessage';
+import { capitalizeFirstLetter } from '../../../utils/methods';
 
 export default function HomeScreen(props: any) {
-
-  const { isGetBonus, setIsGetBonus, userDetails } = useAuthStore();
+  const { isGetBonus, setIsGetBonus, userDetails, currentLanguage } = useAuthStore();
   const { getDashboardData } = useHomeStore.getState();
-  const [coinAmount, setCoinAmount] = useState(50);
   const [overview, setOverview] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [predictions, setPredictions] = useState(null);
-  const [userList, setUserList] = useState<Array<any>>([]);
   const [zodicSign, setZodicSign] = useState<string>('');
   const [signs, setSigns] = useState([
     { label: i18n.t('home.sunSign'), value: 'Gemini' },
@@ -57,18 +38,16 @@ export default function HomeScreen(props: any) {
   const [showReceiveBonusModal, setShowReceiveBonusModal] = useState(false);
   const [overviewExpanded, setOverviewExpanded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const { getUserDetail, secondaryUserdata, selectedUser, setSelectedUser } = useProfileStore();
-  console.log('selectedUser : ', selectedUser);
+  const { getUserDetail, selectedUser, secondaryUserdata } = useProfileStore();
   const { getPlanDetails, myLastSubscription, setCurrentSubscription } = useWalletStore();
 
   useEffect(() => {
     fetchUserDetail();
-    getPlanDetails();  
+    getPlanDetails();
   }, []);
 
   const fetchUserDetail = async () => {
     const result = await getUserDetail();
-    
   };
 
   useEffect(() => {
@@ -78,10 +57,10 @@ export default function HomeScreen(props: any) {
 
   const fetchMyLastSubscription = async () => {
     const result = await myLastSubscription();
-    if(result.success){
+    if (result.success) {
       console.log('My last subscription : ', result.data);
       setCurrentSubscription(result.data);
-     }
+    }
   }
 
   useEffect(() => {
@@ -118,7 +97,7 @@ export default function HomeScreen(props: any) {
       }
     };
     fetchDashboardData();
-  }, [getDashboardData, selectedUser]);
+  }, [getDashboardData, selectedUser?._id?.$oid, secondaryUserdata, currentLanguage]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -140,7 +119,6 @@ export default function HomeScreen(props: any) {
     setRefreshing(false);
   };
   return (
-
     <BaseView backgroundImage={imagepath.homeBg}>
       <View style={styles.headerView}>
         <View style={styles.helloView}>
@@ -158,7 +136,10 @@ export default function HomeScreen(props: any) {
           </TouchableOpacity>
         </View>
       </View>
-
+      {showReceiveBonusModal && <ReceiveBonusModal closeModal={() => {
+        setShowReceiveBonusModal(false)
+        setIsGetBonus(false);
+      }} visible={showReceiveBonusModal} />}
       <View style={styles.mainView}>
         <ScrollView
           bounces={false}
@@ -174,10 +155,9 @@ export default function HomeScreen(props: any) {
           <View style={styles.circularView}>
             <View style={styles.yellowView}>
               <ZodicSign sign={zodicSign} width={scale(100)} height={scale(100)} />
-              {/* <Yellow width={width * 0.36} /> */}
             </View>
             <View style={styles.nameView}>
-              <Text style={styles.fullnameText}>{selectedUser?.name ?? userDetails?.name}</Text>
+              <Text style={styles.fullnameText}>{capitalizeFirstLetter(selectedUser?.name ?? userDetails?.name ?? '')}</Text>
               {/* <Text style={styles.zodiacText}>Pisces - Married</Text> */}
               <View style={styles.optionsView}>
                 {signs.map((sign, index) => (
@@ -212,20 +192,21 @@ export default function HomeScreen(props: any) {
             </TouchableOpacity>
           ) : null}
         </ScrollView>
-          <CustomButton
-            style={styles.chatWithAiButton}
-            title={i18n.t('home.chatWithAi')}
-            onPress={() =>
-              props.navigation.navigate('BottomTabNavigator', {
-                screen: 'AI Astrologer',
-              })
-            }
-          />
-        <ReceiveBonusModal closeModal={() => {
-          setShowReceiveBonusModal(false)
-          setIsGetBonus(false);
-        }} visible={showReceiveBonusModal} />
+
+        <CustomButton
+          style={styles.chatWithAiButton}
+          title={i18n.t('home.chatWithAi')}
+          onPress={() =>
+            props.navigation.navigate('BottomTabNavigator', {
+              screen: 'AI Astrologer',
+            })
+          }
+        />
       </View>
+      {/* <ReceiveBonusModal closeModal={() => {
+        setShowReceiveBonusModal(false)
+        setIsGetBonus(false);
+      }} visible={showReceiveBonusModal} /> */}
     </BaseView>
   );
 }

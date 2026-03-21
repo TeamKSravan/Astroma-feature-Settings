@@ -44,6 +44,7 @@ import DateInput from '../../../../../components/CustomDateInput';
 import CustomDateInput from '../../../../../components/CustomDateInput';
 import { AstrologyApiKey } from '../../../../../constants/Keys';
 import moment from 'moment';
+import { capitalizeFirstLetter } from '../../../../../utils/methods';
 
 const ProfileInput = ({
   label,
@@ -57,6 +58,7 @@ const ProfileInput = ({
   forPhone = false,
   forDate = false,
   phoneNo = '',
+  maxLength = 60,
   setPhoneNo = () => { },
   handleCountrySelect = () => { },
   selectedCountry = null as Country | null,
@@ -73,6 +75,7 @@ const ProfileInput = ({
   forPhone?: boolean,
   forDate?: boolean,
   phoneNo?: string,
+  maxLength?: number,
   setPhoneNo?: (text: string) => void,
   handleCountrySelect?: (country: Country) => void,
   selectedCountry?: Country | null,
@@ -123,6 +126,7 @@ const ProfileInput = ({
             <CustomTextInput
               placeholder={placeholder}
               value={value}
+              maxLength={maxLength}
               editable={editable}
               onChangeText={onChangeText}
               inputStyle={{
@@ -173,7 +177,7 @@ export default function Profile({ navigation }: any) {
 
   useEffect(() => {
     console.log('userDetails : ', userDetails);
-    setFullName(userDetails?.name || '');
+    setFullName(capitalizeFirstLetter(userDetails?.name || ''));
     // Note: country_code is stored as string; resolve async to get Country then set state
     getCountryCodeFromCallingCode(userDetails?.country_code?.replace('+', '')).then(country =>
       setSelectedCountry(country),
@@ -273,7 +277,7 @@ export default function Profile({ navigation }: any) {
     }
 
     editPrimaryUserDetail({
-      name: fullName,
+      name: capitalizeFirstLetter(fullName),
       phone: phoneNo,
       country_code: selectedCountry?.callingCode?.[0] || userDetails?.country_code || '',
       date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
@@ -462,6 +466,18 @@ export default function Profile({ navigation }: any) {
   );
 
 
+  const onNameChange = (text: string) => {
+    let capitalizeText = capitalizeFirstLetter(text);
+    if(capitalizeText.length > 50) {
+      setFullName(capitalizeText);
+      setErrors(prev => ({ ...prev, name: i18n.t('profile.nameTooLong') }));
+    } else {
+      setFullName(capitalizeText);
+      setErrors(prev => ({ ...prev, name: '' }));
+    }
+  };
+
+
   return (
     <BaseView backgroundImage={imagepath.reportBg}>
       <View style={styles.headerView}>
@@ -486,7 +502,7 @@ export default function Profile({ navigation }: any) {
             paddingHorizontal: scale(10),
             gap: verticalScale(15),
           }}>
-            <ProfileInput label={i18n.t('profile.fullName')} placeholder={i18n.t('profile.fullName')} value={fullName} onChangeText={setFullName} editable={isEditable} error={errors?.name} />
+            <ProfileInput label={i18n.t('profile.fullName')} placeholder={i18n.t('profile.fullName')} value={fullName} onChangeText={onNameChange} editable={isEditable} error={errors?.name} />
             <ProfileInput
               label={i18n.t('profile.phoneNo')}
               forPhone={true}
@@ -516,7 +532,7 @@ export default function Profile({ navigation }: any) {
             />
             <View style={styles.inputWrapper}>
               <ProfileInput label={i18n.t('profile.placeOfBirth')} placeholder={i18n.t('profile.placeOfBirth')} value={placeOfBirth} onChangeText={handleInputChange} editable={isEditable} error={errors?.place} />
-              {placeOfBirth.length > 0 && (
+              {placeOfBirth.length > 0 && isEditable && (
                 <TouchableOpacity
                   style={styles.clearButton}
                   onPress={handleClearInput}

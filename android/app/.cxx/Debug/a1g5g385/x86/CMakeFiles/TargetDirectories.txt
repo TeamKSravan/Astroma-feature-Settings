@@ -7,6 +7,9 @@
 /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/rnclipboard_autolinked_build/CMakeFiles/react_codegen_rnclipboard.dir
 /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/rnclipboard_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/rnclipboard_autolinked_build/CMakeFiles/rebuild_cache.dir
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/RNCNetInfoSpec_autolinked_build/CMakeFiles/react_codegen_RNCNetInfoSpec.dir
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/RNCNetInfoSpec_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/RNCNetInfoSpec_autolinked_build/CMakeFiles/rebuild_cache.dir
 /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/lottiereactnative_autolinked_build/CMakeFiles/react_codegen_lottiereactnative.dir
 /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/lottiereactnative_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/Debug/a1g5g385/x86/lottiereactnative_autolinked_build/CMakeFiles/rebuild_cache.dir

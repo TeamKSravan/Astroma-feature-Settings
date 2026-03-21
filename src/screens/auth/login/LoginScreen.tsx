@@ -37,7 +37,7 @@ export default function LoginScreen(props: any) {
     region: 'Asia',
     subregion: 'Southern Asia',
   } as Country);
-  const { sendOTP, isLoading } = useAuthStore();
+  const { sendOTP, isLoading, CheckOnBoarding } = useAuthStore();
   const { getPlanDetails, } = useWalletStore();
   const { validate } = useValidation();
 
@@ -75,7 +75,7 @@ export default function LoginScreen(props: any) {
       ).start();
     });
   };
- 
+
 
   const createElementStyle = (animValue: Animated.Value) => {
     const opacity = animValue.interpolate({
@@ -129,50 +129,45 @@ export default function LoginScreen(props: any) {
       setError(prev => ({ ...prev, phone: validationError }));
       return;
     }
-    // console.log(`code : ${selectedCountry.cca2} -> digits : ${DigitSubscriberNumber.find(item => item.countryCode === `+${selectedCountry.callingCode[0]}`)?.totalNationalDigits}`);
-    // if (
-    //   !validate('phone', phoneNumber, {
-    //     countryCode: selectedCountry.cca2,
-    //     minLength: DigitSubscriberNumber.find(item => item.countryCode === `+${selectedCountry.callingCode[0]}`)?.totalNationalDigits,
-    //     maxLength: 15,
-    //   })
-    // ) {
-    //   return;
-    // }
+
     try {
-      const fullPhoneNumber = `+${selectedCountry.callingCode[0]}${phoneNumber}`;
+
       const formdata = {
         country_code: `+${selectedCountry.callingCode[0]}`,
         phone: phoneNumber,
       }
       console.log('Full phone number:', formdata);
+      const onBoardingResult = await CheckOnBoarding(formdata.country_code, formdata.phone);
       const result = await sendOTP(formdata);
       if (result.success) {
         setError({})
         ToastMessage(i18n.t('login.otpSent'));
+        if (onBoardingResult.isOnboarded) {
+          useAuthStore.setState({ isGetBonus: false });
+        } else {
+          useAuthStore.setState({ isGetBonus: true });
+        }
         setTimeout(() => {
           props.navigation.navigate('OtpScreen', {
             country_code: `+${selectedCountry.callingCode[0]}`,
             phone: phoneNumber,
-            // phone: fullPhoneNumber,
+            isOnboarded: onBoardingResult.isOnboarded,
           });
         }, 500);
-      } else {
-        ToastMessage(result.message || i18n.t('login.genericError'));
       }
     } catch (error: any) {
-      ToastMessage(error?.message || i18n.t('login.genericError'));
+      // ToastMessage(error?.message || i18n.t('login.genericError'));
       console.log('Login error:', error);
     }
   };
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 60}
-      >
-        <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 90}
+        >
           <View style={[styles.img, { width: '100%' }]}>
             <Animated.View style={[styles.smallImg, { top: 110, left: 55 }, createElementStyle(sparkle1)]}>
               <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
@@ -195,7 +190,7 @@ export default function LoginScreen(props: any) {
             <Animated.View style={[styles.mediumImg, { top: 110, right: 150 }, createElementStyle(sparkle7)]}>
               <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
             </Animated.View>
-            <Image source={imagepath.grouped2} style={styles.img} />
+            <Image source={imagepath.grouped2} resizeMode='contain' style={styles.img} />
           </View>
           <View style={styles.mainView}>
             <Text style={styles.loginText}>{i18n.t('login.login')}</Text>
@@ -215,14 +210,15 @@ export default function LoginScreen(props: any) {
               error={error?.phone || ''}
             />
           </View>
-        </ScrollView>
-        <CustomButton
-          title={i18n.t('login.loginn')}
-          style={styles.buttonStyle}
-          onPress={handleLogin}
-          disabled={phoneNumber.length == 0}
-        />
-      </KeyboardAvoidingView>
+          {/* </ScrollView> */}
+        </KeyboardAvoidingView>
+      </View>
+          <CustomButton
+            title={i18n.t('login.loginn')}
+            style={styles.buttonStyle}
+            onPress={handleLogin}
+            disabled={phoneNumber.length == 0}
+          />
       {isLoading && <Loader />}
     </BaseView>
   );
@@ -251,10 +247,14 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     marginHorizontal: scale(16),
-    marginVertical: verticalScale(10),
+
+    // marginTop: verticalScale(25),
+    // marginBottom: verticalScale(130),
+    // marginBottom: verticalScale(50),
   },
   container: {
     flex: 1,
+    paddingVertical: verticalScale(5),
   },
   smallImg: {
     position: 'absolute',

@@ -13,6 +13,8 @@ import { useChatStore } from '../store/useChatStore';
 
 interface ChatMessageProps {
   item: any;
+  index: number;
+  chatType: string;
   previousMessage: string;
   message: string;
   isUser: boolean;
@@ -76,6 +78,8 @@ const Typewriter = ({ text = '', speed = Platform.OS === 'android' ? 50 : 50, on
 const ChatMessage: React.FC<ChatMessageProps> = ({
   item,
   message,
+  index,
+  chatType,
   previousMessage,
   isUser,
   timestamp,
@@ -96,11 +100,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
   const handleCopy = async () => {
     try {
-      await Clipboard.setString(`Ques- ${previousMessage}\n\n Ans- ${message}`);
-      ToastMessage(i18n.t('chat.copySuccess'));
+      // console.log('index::::: ', index);
+      const messageToCopy = (index == 0 && chatType === 'viewReport') ? message : `Ques- ${previousMessage}\n\n Ans- ${message}`;
+      await Clipboard.setString(messageToCopy);
+      // ToastMessage(i18n.t('chat.copySuccess'));
     } catch (error) {
       console.error('Failed to copy message:', error);
-      ToastMessage(i18n.t('chat.copyFailed'));
+      // ToastMessage(i18n.t('chat.copyFailed'));
     }
   };
 
@@ -147,7 +153,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             style={styles.moreButton} 
             onPress={async () => {
               console.log('item on like press: ', item);
-                const result = await chatLike(item?.item?.conversation_id?.$oid, item?.id);
+                const result = await chatLike(item?.conversation_id, item?.id);
+                // const result = await chatLike(item?.item?.conversation_id?.$oid, item?.id);
                 console.log('like result : ', result.message);
                 if(result.success){
                   setLiked(true);
@@ -165,7 +172,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           <TouchableOpacity 
             style={styles.moreButton} 
             onPress={async () => {
-              const result = await chatDislike(item?.item?.conversation_id?.$oid, item?.id);
+              const result = await chatDislike(item?.conversation_id, item?.id);
+              // const result = await chatDislike(item?.item?.conversation_id?.$oid, item?.id);
                 console.log('dislike result : ', result.message);
                 if(result.success){
                   setDisliked(true);
@@ -180,9 +188,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               key={disliked ? 'disliked' : 'not-disliked'}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.moreButton}>
+          {/* <TouchableOpacity style={styles.moreButton}>
             <VerticalMore width={scale(15)} height={scale(15)}  />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       )}
 

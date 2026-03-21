@@ -24,8 +24,9 @@ const formatTime = (seconds: number): string => {
 };
 
 export default function OtpScreen(props: any) {
+  const { country_code: country_codeParam, phone: phoneParam, isOnboarded: isOnboardedParam } = props.route?.params || {};
   const [otp, setOtp] = useState('123456');
-  const [showLanguageModal, setShowLanguageModal] = useState(true);
+  const [showLanguageModal, setShowLanguageModal] = useState(isOnboardedParam ? false : true);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [timer, setTimer] = useState<number>(TIMER_DURATION);
   const { login, isLoading, userDetails, sendOTP, setIsGetBonus, currentLanguage } = useAuthStore();
@@ -89,8 +90,8 @@ export default function OtpScreen(props: any) {
     createSparkleAnimation(sparkle7, 1800);
   }, []);
 
-  const phone = props.route?.params?.phone || '';
-  const country_code = props.route?.params?.country_code || '';
+  const phone = phoneParam || '';
+  const country_code = country_codeParam || '';
 
   const handleVerifyOtp = async () => {
     let validationError = validate('otp', otp);
@@ -111,13 +112,14 @@ export default function OtpScreen(props: any) {
       const result = await login(data);
 
       if (result.success) {
-        ToastMessage('OTP verified successfully!');
+        ToastMessage(i18n.t('toast.otpVerifiedSuccess'));
         setSecondaryUserdata([]);
         setTimeout(() => {
           if (!result.isOnboarded) {
             props.navigation.replace('OnboardingScreen', { onBoardType: 'newUser' });
             setIsGetBonus(true);
           } else {
+            setIsGetBonus(false);
             // props.navigation.replace('AppNavigator');
             // props.navigation.reset({
             //   index: 0,
@@ -126,19 +128,18 @@ export default function OtpScreen(props: any) {
           }
         }, 500);
       } else {
-        ToastMessage(result.message || 'Invalid OTP. Please try again.');
+        ToastMessage(result.message || i18n.t('toast.invalidOtp'));
       }
     } catch (error: any) {
       console.log('login Error:', error);
-      const errorMessage = error?.message || 'Invalid OTP. Please try again.';
+      const errorMessage = error?.message || i18n.t('toast.invalidOtp');
       ToastMessage(errorMessage);
     }
   };
 
-
   const handleResendOtp = async () => {
     if (!phone) {
-      ToastMessage('Phone number not found. Please go back and try again.');
+      ToastMessage(i18n.t('toast.phoneNumberNotFound'));
       return;
     }
     try {
@@ -148,18 +149,18 @@ export default function OtpScreen(props: any) {
       });
 
       if (result.success) {
-        ToastMessage('OTP sent successfully!');
+        ToastMessage(i18n.t('toast.otpSentSuccess'));
         setOtp('');
       } else {
         ToastMessage(
-          result.message || 'Failed to resend OTP. Please try again.',
+          result.message || i18n.t('toast.failedToResendOtp'),
         );
       }
     } catch (error: any) {
       console.error('Resend OTP Error:', error);
 
       const errorMessage =
-        error?.message || 'Failed to resend OTP. Please try again.';
+        error?.message || i18n.t('toast.failedToResendOtp');
 
       ToastMessage(errorMessage);
     }
@@ -191,7 +192,7 @@ export default function OtpScreen(props: any) {
         <Animated.View style={[styles.mediumImg, { top: 110, right: 150 }, createElementStyle(sparkle7)]}>
           <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
         </Animated.View>
-        <Image source={imagepath.grouped2} style={styles.img} />
+        <Image source={imagepath.grouped2} resizeMode='contain' style={styles.img} />
       </View>
       <View style={styles.mainView}>
         <Text style={styles.loginText}>{i18n.t('login.auth')}</Text>

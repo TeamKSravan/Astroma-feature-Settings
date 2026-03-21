@@ -23,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useProfileStore } from '../store/useProfileStore';
 import { UserDetails } from '../store/useAuthStore';
 import { ToastMessage } from './ToastMessage';
+import { capitalizeFirstLetter } from '../utils/methods';
 
 interface UserListProps {
     primaryUser?: UserDetails;
@@ -91,7 +92,7 @@ export default function UserList({ primaryUser, showAddUser = true, disableUserS
                         <TouchableOpacity activeOpacity={1} style={sign._id?.$oid === selectedUser?._id?.$oid ? styles.selectedcircle : styles.circle} onPress={() => disableUserSelection ? null : setSelectedUser(sign._id?.$oid === selectedUser?._id?.$oid ? null : sign)}>
                             <UserIcon sign={sign?.zodiac_sign ?? ''} />
                         </TouchableOpacity>
-                        <Text numberOfLines={1} lineBreakMode='tail' style={styles.profileNameText}>{sign.name}</Text>
+                        <Text numberOfLines={1} lineBreakMode='tail' style={styles.profileNameText}>{capitalizeFirstLetter(sign.name)}</Text>
                     </View>
                 ))}
             </ScrollView>

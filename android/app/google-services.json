@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1054958548231",
+    "project_id": "astroma-52d87",
+    "storage_bucket": "astroma-52d87.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054958548231:android:27abb77cbca09c1797c1a2",
+        "android_client_info": {
+          "package_name": "com.astroma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU6ykHj4Id8Kc1MZdwrF1W3ex0UqEUpmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

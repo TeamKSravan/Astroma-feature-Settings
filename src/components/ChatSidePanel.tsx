@@ -42,7 +42,7 @@ export interface ChatSidePanelProps {
   onSelectChat?: (chatId: string) => void;
 }
 
-export default function ChatSidePanel({
+function ChatSidePanel({
   visible,
   onClose,
   onChatHistory,
@@ -59,6 +59,7 @@ export default function ChatSidePanel({
   const [searchQuery, setSearchQuery] = useState('');
   const [chatHistoryList, setChatHistoryList] = useState<ChatHistoryItem[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUserData, setSelectedUserData] = useState<ChatHistoryItem | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,7 +67,7 @@ export default function ChatSidePanel({
   const { selectedUser } = useProfileStore();
   const options = [
     { label: i18n.t('common.delete'), value: 'delete' },
-    { label: i18n.t('common.edit'), value: 'edit' },
+    { label: i18n.t('common.rename'), value: 'rename' },
   ];
 
   const fetchChatHistory = useCallback(async () => {
@@ -165,11 +166,11 @@ export default function ChatSidePanel({
     const userId = (selectedUser as any)?._id?.$oid ?? '';
     const result = await deleteAllChatHistory(userId);
     if (result.success) {
-      fetchChatHistory();
+      setChatHistoryList([]);
       onNewChat?.();
       ToastMessage(i18n.t('chatHistory.deletedSuccess'));
     }
-  }, [deleteAllChatHistory, fetchChatHistory, onNewChat, selectedUser]);
+  }, [deleteAllChatHistory, onNewChat, selectedUser]);
 
   const handleDelete = useCallback(async (chatItem: ChatHistoryItem | null) => {
     const id = chatItem?._id?.$oid;
@@ -177,17 +178,16 @@ export default function ChatSidePanel({
     const result = await deleteChatHistory(id);
     if (result.success) {
       setChatHistoryList((prev) => prev.filter((item) => item._id?.$oid !== id));
-      fetchChatHistory();
       setShowDeleteModal(false);
       setSelectedUserData(null);
       ToastMessage(i18n.t('chatHistory.deletedSuccess'));
     }
-  }, [deleteChatHistory, fetchChatHistory]);
+  }, [deleteChatHistory]);
 
   const handleOptionSelect = useCallback((value: string) => {
     if (value === 'delete') {
       setShowDeleteModal(true);
-    } else if (value === 'edit') {
+    } else if (value === 'rename') {
       setShowEditModal(true);
     }
   }, []);
@@ -276,11 +276,11 @@ export default function ChatSidePanel({
           <Text style={styles.sectionHeaderText}>
             {i18n.t('chatHistory.title')}
           </Text>
-          <TouchableOpacity onPress={handleDeleteAll}>
+          {filteredList.length > 0 && <TouchableOpacity onPress={() => setShowDeleteAllModal(true)}>
             <Text style={styles.sectionSubText}>
-              {'Clear History'}
+              {i18n.t('chatHistory.clearHistory')}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity>}
         </View>
 
         {/* Chat history list */}
@@ -340,6 +340,16 @@ export default function ChatSidePanel({
           title={i18n.t('chatHistory.deleteTitle')}
           description={i18n.t('chatHistory.deleteDescription')}
         />
+        <DeleteModal
+          closeModal={() => {
+            setShowDeleteAllModal(false);
+            setSelectedUserData(null);
+          }}
+          visible={showDeleteAllModal}
+          handleVerify={handleDeleteAll}
+          title={i18n.t('chatHistory.deleteAllTitle')}
+          description={i18n.t('chatHistory.deleteAllDescription')}
+        />
         <EditConversation
           title={selectedUserData?.title ?? ''}
           id={selectedUserData?._id?.$oid ?? ''}
@@ -354,6 +364,8 @@ export default function ChatSidePanel({
     </>
   );
 }
+
+export default React.memo(ChatSidePanel);
 
 const styles = StyleSheet.create({
   overlay: {

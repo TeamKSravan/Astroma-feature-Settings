@@ -2,6 +2,7 @@
   "buildFiles": [
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-iap/android/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -69,6 +70,11 @@
         "/Users/sravi/.gradle/caches/8.13/transforms/31e0f7f2036363594f850a6d0047e18b/transformed/react-android-0.82.0-release/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
         "/Users/sravi/.gradle/caches/8.13/transforms/c9612a496a82872c52c1a7d0558ad962/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so"
       ]
+    },
+    "react_codegen_RNCNetInfoSpec::@c36c96bfd5b5770618a5": {
+      "artifactName": "react_codegen_RNCNetInfoSpec",
+      "abi": "x86_64",
+      "runtimeFiles": []
     },
     "react_codegen_rnworklets::@68f58d84d4754f193387": {
       "artifactName": "react_codegen_rnworklets",

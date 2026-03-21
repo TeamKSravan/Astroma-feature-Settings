@@ -3962,6 +3962,7 @@ mipmap ic_launcher_round
 plurals mtrl_badge_content_description
 raw com_android_billingclient_heterodyne_info
 raw com_android_billingclient_registration_info
+raw firebase_common_keep
 raw keep
 string abc_action_bar_home_description
 string abc_action_bar_up_description
@@ -4076,6 +4077,11 @@ string fab_transformation_sheet_behavior
 string fallback_menu_item_copy_link
 string fallback_menu_item_open_in_browser
 string fallback_menu_item_share_link
+string gcm_defaultSenderId
+string google_api_key
+string google_app_id
+string google_crash_reporting_api_key
+string google_storage_bucket
 string header_description
 string hide_bottom_view_on_scroll_behavior
 string hour_description
@@ -4198,6 +4204,7 @@ string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
 string progressbar_description
+string project_id
 string radiogroup_description
 string react_native_dev_server_ip
 string rn_tab_description

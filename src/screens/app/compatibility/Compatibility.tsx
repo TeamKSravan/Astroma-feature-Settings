@@ -203,7 +203,7 @@ export default function Compatibility(props: any) {
     }
 
     if (selectedUser.length >= 4) {
-      ToastMessage('You can only select 4 users');
+      ToastMessage(i18n.t('toast.maxUsersCompatibility'));
       return;
     }
     // Handle "Add Profile" case
@@ -233,7 +233,7 @@ export default function Compatibility(props: any) {
       } else if (compareUser4 === null) {
         setCompareUser4(userToAdd);
       } else {
-        ToastMessage('You can only select 4 users');
+        ToastMessage(i18n.t('toast.maxUsersCompatibility'));
         return;
       }
     }
@@ -251,13 +251,13 @@ export default function Compatibility(props: any) {
   }, [getCompatibilityTypeList]);
 
   const onPressGenerateReport = () => {
+    console.log('selectedUser : ', selectedUser);
     if (selectedUser.length < 2 || selectedUser.length > 4) {
-      ToastMessage('Please select at least 2 and at most 4 users');
+      ToastMessage(i18n.t('toast.selectUsersRange'));
       return;
     }
     if (compatibilityType === i18n.t('compat.selectType')) {
-      setErrorCombat('Please select a compatibility type');
-      // ToastMessage('Please select a compatibility type');
+      setErrorCombat(i18n.t('toast.selectCompatibilityType'));
       return;
     }
     setShowCoinSummaryModal(true);
@@ -271,10 +271,10 @@ export default function Compatibility(props: any) {
         setErrorCombat('')
         setShowGenerateReportModal(true);
         setPdfUrl(res.data || '')
-        ToastMessage('Report generated successfully');
+        ToastMessage(i18n.t('toast.reportGeneratedSuccess'));
         await getWalletDetails();
       } else {
-        ToastMessage(res.data as string);
+        ToastMessage((res.data as string) || i18n.t('common.somethingWentWrong'));
       }
     });
   };
@@ -288,7 +288,7 @@ export default function Compatibility(props: any) {
     if (timeOfBirth) {
       timeOfBirth = timeOfBirth.split(':').slice(0, 2).join(':');
     }
-    return dateOfBirth && timeOfBirth ? `${dateOfBirth} | ${timeOfBirth}` : '';
+    return dateOfBirth && timeOfBirth ? `${dateOfBirth} \n ${timeOfBirth}` : '';
   };
 
   // Reusable component for rendering selected user info
@@ -321,33 +321,14 @@ export default function Compatibility(props: any) {
         </View>
       </View>
     )
-    return (
-      <View style={positionStyle}>
-        <View style={styles.nameView}>
-          <OptionMenu
-            options={[{ label: 'Remove', value: 'remove' }]}
-            triggerComponent={
-              <More width={40} height={20} style={{ position: 'absolute', top: 0, right: -scale(70) }} />
-            }
-            menuOptionsContainerStyle={{ width: scale(100), justifyContent: 'center', minWidth: scale(80), }}
-            onSelect={() => onRemove(user)}
-          />
-          <View style={styles.userContentContainer}>
-            <ZodicSign sign={user?.zodiac_sign || ''} width={80} height={80} />
-            <Text style={styles.nameText}>{user?.name || ''}</Text>
-            <Text style={styles.dateText}>{formatUserDate(user)}</Text>
-          </View>
-        </View>
-      </View>
-    )
   };
 
   // Configuration for selected user positions
   const selectedUserPositions = [
-    { index: 0, positionStyle: { alignSelf: 'center' } },
-    { index: 1, positionStyle: { top: verticalScale(270), alignSelf: 'center' } },
-    { index: 2, positionStyle: { top: verticalScale(90), left: scale(55), alignSelf: 'flex-start' } },
-    { index: 3, positionStyle: { top: verticalScale(150), right: scale(60), alignSelf: 'flex-end' } },
+    { index: 0, positionStyle: { top: verticalScale(-20), alignSelf: 'center' } },
+    { index: 1, positionStyle: { top: verticalScale(230), alignSelf: 'center' } },
+    { index: 2, positionStyle: { top: verticalScale(100), left: scale(55), alignSelf: 'flex-start' } },
+    { index: 3, positionStyle: { top: verticalScale(120), right: scale(60), alignSelf: 'flex-end' } },
   ];
 
   const OptionItem = (option: any) => {
@@ -493,7 +474,7 @@ export default function Compatibility(props: any) {
         <EmptyCredits />
       </View>}
       <CoinSummaryModal
-        title={`Download ${compatibilityType.charAt(0).toUpperCase() + compatibilityType.slice(1)} ${i18n.t('compat.compatibilityReport')}`}
+        title={`${compatibilityType.charAt(0).toUpperCase() + compatibilityType.slice(1)} ${i18n.t('compat.compatibilityReport')}`}
         cost={10}
         closeModal={() => { setShowCoinSummaryModal(false) }}
         visible={showCoinSummaryModal}
@@ -530,7 +511,7 @@ const styles = StyleSheet.create({
   },
   addIcon1: {
     position: 'absolute',
-    top: scale(220),
+    top: scale(250),
     left: scale(10),
   },
   userContentContainer: {
@@ -540,7 +521,7 @@ const styles = StyleSheet.create({
   },
   addIcon2: {
     position: 'absolute',
-    top: verticalScale(70),
+    top: verticalScale(40),
     right: scale(10),
   },
   nameText: {

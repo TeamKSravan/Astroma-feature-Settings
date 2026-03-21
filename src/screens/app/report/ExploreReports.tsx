@@ -24,19 +24,21 @@ import { useWalletStore } from '../../../store/useWalletStore';
 import EmptyCredits from '../../../components/EmptyCredits';
 import CoinSummaryModal from '../../../components/modals/CoinSummary';
 import CategorySign, { Type } from '../../../components/CategorySign';
+import DownloadSuccess from '../../../components/modals/DownloadSuccess';
 
 
 export default function ExploreReports() {
   const lowerLimit = 10;
   const { isLoading } = useAuthStore();
   const { selectedUser } = useProfileStore();
-  const { getWalletDetails, availableCoins } = useWalletStore();
+  const { getWalletDetails, availableCoins, setAvailableCoins } = useWalletStore();
   const { getRemainingReports, AddUserReports, getUserReports } = useChatStore();
   const [reports, setReports] = useState<Array<any>>([]);
   const [emptyMessage, setEmptyMessage] = useState<string>('');
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [selectedPackage, setSelectedPackage] = useState({ id: 1, label: i18n.t('wallet.coins10'), specialOffer: false, subscription: false, cost: 3 },);
   const [showOrderSummaryModal, setShowOrderSummaryModal] = useState(false);
+  const [showDownloadSuccessModal, setShowDownloadSuccessModal] = useState(false);
 
   useEffect(() => {
     fetchReports();
@@ -59,7 +61,7 @@ export default function ExploreReports() {
     if (availableCoins >= lowerLimit) {
       ManageSectPackage(item, index);
     } else {
-      ToastMessage('You do not have enough coins(10 coins) to unlock this report');
+      ToastMessage(i18n.t('toast.notEnoughCoins'));
     }
   };
 
@@ -77,10 +79,15 @@ export default function ExploreReports() {
         if (response.success) {
           setSelectedReport(null);
           fetchReports();
-          await getWalletDetails();
-          ToastMessage("Report downloaded successfully");
+          setAvailableCoins(response?.coins ?? 0);
+          setShowDownloadSuccessModal(true);
+
+          setTimeout(() => {
+            setShowDownloadSuccessModal(false);
+          }, 3000);
+          // ToastMessage("Report downloaded successfully");
         } else {
-          ToastMessage("Failed to download report");
+          ToastMessage(i18n.t('toast.failedToDownloadReport'));
         }
       })
       .catch(error => {
@@ -119,6 +126,12 @@ export default function ExploreReports() {
   );
   return (
     <BaseView backgroundImage={imagepath.reportBg}>
+      <DownloadSuccess
+        title={`Report Successfully Downloaded`}
+        cost={10}
+        closeModal={() => { setShowDownloadSuccessModal(false) }}
+        visible={showDownloadSuccessModal}
+      />
       {isLoading && <Loader />}
       <FlatList
         data={reports}
@@ -135,7 +148,7 @@ export default function ExploreReports() {
         closeModal={() => { setShowOrderSummaryModal(false) }}
         visible={showOrderSummaryModal}
         paynow={handleAddCoins}
-        title={`Download ${selectedPackage?.label}`}
+        title={selectedPackage?.label}
         cost={10}
       />
     </BaseView>

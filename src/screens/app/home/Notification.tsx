@@ -6,130 +6,69 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import BackButton from '../../../components/BackButton';
-import { Calender, Horoscope, Lucky, Moon, Compatibility } from '../../../constants/svgpath';
+import { useHomeStore } from '../../../store/useHomeStore';
+import ItemNotification from '../../../components/Home/ItemNotification';
+import i18n from '../../../translation/i18n';
+import ListEmptyComponent from '../../../components/Common/ListEmptyComponent';
 
-enum NotificationType {
-    calender = 'calender',
-    compatibility = 'compatibility',
-    horoscope = 'horoscope',
-    lucky = 'lucky',
-    moon = 'moon',
-}
-
-export default function NotificationScreen(props: any) {
-    const data = [
-        {
-            id: 1,
-            title: 'Daily Horoscope Ready',
-            subtitle: 'Your Pisces daily horoscope for today is ready. Tap to read your cosmic insights.',
-            date: '2 min ago',
-            type: NotificationType.horoscope,
-            isRead: false,
-        },
-        {
-            id: 1,
-            title: 'Moon Phase Alert',
-            subtitle: 'Full Moon in Leo tonight! Great time for creative pursuits and self-expression.',
-            date: '1 hour ago',
-            type: NotificationType.moon,
-            isRead: false,
-        },
-        {
-            id: 1,
-            title: 'Compatibility Match',
-            subtitle: 'New compatibility report available. Check how well you match with Aries!',
-            date: '3 hours ago',
-            type: NotificationType.compatibility,
-            isRead: false,
-        },
-        {
-            id: 1,
-            title: 'Lucky Period Ahead',
-            subtitle: 'Jupiter enters your sign this week. Expect positive changes in career and finances.',
-            date: '5 hours ago',
-            type: NotificationType.lucky,
-            isRead: false,
-        },
-        {
-            id: 1,
-            title: 'Mercury Retrograde Ending',
-            subtitle: 'Mercury retrograde ends tomorrow. Communication issues will start to resolve.',
-            date: '2 days ago',
-            type: NotificationType.calender,
-            isRead: false,
-        },
-    ];
+function NotificationScreen(props: any) {
+    const [data, setData] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
+    const { getNotificationList, markAsRead } = useHomeStore();
 
-    const NotiIcon = ({ type }: { type: NotificationType }) => {
-        switch (type) {
-            case NotificationType.calender:
-                return <Calender />
-            case NotificationType.compatibility:
-                return <Compatibility />
-            case NotificationType.horoscope:
-                return <Horoscope />
-            case NotificationType.lucky:
-                return <Lucky />
-            case NotificationType.moon:
-                return <Moon />
-            default:
-                return <View />
+    useEffect(() => {
+        fetchNotificationList();
+    }, [getNotificationList]);
+
+    const fetchNotificationList = async () => {
+        const result = await getNotificationList();
+        if (result.success) {
+            setData(result.data);
+            setRefreshing(false);
         }
+    };
 
-    }
-
-
+    const markAsReadNotification = async (notificationId: string) => {
+        const result = await markAsRead(notificationId);
+        if (result.success) {
+            fetchNotificationList();
+        }
+    };
 
     const onRefresh = async () => {
         setRefreshing(true);
-
-        setRefreshing(false);
+        setData([]);
+        await fetchNotificationList();
     };
 
-    const RenderItem = ({ item }: { item: any }) => {
-        return (
-            <View style={styles.notificationItemContainer}>
-                <View style={styles.notificationItemRow}>
-                    <View style={styles.notiIconContainer}>
-                        <NotiIcon type={item.type} />
-                    </View>
-                    <View style={styles.notificationItemLeft}>
-                        <Text style={styles.notificationItemTitle}>{item.title}</Text>
-                        <Text numberOfLines={2} ellipsizeMode='tail' style={styles.notificationItemSubtitle}>{item.subtitle}</Text>
-                        <Text style={styles.notificationItemDate}>{item.date}</Text>
-                    </View>
-                    <View style={styles.markTag} />
-                </View>
-            </View>
-        );
-    };
+    const isAllRead = data.every((item) => item.is_read);
+    console.log('isAllRead', isAllRead);
     return (
         <BaseView backgroundImage={imagepath.NotificationBG}>
             <View style={styles.headerContainer}>
                 <BackButton style={styles.backButton} />
                 <View style={styles.headerView}>
                     <View style={styles.helloView}>
-                        <Text style={styles.nameText}>{'Notifications'}</Text>
+                        <Text style={styles.nameText}>{i18n.t('notifications.title')}</Text>
                     </View>
-                    <TouchableOpacity style={styles.markAllReadContainer}>
-                        <Text style={styles.markAllReadText}>{'Mark all read'}</Text>
-                    </TouchableOpacity>
+                    {data.length > 0 && !isAllRead && <TouchableOpacity style={styles.markAllReadContainer}>
+                        <Text style={styles.markAllReadText}>{i18n.t('notifications.markAllRead')}</Text>
+                    </TouchableOpacity>}
                 </View>
             </View>
 
             <View style={styles.mainView}>
                 <FlatList
                     data={data}
-                    renderItem={RenderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <ItemNotification item={item} onPress={(notificationId: string) => markAsReadNotification(notificationId)} />}
+                    keyExtractor={(item) => item._id}
                     showsVerticalScrollIndicator={false}
                     bounces={false}
                     contentContainerStyle={{ paddingBottom: verticalScale(60) }}
@@ -141,11 +80,14 @@ export default function NotificationScreen(props: any) {
                             tintColor={colors.primary}
                         />
                     }
+                    ListEmptyComponent={() => <ListEmptyComponent title={i18n.t('notifications.noNotifications')} noButton={true} />}
                 />
             </View>
         </BaseView>
     );
 }
+
+export default React.memo(NotificationScreen);
 
 const styles = StyleSheet.create({
     mainView: {
@@ -189,58 +131,10 @@ const styles = StyleSheet.create({
         fontFamily: fonts.semiBold,
         fontSize: moderateScale(12),
     },
-    notiIconContainer: {
-        width: scale(40),
-        height: scale(40),
-        borderRadius: scale(20),
-        alignSelf: 'flex-start',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: scale(10),
-    },
-    notificationItemContainer: {
-        paddingHorizontal: scale(20),
-        paddingVertical: verticalScale(10),
-    },
-    notificationItemRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    notificationItemLeft: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: scale(5),
-        paddingVertical: verticalScale(5),
-    },
-    notificationItemTitle: {
-        color: colors.white,
-        fontFamily: fonts.bold,
-        fontSize: moderateScale(14),
-    },
-    notificationItemSubtitle: {
-        color: colors.lightYellow,
-        fontFamily: fonts.regular,
-        fontSize: moderateScale(12),
-    },
-    notificationItemDate: {
-        marginTop: verticalScale(5),
-        color: colors.lightYellow,
-        fontFamily: fonts.regular,
-        fontSize: moderateScale(10),
-    },
     notificationItemSeparator: {
         height: 0.5,
         backgroundColor: colors.lightGray,
         marginHorizontal: scale(15),
         marginVertical: verticalScale(5),
-    },
-    markTag:  {
-        width: scale(7),
-        height: scale(7),
-        borderRadius: scale(3.5),
-        backgroundColor: colors.red2,
-        margin: scale(5),
     },
 });

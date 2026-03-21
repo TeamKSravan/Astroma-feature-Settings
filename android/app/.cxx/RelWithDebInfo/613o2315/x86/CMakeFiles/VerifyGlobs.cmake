@@ -62,6 +62,31 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/RNCNetInfoSpec-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/*.cpp")
+set(OLD_GLOB
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/ComponentDescriptors.cpp"
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/EventEmitters.cpp"
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/Props.cpp"
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/RNCNetInfoSpecJSI-generated.cpp"
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/ShadowNodes.cpp"
+  "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/react/renderer/components/RNCNetInfoSpec/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86/CMakeFiles/cmake.verify_globs")
+endif()
+
 # react_codegen_SRCS at /Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/*.cpp")
 set(OLD_GLOB

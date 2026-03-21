@@ -103,17 +103,17 @@ export const useChatStore = create<ChatState>()(
         }
       },
       getChatHistory: async (userId: string, searchQuery?: string) => {
-        setLoading(true);
+        // setLoading(true);
         try {
           const response = await AxiosBase.get(`/conversation-list/${userId ? `?profile_id=${userId}` : ''}${searchQuery ? `&search_term=${searchQuery}` : ''}`);
           // const response = await AxiosBase.get(`/astrology/chat-history`);
           console.log('Response from getChatHistory', response);
-          setLoading(false);
+          // setLoading(false);
           return { success: true, data: response.result };
         } catch (error: any) {
           const errorMessage =
             error.response?.data?.detail || 'Failed to get chat history by id';
-          setLoading(false);
+          // setLoading(false);
           return {
             success: false,
             message: errorMessage,
@@ -257,7 +257,8 @@ export const useChatStore = create<ChatState>()(
           const response = await AxiosBase.post(`/report/user/${reportID}${userId ? `?profile_id=${userId}` : ''}`);
           console.log('Response from AddUserReports', response);
           setLoading(false);
-          return { success: true, message: response.message };
+
+          return { success: true, message: response.message, coins: response.coins };
         } catch (error: any) {
           const errorMessage =
             error.response?.message || 'Failed to add user reports';
@@ -303,7 +304,7 @@ export const useChatStore = create<ChatState>()(
           const response = await AxiosBase.get(`/report/remaining${userId ? `?profile_id=${userId}` : ''}`);
           setLoading(false);
           console.log('remaining reports response', response);
-          return { success: true, data: response.result };
+          return { success: true, data: response?.result };
         } catch (error: any) {
           setLoading(false);
           return { success: false, message: error.response?.data?.detail || 'Error fetching compatibility' };

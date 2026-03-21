@@ -5,7 +5,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
@@ -18,7 +18,7 @@ import { Comparee, ReportHistory } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
-import { useCompatibilityStore } from '../../../store/useCompatibilityStore';
+import { useAuthStore } from '../../../store/useAuthStore';
 
 const { width } = Dimensions.get('window');
 
@@ -30,11 +30,15 @@ const renderScene = SceneMap({
 
 export default function MainScreen(props: any) {
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'compatibility', title: i18n.t('compat.com') },
-    { key: 'compare', title: i18n.t('compat.compare') },
-    { key: 'downloads', title: i18n.t('report.downloads') },
-  ]);
+  const { currentLanguage } = useAuthStore();
+  const routes = useMemo(
+    () => [
+      { key: 'compatibility', title: i18n.t('compat.com') },
+      { key: 'compare', title: i18n.t('compat.compare') },
+      { key: 'downloads', title: i18n.t('report.downloads') },
+    ],
+    [currentLanguage]
+  );
 
 
   const renderTabBar = (props: any) => {
@@ -78,7 +82,6 @@ export default function MainScreen(props: any) {
         onWalletPress={() => props.navigation.navigate('Wallet', { showBack: true })}
         RightComponent={<View />}
       />
-
       <TabView
         navigationState={{ index, routes: routes.map((route: any) => ({ ...route, params: { index } })) }}
         renderScene={renderScene}

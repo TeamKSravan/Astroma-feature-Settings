@@ -18,6 +18,7 @@ interface CustomTextInputProps extends TextInputProps {
   value: string;
   onChangeText: (text: string) => void;
   inputStyle?: StyleProp<ViewStyle>;
+  maxLength?: number;
   leftComponent?: ReactNode;
   rightComponent?: ReactNode;
   error?: string;
@@ -29,6 +30,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   value,
   onChangeText,
   inputStyle,
+  maxLength,
   leftComponent,
   rightComponent,
   editable = true,
@@ -48,6 +50,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
             leftComponent && styles.inputWithLeft,
             rightComponent && styles.inputWithRight,
           ]}
+          maxLength={maxLength}
           editable={editable}
           placeholder={placeholder}
           placeholderTextColor={colors.lightGray}

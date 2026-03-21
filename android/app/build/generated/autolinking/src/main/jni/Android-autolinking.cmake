@@ -8,6 +8,7 @@ set(REACTNATIVE_MERGED_SO true)
 
 add_subdirectory("/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/" rnasyncstorage_autolinked_build)
 add_subdirectory("/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/" rnclipboard_autolinked_build)
+add_subdirectory("/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/" RNCNetInfoSpec_autolinked_build)
 add_subdirectory("/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/" lottiereactnative_autolinked_build)
 add_subdirectory("/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/" RNDatePickerSpecs_autolinked_build)
 
@@ -26,6 +27,7 @@ add_subdirectory("/Users/sravi/Documents/project/Astroma-feature-Settings/node_m
 set(AUTOLINKED_LIBRARIES
   react_codegen_rnasyncstorage
   react_codegen_rnclipboard
+  react_codegen_RNCNetInfoSpec
   react_codegen_lottiereactnative
   react_codegen_RNDatePickerSpecs
   

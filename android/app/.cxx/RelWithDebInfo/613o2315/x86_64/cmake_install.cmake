@@ -46,6 +46,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86_64/rnasyncstorage_autolinked_build/cmake_install.cmake")
   include("/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86_64/rnclipboard_autolinked_build/cmake_install.cmake")
+  include("/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86_64/RNCNetInfoSpec_autolinked_build/cmake_install.cmake")
   include("/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86_64/lottiereactnative_autolinked_build/cmake_install.cmake")
   include("/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86_64/RNDatePickerSpecs_autolinked_build/cmake_install.cmake")
   include("/Users/sravi/Documents/project/Astroma-feature-Settings/android/app/.cxx/RelWithDebInfo/613o2315/x86_64/RNIap_autolinked_build/cmake_install.cmake")

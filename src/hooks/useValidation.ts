@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import moment from 'moment';
-import { ToastMessage } from '../components/ToastMessage';
+import i18n from '../translation/i18n';
 
 type ValidationField = 'name' | 'email' | 'dob' | 'dateofbirth' | 'otp' | 'phone' | 'place' | 'gender' | 'time';
 
@@ -25,30 +25,30 @@ const useValidation = () => {
     let error = '';
 
     switch (field) {
-      case 'name':   
-        if (!value?.trim()) error = 'Name is required';
-        else if (value.trim().length < 2) error = 'Name too short';
+      case 'name':
+        if (!value?.trim()) error = i18n.t('validation.nameRequired');
+        else if (value.trim().length < 2) error = i18n.t('validation.nameTooShort');
         break;
 
       case 'email':
-        if (!value?.trim()) error = 'Email is required';
+        if (!value?.trim()) error = i18n.t('validation.emailRequired');
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-          error = 'Invalid email';
+          error = i18n.t('validation.invalidEmail');
         break;
 
       case 'dob':
-        if (!value) error = 'Date of birth is required';
+        if (!value) error = i18n.t('validation.dobRequired');
         else if (moment(value).isSameOrAfter(moment(), 'day'))
-          error = 'Please select a valid date of birth';
+          error = i18n.t('validation.invalidDob');
         break;
 
       case 'dateofbirth':
         if (!value) {
-          error = 'Date of birth is required';
+          error = i18n.t('validation.dobRequired');
         } else {
           // CustomDateInput stores date as DDMMYYYY (8 digits) or it might be DD/MM/YYYY format
           let dateStr = value;
-          
+
           // If it's 8 digits (DDMMYYYY), convert to DD/MM/YYYY format for validation
           if (/^\d{8}$/.test(value)) {
             const day = value.slice(0, 2);
@@ -56,28 +56,28 @@ const useValidation = () => {
             const year = value.slice(4, 8);
             dateStr = `${day}/${month}/${year}`;
           }
-          
+
           // Validate format: DD/MM/YYYY
           if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-            error = 'Invalid date format. Please use DD/MM/YYYY format';
+            error = i18n.t('validation.invalidDateFormat');
           } else {
             // Parse the date and validate
             const parsedDate = moment(dateStr, 'DD/MM/YYYY', true);
-            
+
             if (!parsedDate.isValid()) {
-              error = 'Invalid date of birth';
+              error = i18n.t('validation.dobRequired');
             } else if (parsedDate.isSameOrAfter(moment(), 'day')) {
-              error = 'Please select a valid date of birth (cannot be today or future)';
+              error = i18n.t('validation.invalidDobFuture');
             } else {
               // Additional validation: check if day/month are valid
               const day = parseInt(dateStr.split('/')[0], 10);
               const month = parseInt(dateStr.split('/')[1], 10);
               const year = parseInt(dateStr.split('/')[2], 10);
-              
+
               if (day < 1 || day > 31 || month < 1 || month > 12) {
-                error = 'Invalid date of birth';
+                error = i18n.t('validation.dobRequired');
               } else if (year < 1900 || year > moment().year()) {
-                error = 'Please enter a valid year';
+                error = i18n.t('validation.invalidYear');
               }
             }
           }
@@ -85,30 +85,28 @@ const useValidation = () => {
         break;
 
       case 'otp':
-        if (!value?.trim()) error = 'OTP is required';
-        else if (!/^\d{4,6}$/.test(value)) error = 'Invalid OTP';
+        if (!value?.trim()) error = i18n.t('validation.otpRequired');
+        else if (!/^\d{4,6}$/.test(value)) error = i18n.t('validation.invalidOtpFormat');
         break;
 
       case 'place':
-        if (!value?.trim()) error = 'Place of birth is required';
+        if (!value?.trim()) error = i18n.t('validation.placeRequired');
         break;
 
       case 'time':
-        // if (!value?.trim()) error = 'Time of birth is required';
-        // else 
         console.log('value : ', value);
-        
-        if (!/^\d{2}:\d{2}$/.test(value)) error = 'Invalid time of birth';
+
+        if (!/^\d{2}:\d{2}$/.test(value)) error = i18n.t('validation.invalidTimeOfBirth');
         break;
 
       case 'gender':
-        if (!value?.trim()) error = 'Gender is required';
-        else if (value.trim() !== 'male' && value.trim() !== 'female' && value.trim() !== 'other') error = 'Invalid gender';
+        if (!value?.trim()) error = i18n.t('validation.genderRequired');
+        else if (value.trim() !== 'male' && value.trim() !== 'female' && value.trim() !== 'other') error = i18n.t('validation.invalidGender');
         break;
 
       case 'phone':
         if (!value?.trim()) {
-          error = 'Phone number is required';
+          error = i18n.t('validation.phoneRequired');
         } else {
           // Remove any non-digit characters for validation
           const cleanedPhone = value.replace(/\D/g, '');
@@ -119,11 +117,11 @@ const useValidation = () => {
 
           // Basic validation
           if (cleanedPhone.length < minLength) {
-            error = `Phone number must be at least ${minLength} digits`;
+            error = i18n.t('validation.phoneMinLength', { min: minLength });
           } else if (cleanedPhone.length > maxLength) {
-            error = `Phone number cannot exceed ${maxLength} digits`;
+            error = i18n.t('validation.phoneMaxLength', { max: maxLength });
           } else if (!/^\d+$/.test(cleanedPhone)) {
-            error = 'Phone number can only contain digits';
+            error = i18n.t('validation.phoneDigitsOnly');
           } else {
             // Country-specific validation
             if (options?.countryCode) {
@@ -135,10 +133,8 @@ const useValidation = () => {
     }
 
     if (error) {
-      // ToastMessage(error);
       setErrors(prev => ({ ...prev, [field]: error }));
       return error;
-      // return false;
     }
 
     setErrors(prev => {
@@ -172,10 +168,10 @@ const useValidation = () => {
 
     if (countryPattern) {
       if (phone.length !== countryPattern.length) {
-        return `Invalid phone number for ${countryCode}. Expected ${countryPattern.length} digits`;
+        return i18n.t('validation.invalidPhoneCountry', { country: countryCode, length: countryPattern.length });
       }
       if (countryPattern.pattern && !countryPattern.pattern.test(phone)) {
-        return `Invalid phone number format for ${countryCode}`;
+        return i18n.t('validation.invalidPhoneFormat', { country: countryCode });
       }
     }
 

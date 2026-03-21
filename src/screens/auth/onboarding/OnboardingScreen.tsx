@@ -127,11 +127,14 @@ export default function OnboardingScreen(props: any) {
         : await completeOnboarding(submitData);
     if (result.success) {
       console.log('onBoardType => ', onBoardType);
-      ToastMessage('Profile completed successfully!');
+      ToastMessage(i18n.t('toast.profileCompletedSuccess'));
       console.log('new profile data : ', result);
       // setSelectedUser(result?.data as UserDetails);
 
       if (onBoardType === 'combatUser') {
+        if (props.route?.params?.onGoBack) {
+          props.route?.params?.onGoBack();
+        }
         props.navigation.goBack();
       } else if (onBoardType === 'addUser') {
         setTimeout(() => {
@@ -145,7 +148,7 @@ export default function OnboardingScreen(props: any) {
       }
     } else {
       ToastMessage(
-        result.message || 'Failed to complete onboarding. Please try again.',
+        result.message || i18n.t('toast.failedToCompleteOnboarding'),
       );
     }
   };
@@ -180,10 +183,10 @@ export default function OnboardingScreen(props: any) {
           <EnterTimeStep
             value={formData.time}
             onChangeTime={time => setFormData({ ...formData, time: time })}
-            onChangeTimezone={(timezone: any) => {
-              console.log('onChangeTimezone => ', timezone);
-              setFormData({ ...formData, timezone: timezone?.value || '' })
-            }}
+            // onChangeTimezone={(timezone: any) => {
+            //   console.log('onChangeTimezone => ', timezone);
+            //   setFormData({ ...formData, timezone: timezone?.value || '' })
+            // }}
             isActive={true}
           />
         );
@@ -194,6 +197,10 @@ export default function OnboardingScreen(props: any) {
             lat={formData.lat}
             long={formData.long}
             onChangeText={text => setFormData({ ...formData, place: text })}
+            onChangeTimezone={(timezone: any) => {
+              console.log('onChangeTimezone => ', timezone);
+              setFormData({ ...formData, timezone: timezone?.value || '' })
+            }}
             onLocationSelect={handleLocationSelect}
             onLocationTypeSelect={setLocationType}
             locationType={locationType}

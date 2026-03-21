@@ -31,7 +31,7 @@ export const ToastMessage = (
   Toast?.show?.(message, {
     type: type,
     placement: position,
-    duration: 5000,
+    duration: 3500,
     animationType: animationType as "slide-in" | "zoom-in",
     style: {
       backgroundColor: colors.primary,

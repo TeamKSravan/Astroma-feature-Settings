@@ -137,7 +137,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
 
   const downloadFile = async (url: string) => {
     if (!url || url.trim() === '') {
-      ToastMessage('Invalid download URL');
+      ToastMessage(i18n.t('toast.invalidDownloadUrl'));
       return;
     }
 
@@ -146,7 +146,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       if (Platform.OS === 'android') {
         const hasPermission = await requestStoragePermission();
         if (!hasPermission) {
-          ToastMessage('Storage permission is required to download files');
+          ToastMessage(i18n.t('toast.storagePermissionRequired'));
           return;
         }
       }
@@ -217,7 +217,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
           console.log(`Download progress: ${percentage}%`);
           // Only show toast for significant progress updates (every 25%)
           if (percentage % 25 === 0 || percentage === 100) {
-            ToastMessage(`Downloading: ${percentage}%`);
+            ToastMessage(i18n.t('toast.downloading', { percentage }));
           }
         }
       };
@@ -248,7 +248,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
           // } else {
           //   ToastMessage(`File saved`);
           // }
-          ToastMessage(`File saved`);
+          ToastMessage(i18n.t('toast.fileSaved'));
           return finalDestPath;
         } else {
           throw new Error('File download completed but file not found at destination');
@@ -258,8 +258,8 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       }
     } catch (error: any) {
       console.error('Download error:', error);
-      const errorMessage = error?.message || 'Failed to download file';
-      ToastMessage(`Download failed: ${errorMessage}`);
+      const errorMessage = error?.message || i18n.t('toast.downloadFailedFallback');
+      ToastMessage(i18n.t('toast.downloadFailed', { message: errorMessage }));
 
       // Show more detailed error for debugging
       if (__DEV__) {
@@ -307,7 +307,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
     </View>
   );
   return (
-    <BaseView backgroundImage={imagepath.reportBg}>
+    <>
       {isLoading && <Loader />}
       <FlatList
         data={userReports}
@@ -321,7 +321,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
         visible={showPdfViewerModal}
         pdfUrl={pdfUrl}
       />
-    </BaseView>
+    </>
   );
 }
 

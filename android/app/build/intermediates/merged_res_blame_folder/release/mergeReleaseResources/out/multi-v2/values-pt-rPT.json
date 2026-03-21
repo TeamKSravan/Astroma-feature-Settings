@@ -1,8 +1,25 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeReleaseResources-48:/values-pt-rPT/values-pt-rPT.xml",
+            "outputFile": "com.astroma.app-mergeReleaseResources-56:/values-pt-rPT/values-pt-rPT.xml",
             "map": [
+                {
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/7aae316a6a96dca59f537faa0933eb13/transformed/play-services-base-18.5.0/res/values-pt-rPT/values.xml",
+                    "from": {
+                        "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
+                        "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                        "startOffsets": "197,298,457,581,685,849,973,1091,1196,1380,1484,1650,1777,1932,2106,2170,2235",
+                        "endColumns": "100,158,123,103,163,123,117,104,183,103,165,126,154,173,63,64,82",
+                        "endOffsets": "297,456,580,684,848,972,1090,1195,1379,1483,1649,1776,1931,2105,2169,2234,2317"
+                    },
+                    "to": {
+                        "startLines": "50,51,52,53,54,55,56,57,59,60,61,62,63,64,65,66,67",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "4683,4788,4951,5079,5187,5355,5483,5605,5859,6047,6155,6325,6456,6615,6793,6861,6930",
+                        "endColumns": "104,162,127,107,167,127,121,108,187,107,169,130,158,177,67,68,86",
+                        "endOffsets": "4783,4946,5074,5182,5350,5478,5600,5709,6042,6150,6320,6451,6610,6788,6856,6925,7012"
+                    }
+                },
                 {
                     "source": "/Users/sravi/.gradle/caches/8.13/transforms/875344938fbd01c56216ad280a96946d/transformed/browser-1.2.0/res/values-pt-rPT/values-pt-rPT.xml",
                     "from": {
@@ -21,13 +38,13 @@
                     }
                 },
                 {
-                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/ea3857e59e0b43df25d6dd1c965b41e0/transformed/play-services-basement-18.3.0/res/values-pt-rPT/values.xml",
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/eb93b9659102dca15474fb2d9c4e9f0b/transformed/play-services-basement-18.8.0/res/values-pt-rPT/values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
-                        "startOffsets": "199",
+                        "startOffsets": "222",
                         "endColumns": "140",
-                        "endOffsets": "339"
+                        "endOffsets": "362"
                     },
                     "to": {
                         "startLines": "58",
@@ -88,23 +105,6 @@
                         "startOffsets": "3561,3658,3760,3859,3959,4066,4172,14358",
                         "endColumns": "96,101,98,99,106,105,120,100",
                         "endOffsets": "3653,3755,3854,3954,4061,4167,4288,14454"
-                    }
-                },
-                {
-                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/2d9d8e49869d35c0d77fd18c3b68226c/transformed/play-services-base-18.3.0/res/values-pt-rPT/values.xml",
-                    "from": {
-                        "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
-                        "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
-                        "startOffsets": "197,298,457,581,685,849,973,1091,1196,1380,1484,1650,1777,1932,2106,2170,2235",
-                        "endColumns": "100,158,123,103,163,123,117,104,183,103,165,126,154,173,63,64,82",
-                        "endOffsets": "297,456,580,684,848,972,1090,1195,1379,1483,1649,1776,1931,2105,2169,2234,2317"
-                    },
-                    "to": {
-                        "startLines": "50,51,52,53,54,55,56,57,59,60,61,62,63,64,65,66,67",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "4683,4788,4951,5079,5187,5355,5483,5605,5859,6047,6155,6325,6456,6615,6793,6861,6930",
-                        "endColumns": "104,162,127,107,167,127,121,108,187,107,169,130,158,177,67,68,86",
-                        "endOffsets": "4783,4946,5074,5182,5350,5478,5600,5709,6042,6150,6320,6451,6610,6788,6856,6925,7012"
                     }
                 },
                 {

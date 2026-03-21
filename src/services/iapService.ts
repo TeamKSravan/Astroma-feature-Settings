@@ -117,7 +117,7 @@ const verifyPurchaseWithBackend = async purchase => {
       console.log('Coins response:', coinsResponse);
 
       if (coinsResponse?.success && typeof coinsResponse?.result === 'number') {
-        useWalletStore.getState().setAvailableCoins(coinsResponse.result);
+        useWalletStore.getState().setAvailableCoins(coinsResponse.result ?? 0);
       }
     } catch (coinsError) {
       console.error('Error fetching coins after purchase:', coinsError);
@@ -316,7 +316,7 @@ export const setupPurchaseListeners = onPurchaseSuccess => {
       const res = await useWalletStore.getState().getPurchaseHistory(JSON.stringify(purchase));
       console.log('Response from getPurchaseHistory : ', res);
       if (res?.success) {
-        useWalletStore.getState().setAvailableCoins(res?.coins);
+        useWalletStore.getState().setAvailableCoins(res?.coins ?? 0);
       }
       await handlePurchaseUpdate(purchase, onPurchaseSuccess);
     });

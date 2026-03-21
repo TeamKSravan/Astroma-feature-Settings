@@ -107,6 +107,9 @@ export default function WalletScreen(props: any) {
     }
   };
 
+
+  console.log('current plan : ', plans.some(plan => plan.id === currentSubscription?.plan_details?._id));
+
   return (
     <BaseView backgroundImage={imagepath.walletBg}>
       {/* <View style={styles.headerContainer}>
@@ -155,7 +158,7 @@ export default function WalletScreen(props: any) {
               {plans?.filter((o) => o.subscription).map((option) => (
                 <TouchableOpacity
                   key={option.id}
-                  disabled={plans.some(plan => plan.id === currentSubscription?.plan_details?._id )}
+                  // disabled={plans.some(plan => plan.id === currentSubscription?.plan_details?._id)}
                   style={[
                     styles.planCard,
                     (currentSubscription?.plan_details?._id === option.id || selectedPackage?.id === option.id) && styles.planCardSelected,

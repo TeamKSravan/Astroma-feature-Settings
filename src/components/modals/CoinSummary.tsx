@@ -6,6 +6,7 @@ import { fonts } from '../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../utils/scale';
 import { CoinSumTitle, ModalClose } from '../../constants/svgpath';
 import { useWalletStore } from '../../store/useWalletStore';
+import i18n from '../../translation/i18n';
 
 type CoinSummaryProps = {
   title: string;
@@ -40,25 +41,25 @@ export default function CoinSummary(props: CoinSummaryProps) {
           <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
             <ModalClose width={24} height={24} />
           </TouchableOpacity>
-          <Text style={styles.orderTitle}>{title}</Text>
-          <Text style={styles.billLabel}>{`To download  Love compatibility report ${cost} coins will be deducted`}</Text>
+          <Text style={styles.orderTitle}>{i18n.t('coinSummary.downloadTitle', { title })}</Text>
+          <Text style={styles.billLabel}>{i18n.t('coinSummary.downloadDescription', { title, cost })}</Text>
           <View style={styles.planSummaryContainer}>
             <View style={styles.totalRow}>
-              <Text style={styles.billLabel}>{'Available Coins'}</Text>
+              <Text style={styles.billLabel}>{i18n.t('coinSummary.availableCoins')}</Text>
               <Text style={styles.billValue}>{availableCoins}</Text>
             </View>
             <View style={styles.totalRow}>
-              <Text style={styles.billLabel}>{'Remaining Coins'}</Text>
+              <Text style={styles.billLabel}>{i18n.t('coinSummary.remainingCoins')}</Text>
               <Text style={styles.billValue}>{availableCoins - cost}</Text>
             </View>
           </View>
         </View>
         <View style={styles.buttonView}>
           <TouchableOpacity style={styles.noView} onPress={closeModal}>
-            <Text style={styles.noText}>{'Cancel'}</Text>
+            <Text style={styles.noText}>{i18n.t('coinSummary.cancel')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.yesView} onPress={handleYes}>
-            <Text style={styles.yesText}>{'Continue'}</Text>
+            <Text style={styles.yesText}>{i18n.t('coinSummary.continue')}</Text>
           </TouchableOpacity>
         </View>
       </View>

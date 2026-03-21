@@ -13,17 +13,21 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import CustomTextInput from '../../../components/CustomTextInput';
 import i18n from '../../../translation/i18n';
-import { verticalScale } from '../../../utils/scale';
+import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import imagepath from '../../../constants/imagepath';
 import { colors } from '../../../constants/colors';
 import { AstrologyApiKey } from '../../../constants/Keys';
 import RadioSection from '../../../components/RadioSection';
+import moment from 'moment-timezone';
+import TimeZoneModal from '../../../components/modals/TimeZoneModal';
+import { fonts } from '../../../constants/fonts';
 
 interface EnterPlaceStepProps {
   value: string;
   lat: string;
   long: string;
   onChangeText: (text: string) => void;
+  onChangeTimezone: (timezone: any) => void;
   onLocationSelect: (lat: string, lng: string) => void;
   locationType: string;
   onLocationTypeSelect: (type: string) => void;
@@ -35,6 +39,7 @@ export default function EnterPlaceStep({
   lat,
   long,
   onChangeText,
+  onChangeTimezone,
   isActive,
   onLocationSelect,
   locationType,
@@ -52,7 +57,9 @@ export default function EnterPlaceStep({
   const element6 = useRef(new Animated.Value(0)).current;
   const element7 = useRef(new Animated.Value(0)).current;
   const element8 = useRef(new Animated.Value(0)).current;
-
+  const currentTimeZone = { label: `(GMT${moment.tz(moment.tz.guess()).format('Z')}) ${moment.tz.guess()}`, value: moment.tz.guess() };
+  const [timezone, setTimezone] = useState(currentTimeZone);
+  const [showTimeZoneModal, setShowTimeZoneModal] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [coordinates, setCoordinates] = useState<{ lat: string | null; lng: string | null }>({ lat: lat ?? '', lng: long ?? '' });
@@ -118,9 +125,14 @@ export default function EnterPlaceStep({
     return String(val);
   };
 
-  useEffect(()=>{
+  const handleTimezoneSelect = (timezone: any) => {
+    setTimezone(timezone);
+    onChangeTimezone(timezone);
+  };
+
+  useEffect(() => {
     onLocationSelect(coordinates.lat ?? '', coordinates.lng ?? '');
-  },[coordinates])
+  }, [coordinates])
 
   useEffect(() => {
     if (isActive && !hasAnimated.current) {
@@ -282,6 +294,7 @@ export default function EnterPlaceStep({
   };
 
   const fetchPlaceDetails = async (item: any) => {
+    console.log('item => ', item);
     isSelectingRef.current = true;
     Keyboard.dismiss();
     setShowDropdown(false);
@@ -411,7 +424,7 @@ export default function EnterPlaceStep({
           options={[{ label: i18n.t('place.automatic'), value: 'automatic' }, { label: i18n.t('place.manual'), value: 'manual' }]}
           selectedValue={locationType}
           // selectedValue={selectedValue}
-          onSelect={(value)=>{
+          onSelect={(value) => {
             // setSelectedValue(value);
             onLocationTypeSelect(value);
             setCoordinates({ lat: null, lng: null });
@@ -422,6 +435,7 @@ export default function EnterPlaceStep({
             }, 100);
           }}
         />
+
         <View style={styles.inputWrapper}>
           <CustomTextInput
             ref={inputRef}
@@ -469,7 +483,6 @@ export default function EnterPlaceStep({
             </TouchableOpacity>
           )}
         </View>
-
         {/* FIXED HEIGHT DROPDOWN - ALWAYS SAME SIZE */}
         {showDropdown && value.length >= 2 && locationType === 'automatic' && (
           <View style={styles.dropdownFixed}>
@@ -490,6 +503,13 @@ export default function EnterPlaceStep({
             )}
           </View>
         )}
+        <View style={styles.TimezoneContainer}>
+          <Text style={styles.TimezoneTitle}>Timezone</Text>
+          <TouchableOpacity style={styles.changeTimezoneButton} onPress={() => setShowTimeZoneModal(true)}>
+            <Text style={styles.changeTimezoneText}>{timezone?.label ?? timezone}</Text>
+          </TouchableOpacity>
+        </View>
+        <TimeZoneModal visible={showTimeZoneModal} closeModal={() => setShowTimeZoneModal(false)} value={timezone?.value} onTimezoneSelect={handleTimezoneSelect} />
       </View>
     </ScrollView>
   );
@@ -507,11 +527,12 @@ const styles = StyleSheet.create({
   star: { width: 20, height: 20 },
 
   inputContainer: {
-    marginTop: verticalScale(40),
+    marginTop: verticalScale(10),
   },
 
   inputWrapper: {
     position: 'relative',
+    marginTop: verticalScale(20),
   },
 
   clearButton: {
@@ -594,5 +615,34 @@ const styles = StyleSheet.create({
   manualInputWrapper: {
     marginTop: 10,
     gap: 10,
+  },
+  TimezoneContainer: {
+    alignSelf: 'center',
+    width: '100%',
+    marginTop: verticalScale(10),
+  },
+  changeTimezoneButton: {
+    alignSelf: 'center',
+    width: '100%',
+    marginTop: verticalScale(10),
+    backgroundColor: colors.lightBlack,
+    paddingVertical: verticalScale(15),
+    paddingHorizontal: scale(20),
+    borderRadius: moderateScale(12),
+
+  },
+  TimezoneTitle: {
+    color: colors.white,
+    fontFamily: fonts.regular,
+    fontSize: moderateScale(12),
+    textAlign: 'left',
+    // marginBottom: verticalScale(10),
+  },
+  changeTimezoneText: {
+    color: colors.white,
+    fontFamily: fonts.regular,
+    fontSize: moderateScale(15),
+    textAlign: 'center',
+    // marginBottom: verticalScale(10),
   },
 });

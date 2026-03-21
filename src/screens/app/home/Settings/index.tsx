@@ -24,6 +24,7 @@ import LogoutModal from '../../../../components/modals/LogoutModal';
 import { useAuthStore } from '../../../../store/useAuthStore';
 import BackButton from '../../../../components/BackButton';
 import ZodicSign from '../../../../components/ZodicSign';
+import { capitalizeFirstLetter } from '../../../../utils/methods';
 
 
 const LanguageDropdown = ({ data = [], value, onChangeText }: { data: any[], value: string, onChangeText: (text: string) => void }) => {
@@ -158,7 +159,7 @@ export default function SettingScreen(props: any) {
                         {/* <Image source={imagepath.rashi3} style={styles.profileImage} /> */}
                         <ZodicSign sign={userDetails?.zodiac_sign} />
                         <View style={styles.profileInfoView}>
-                            <Text style={styles.userNameText}>{userDetails?.name}</Text>
+                            <Text style={styles.userNameText}>{capitalizeFirstLetter(userDetails?.name || '')}</Text>
                             {/* <Text style={styles.profileEmailText}>mariapunto@gmail.com</Text> */}
                         </View>
                         <RightArrow />

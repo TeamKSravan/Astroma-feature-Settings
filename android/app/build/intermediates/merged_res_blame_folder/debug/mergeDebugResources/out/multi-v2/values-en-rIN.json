@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeDebugResources-47:/values-en-rIN/values-en-rIN.xml",
+            "outputFile": "com.astroma.app-mergeDebugResources-55:/values-en-rIN/values-en-rIN.xml",
             "map": [
                 {
                     "source": "/Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/res/values-en-rIN/values-en-rIN.xml",

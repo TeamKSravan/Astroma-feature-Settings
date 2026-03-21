@@ -13,7 +13,7 @@ export interface CompatibilityType {
 interface CompatibilityState {
   compatibilityTypeList: CompatibilityType[];
   setCompatibilityTypeList: (data: CompatibilityType[]) => void;
-  getCompatibilityTypeList: (isCompare?: boolean) => Promise<any>;
+  getCompatibilityTypeList: (isCompare?: boolean, userId?: string) => Promise<any>;
   createCompatibilityReport: (withReport: boolean, data: any, isCompare?: boolean) => Promise<any>;
   createcompareReport: (withReport: boolean, data: any) => Promise<any>;
   getRemainingReports: () => Promise<any>;
@@ -27,11 +27,11 @@ export const useCompatibilityStore = create<CompatibilityState>()(
     set => ({
       compatibilityTypeList: [],
       setCompatibilityTypeList: (data: CompatibilityType[]) => set({ compatibilityTypeList: data }),
-      getCompatibilityTypeList: async (isCompare?: boolean) => {
+      getCompatibilityTypeList: async (isCompare?: boolean, userId?: string) => {
         const { setLoading, currentLanguage } = useAuthStore.getState();
         setLoading(true);
         try {
-          const response = await AxiosBase.get(`/compatibility/${isCompare ? `?is_comparison=true` : ''}`);
+          const response = await AxiosBase.get(`/compatibility/${isCompare ? `?is_comparison=true` : '?is_comparison=false'}${userId ? `profile_id=${userId}` : ''}`);
           setLoading(false);
           console.log('response', response);
           return { success: true, data: response.result };
@@ -51,7 +51,7 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           });
           setLoading(false);
           console.log('createCompatibilityReport response', response);
-          setAvailableCoins(response?.coins);
+          setAvailableCoins(response?.coins ?? 0);
           return { success: true, data: response.result };
         } catch (error: any) {
           setLoading(false);
@@ -97,7 +97,7 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           });
           setLoading(false);
           console.log('response', response);
-          setAvailableCoins(response?.coins);
+          setAvailableCoins(response?.coins ?? 0);
           return { success: true, data: response.result };
         } catch (error: any) {
           setLoading(false);

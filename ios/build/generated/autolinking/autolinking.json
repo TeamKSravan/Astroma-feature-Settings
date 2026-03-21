@@ -53,6 +53,31 @@
         }
       }
     },
+    "@react-native-community/netinfo": {
+      "root": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo",
+      "name": "@react-native-community/netinfo",
+      "platforms": {
+        "ios": {
+          "podspecPath": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/react-native-netinfo.podspec",
+          "version": "12.0.1",
+          "configurations": [],
+          "scriptPhases": []
+        },
+        "android": {
+          "sourceDir": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android",
+          "packageImportPath": "import com.reactnativecommunity.netinfo.NetInfoPackage;",
+          "packageInstance": "new NetInfoPackage()",
+          "buildTypes": [],
+          "libraryName": "RNCNetInfoSpec",
+          "componentDescriptors": [],
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cxxModuleCMakeListsModuleName": null,
+          "cxxModuleCMakeListsPath": null,
+          "cxxModuleHeaderName": null,
+          "isPureCxxDependency": false
+        }
+      }
+    },
     "lottie-react-native": {
       "root": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native",
       "name": "lottie-react-native",

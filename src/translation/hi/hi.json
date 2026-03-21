@@ -49,7 +49,14 @@
     "typeMessage": "अपना संदेश यहाँ लिखें...",
     "consultingStars": "तारों से परामर्श...",
     "copySuccess": "संदेश क्लिपबोर्ड पर कॉपी हो गया",
-    "copyFailed": "संदेश कॉपी करने में विफल"
+    "copyFailed": "संदेश कॉपी करने में विफल",
+    "requestFailed": "क्षमा करें, आपका अनुरोध संसाधित नहीं हो सका। कृपया पुनः प्रयास करें।",
+    "authFailed": "प्रमाणीकरण विफल। कृपया पुनः लॉगिन करें।",
+    "insufficientCredits": "आपके पास पर्याप्त क्रेडिट पॉइंट नहीं हैं। जारी रखने के लिए सिक्के जोड़ें",
+    "serverError": "सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+    "networkError": "नेटवर्क त्रुटि। कृपया अपना इंटरनेट कनेक्शन जांचें।",
+    "sendFailed": "संदेश भेजने में विफल। कृपया पुनः प्रयास करें।",
+    "errorWithStatus": "त्रुटि: {{status}}"
   },
   "filters": {
     "title": "फ़िल्टर",
@@ -74,6 +81,7 @@
     "search": "खोजें",
     "delete": "हटाएं",
     "edit": "संपादित करें",
+    "rename": "रीनाम करें",
     "somethingWentWrong": "कुछ गलत हो गया।",
     "noInternet": "इंटरनेट कनेक्शन नहीं है। कृपया अपना नेटवर्क जांचें।",
     "connectionError": "कनेक्शन विफल। कृपया अपना इंटरनेट जांचें या पुनः प्रयास करें।"
@@ -116,12 +124,15 @@
   },
   "chatHistory": {
     "deletedSuccess": "चैट इतिहास सफलतापूर्वक हटा दिया गया",
+    "clearHistory": "इतिहास साफ करें",
     "title": "चैट इतिहास",
     "newChat": "नई चैट",
     "searchChats": "चैट खोजें",
     "noHistory": "कोई चैट इतिहास उपलब्ध नहीं है",
     "deleteTitle": "चैट इतिहास हटाएं",
-    "deleteDescription": "क्या आप वाकई इस चैट इतिहास को हटाना चाहते हैं?"
+    "deleteDescription": "क्या आप वाकई इस चैट इतिहास को हटाना चाहते हैं?",
+    "deleteAllTitle": "सभी चैट इतिहास हटाएं",
+    "deleteAllDescription": "क्या आप वाकई सभी चैट इतिहास को हटाना चाहते हैं?"
   },
   "userList": {
     "maxUsers": "आप केवल 10 माध्यमिक उपयोगकर्ता तक जोड़ सकते हैं।",
@@ -198,6 +209,12 @@
     "english": "अंग्रेज़ी",
     "hindi": "हिंदी"
   },
+  "notifications": {
+    "title": "सूचनाएं",
+    "markAllRead": "सभी पढ़ा हुआ चिह्नित करें",
+    "noNotifications": "कोई सूचनाएं उपलब्ध नहीं हैं",
+    "noNotificationsDescription": "आपके पास कोई सूचनाएं नहीं हैं। आपको नई सूचनाएं जब उपलब्ध होंगी उसकी सूचना मिलेगी।"
+  },
   "transactionHistory": {
     "title": "लेनदेन इतिहास",
     "sortBy": "इसके अनुसार क्रमबद्ध करें",
@@ -215,7 +232,12 @@
     "noTransactions": "कोई लेनदेन उपलब्ध नहीं है"
   },
   "userProfile": {
-    "title": "उपयोगकर्ता प्रोफ़ाइल"
+    "title": "उपयोगकर्ता प्रोफ़ाइल",
+    "deletedSuccess": "प्रोफ़ाइल सफलतापूर्वक हटा दिया गया",
+    "deletedFailed": "प्रोफ़ाइल हटाने में विफल",
+    "emptyListTitle": "कोई उपयोगकर्ता नहीं मिला",
+    "emptyListDescription": "आपके पास कोई उपयोगकर्ता नहीं है। एक उपयोगकर्ता जोड़ें।",
+    "addUserText": "उपयोगकर्ता जोड़ें"
   },
   "profile": {
     "profile": "प्रोफ़ाइल",
@@ -231,13 +253,70 @@
     "verify": "सत्यापित करें",
     "saveChanges": "परिवर्तन सहेजें",
     "invalidName": "कृपया मान्य नाम दर्ज करें",
+    "nameTooLong": "नाम 50 अक्षरों से अधिक नहीं हो सकता",
     "invalidDateOfBirth": "कृपया yyyy-mm-dd प्रारूप में मान्य जन्म तिथि दर्ज करें",
     "invalidPlaceOfBirth": "कृपया मान्य जन्म स्थान दर्ज करें",
     "invalidTimeOfBirth": "कृपया मान्य जन्म समय दर्ज करें",
     "invalidGender": "कृपया मान्य लिंग चुनें",
     "invalidCountry": "कृपया मान्य देश चुनें",
     "dateOfBirthRequired": "जन्म तिथि आवश्यक है",
-    "enterDate": "तिथि दर्ज करें"
+    "enterDate": "तिथि दर्ज करें",
+    "deleteFailed": "प्रोफ़ाइल हटाने में विफल",
+    "updateFailed": "प्रोफ़ाइल अपडेट करने में विफल"
+  },
+  "toast": {
+    "invalidDownloadUrl": "अमान्य डाउनलोड URL",
+    "storagePermissionRequired": "फाइलें डाउनलोड करने के लिए स्टोरेज अनुमति आवश्यक है",
+    "downloading": "डाउनलोड हो रहा है: %{percentage}%",
+    "fileSaved": "फाइल सहेजी गई",
+    "downloadFailed": "डाउनलोड विफल: %{message}",
+    "selectCompatibilityType": "कृपया अनुकूलता प्रकार चुनें",
+    "selectCompareType": "कृपया तुलना प्रकार चुनें",
+    "downloadFailedFallback": "फाइल डाउनलोड करने में विफल",
+    "maxUsersCompatibility": "अधिकतम 4 उपयोगकर्ता चुन सकते हैं",
+    "selectUsersRange": "कृपया कम से कम 2 और अधिकतम 4 उपयोगकर्ता चुनें",
+    "reportGeneratedSuccess": "रिपोर्ट सफलतापूर्वक बनाई गई",
+    "notEnoughCoins": "इस रिपोर्ट को अनलॉक करने के लिए आपके पास पर्याप्त सिक्के नहीं हैं (10 सिक्के)",
+    "failedToDownloadReport": "रिपोर्ट डाउनलोड करने में विफल",
+    "otpVerifiedSuccess": "OTP सफलतापूर्वक सत्यापित हो गया!",
+    "invalidOtp": "अमान्य OTP। कृपया पुनः प्रयास करें।",
+    "phoneNumberNotFound": "फोन नंबर नहीं मिला। कृपया वापस जाएं और पुनः प्रयास करें।",
+    "otpSentSuccess": "OTP सफलतापूर्वक भेज दिया गया!",
+    "failedToResendOtp": "OTP पुनः भेजने में विफल। कृपया पुनः प्रयास करें।",
+    "profileCompletedSuccess": "प्रोफ़ाइल सफलतापूर्वक पूर्ण हुई!",
+    "failedToCompleteOnboarding": "ऑनबोर्डिंग पूरा करने में विफल। कृपया पुनः प्रयास करें।",
+    "failedToGenerateQuery": "क्वेरी जनरेट करने में विफल"
+  },
+  "validation": {
+    "nameRequired": "नाम आवश्यक है",
+    "nameTooShort": "नाम बहुत छोटा है",
+    "emailRequired": "ईमेल आवश्यक है",
+    "invalidEmail": "अमान्य ईमेल",
+    "dobRequired": "जन्म तिथि आवश्यक है",
+    "invalidDob": "कृपया मान्य जन्म तिथि चुनें",
+    "invalidDateFormat": "अमान्य तिथि प्रारूप। कृपया DD/MM/YYYY प्रारूप का उपयोग करें",
+    "invalidDobFuture": "कृपया मान्य जन्म तिथि चुनें (आज या भविष्य नहीं हो सकती)",
+    "invalidYear": "कृपया मान्य वर्ष दर्ज करें",
+    "otpRequired": "OTP आवश्यक है",
+    "invalidOtpFormat": "अमान्य OTP",
+    "placeRequired": "जन्म स्थान आवश्यक है",
+    "invalidTimeOfBirth": "अमान्य जन्म समय",
+    "genderRequired": "लिंग आवश्यक है",
+    "invalidGender": "अमान्य लिंग",
+    "phoneRequired": "फोन नंबर आवश्यक है",
+    "phoneMinLength": "फोन नंबर कम से कम %{min} अंकों का होना चाहिए",
+    "phoneMaxLength": "फोन नंबर %{max} अंकों से अधिक नहीं हो सकता",
+    "phoneDigitsOnly": "फोन नंबर में केवल अंक हो सकते हैं",
+    "invalidPhoneCountry": "%{country} के लिए अमान्य फोन नंबर। %{length} अंक अपेक्षित",
+    "invalidPhoneFormat": "%{country} के लिए अमान्य फोन नंबर प्रारूप"
+  },
+  "coinSummary": {
+    "downloadTitle": "%{title} डाउनलोड करें",
+    "downloadDescription": "%{title} डाउनलोड करने के लिए %{cost} सिक्के काटे जाएंगे",
+    "availableCoins": "उपलब्ध सिक्के",
+    "remainingCoins": "शेष सिक्के",
+    "cancel": "रद्द करें",
+    "continue": "जारी रखें"
   },
   "wallet": {
     "availableCoins": "उपलब्ध सिक्के",
@@ -264,6 +343,10 @@
     "title": "उपयोगकर्ता प्रोफ़ाइल संपादित करें",
     "description": "अपनी उपयोगकर्ता प्रोफ़ाइल संपादित करें",
     "saveChanges": "परिवर्तन सहेजें"
+  },
+  "downloadSuccess": {
+    "title": "रिपोर्ट सफलतापूर्वक डाउनलोड हो गई",
+    "description": "%{cost} सिक्के काटे गए  |  उपलब्ध सिक्के: %{availableCoins}"
   },
   "report": {
     "congratulations": "बधाई हो!",

@@ -65,9 +65,18 @@ export default function ChatScreen(props: any) {
   const { chatType, reportId, report, chatHistoryId, chatHistoryEmpty } = props.route.params || { chatType: null, reportId: null, report: null, chatHistoryId: null, chatHistoryEmpty: false };
   const { selectedUser } = useProfileStore();
   const { getWalletDetails, availableCoins, setAvailableCoins } = useWalletStore();
+  const lowerCount = 1;
   const openModal = () => {
     setFilterModalVisible(true);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (availableCoins < lowerCount) {
+        navigation.navigate('AiAstrologer');
+      }
+    }, [])
+  );
 
   useEffect(() => {
     const showSub = Keyboard.addListener(
@@ -176,6 +185,7 @@ export default function ChatScreen(props: any) {
         isUser: item?.role == 'user' ? true : false,
         timestamp: item?.created_at ? new Date(item.created_at?.$date) : new Date(),
         item: item,
+        conversation_id: item?.conversation_id?.$oid ?? '',
         isLiked: item?.is_liked,
         isDisliked: item?.is_disliked,
       }));
@@ -193,12 +203,25 @@ export default function ChatScreen(props: any) {
 
   useEffect(() => {
     if (chatType === 'viewReport') {
-      setMessages(report?.messages?.map((item: any, index: number) => ({ id: index, text: item?.content, isUser: item?.role == 'user' ? true : false, timestamp: new Date(), item: item })));
+      setMessages(report?.map((item: any, index: number) => ({ 
+        id: item?._id, 
+        text: item?.message, 
+        isUser: item?.role == 'user' ? true : false, 
+        timestamp: item?.created_at ? new Date(item.created_at) : new Date(),
+        item: {
+          conversation_id: {
+            $oid: item?.conversation_id ?? '',
+          },
+        },
+        conversation_id: item?.conversation_id ?? '',
+        isLiked: item?.is_liked,
+        isDisliked: item?.is_disliked,
+      })));
       setIsDisableSendButton(false);
     }
     if (chatType === 'report') {
       console.log('useEffect report : ', report);
-      setMessages([{ id: '1', text: report.data, isUser: false, timestamp: new Date(), item: item }]);
+      setMessages(report);
     }
   }, [chatType, report]);
 
@@ -225,7 +248,7 @@ export default function ChatScreen(props: any) {
     setMessages([]);
     setInputText('');
     setIsLoading(false);
-  }, [setMessages, setInputText, setIsLoading]);
+  }, [setMessages, setInputText, messages, setIsLoading]);
 
   const handleSendMessage = async (text?: string, category?: string) => {
     const messageText = text || inputText.trim();
@@ -251,7 +274,7 @@ export default function ChatScreen(props: any) {
         user_question: messageText,
         ...(messages.length > 0 ? { conversation_id: messages[messages?.length - 1]?.item?.conversation_id?.$oid ?? '' } : {})
       };
-      if (chatType === 'report') {
+      if (chatType === 'viewReport') {
         const response = await generateQuery(reportId, data);
         console.log('report chat response : ', response);
         if (response.success) {
@@ -265,13 +288,14 @@ export default function ChatScreen(props: any) {
                 $oid: response?.conversation_id ?? '',
               },
             },
+            conversation_id: response?.conversation_id ?? '',
             isLiked: false,
             isDisliked: false,
           };
           setMessages(prev => [...prev, botMessage]);
         } else {
           const { message } = response;
-          ToastMessage(message || 'Failed to generate query');
+          ToastMessage(message || i18n.t('toast.failedToGenerateQuery'));
         }
       } else {
         const response = await AxiosBase.post(
@@ -279,7 +303,7 @@ export default function ChatScreen(props: any) {
           data,
         );
         const { result, conversation_id, coins, message_id } = response;
-        setAvailableCoins(coins);
+        setAvailableCoins(coins ?? 0);
         const botMessage: Message = {
           id: message_id ?? (Date.now() + 1).toString(),
           text: result,
@@ -290,6 +314,7 @@ export default function ChatScreen(props: any) {
               $oid: conversation_id ?? '',
             },
           },
+          conversation_id,
           isLiked: false,
           isDisliked: false,
         };
@@ -302,8 +327,7 @@ export default function ChatScreen(props: any) {
     } catch (error: any) {
       console.error('Error sending message:', error);
 
-      let errorText =
-        "Sorry, I couldn't process your request. Please try again.";
+      let errorText = i18n.t('chat.requestFailed');
 
       if (error?.response) {
         const status = error.response.status;
@@ -313,21 +337,20 @@ export default function ChatScreen(props: any) {
         console.error('Status Code:', status);
 
         if (status === 401) {
-          errorText = 'Authentication failed. Please login again.';
+          errorText = i18n.t('chat.authFailed');
         } else if (status === 400) {
-          errorText =
-            errorData?.message || 'Invalid request. Please try again.';
+          errorText = i18n.t('chat.insufficientCredits');
         } else if (status === 500) {
-          errorText = 'Server error. Please try again later.';
+          errorText = i18n.t('chat.serverError');
         } else {
-          errorText = errorData?.message || `Error: ${status}`;
+          errorText = errorData?.message || i18n.t('chat.errorWithStatus', { status });
         }
       } else if (error?.request) {
         console.error('No response received:', error.request);
-        errorText = 'Network error. Please check your internet connection.';
+        errorText = i18n.t('chat.networkError');
       } else {
         console.error('Request setup error:', error.message);
-        errorText = 'Failed to send message. Please try again.';
+        errorText = i18n.t('chat.sendFailed');
       }
 
       // Add error message to chat
@@ -404,6 +427,8 @@ export default function ChatScreen(props: any) {
     return (
       <ChatMessage
         item={item}
+        chatType={chatType}
+        index={index}
         previousMessage={index > 0 ? messages[index - 1].text : ''}
         typewriterOff={chatType === 'viewReport' ? false : index == messages.length - 1 && isTypewriterComplete}
         message={item.text}
@@ -518,11 +543,12 @@ export default function ChatScreen(props: any) {
 
         {isLoading && <TypingIndicator message={i18n.t('chat.consultingStars')} />}
         {!isdisablesendbutton && messages.length !== 0 && isTypewriterComplete && <SuggestedQuestion horizontal onQuestionPress={handleSuggestedQuestionPress} />}
-        {availableCoins < 1 && <EmptyCredits />}
+        {availableCoins < lowerCount && <EmptyCredits />}
         <GradientTextInput
           placeholder={i18n.t('chat.typeMessage')}
           value={inputText}
           onChangeText={setInputText}
+          disabled={availableCoins < lowerCount}
           onSendPress={() => handleSendMessage()}
         />
       </KeyboardAvoidingView>

@@ -186,12 +186,11 @@ export default function Compare(props: any) {
   const onPressGenerateReport = () => {
     console.log('onPressGenerateReport');
     if (selectedUser.length < 2 || selectedUser.length > 4) {
-      ToastMessage('Please select at least 2 and at most 4 users');
+      ToastMessage(i18n.t('toast.selectUsersRange'));
       return;
     }
     if (compareType === i18n.t('compat.selectType')) {
-      setErrorCompare('Please select a compare type');
-      // ToastMessage('Please select a compare type');
+      setErrorCompare(i18n.t('toast.selectCompareType'));
       return;
     }
     setShowCoinSummaryModal(true);
@@ -235,7 +234,7 @@ export default function Compare(props: any) {
       } else if (compareUser4 === null) {
         setCompareUser4(userToAdd);
       } else {
-        ToastMessage('You can only select 4 users');
+        ToastMessage(i18n.t('toast.maxUsersCompatibility'));
         return;
       }
     }
@@ -249,10 +248,10 @@ export default function Compare(props: any) {
         setErrorCompare('')
         setShowGenerateReportModal(true);
         setPdfUrl(res.data || '')
-        ToastMessage('Report generated successfully');
+        ToastMessage(i18n.t('toast.reportGeneratedSuccess'));
         await getWalletDetails();
       } else {
-        ToastMessage(res.data as string);
+        ToastMessage((res.data as string) || i18n.t('common.somethingWentWrong'));
       }
     });
   };

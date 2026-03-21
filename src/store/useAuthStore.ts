@@ -67,6 +67,7 @@ interface AuthState {
   setUserDetails: (details: UserDetails) => void;
   clearAuth: () => void;
   updateUserDetails: (details: Partial<UserDetails>) => void;
+  CheckOnBoarding: (country_code: string, phone: string) => Promise<{ success: boolean; message?: string; isOnboarded?: boolean }>;
   completeOnboarding: (
     data: SignupData,
   ) => Promise<{ success: boolean; message?: string }>;
@@ -82,6 +83,7 @@ interface AuthState {
 
 const { setSecondaryUserdata, setSelectedUser } = useProfileStore.getState();
 const { setAvailableCoins } = useWalletStore.getState();
+const { setCurrentSubscription } = useWalletStore.getState();
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -112,7 +114,28 @@ export const useAuthStore = create<AuthState>()(
         set(state => ({
           userDetails: { ...state.userDetails, ...details } as UserDetails,
         })),
-
+      CheckOnBoarding: async (country_code: string, phone: string) => {
+        try {
+          const response = await AxiosBase.post('/user/onboarding-status', {
+            country_code: country_code.trim(),
+            phone: phone.trim(),
+          });
+          console.log('Response from CheckOnBoarding', response);
+          return { success: true, isOnboarded: response?.result };
+        } catch (error: any) {
+          return { success: false, isOnboarded: false };
+        }
+      },
+      getTimezone: async (lat: string, long: string) => {
+        try {
+          const apikey = 'AIzaSyB0FjlKAR4bnyS4M2Vs_BC-Rh-5ZW9bBGU';
+          const response = await AxiosBase.get(`https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${long}&timestamp=1458000000&key=${apikey}`);
+          console.log('Response from getTimezone', response);
+          return { success: true, timezone: response?.result };
+        } catch (error: any) {
+          return { success: false, timezone: null };
+        }
+      },
       completeOnboarding: async (data: SignupData) => {
         set({ isLoading: true, error: null });
         try {
@@ -241,7 +264,7 @@ export const useAuthStore = create<AuthState>()(
             message: errorMessage,
           };
         }
-      },     
+      },
 
       resendOTP: async (phone: string) => {
         set({ isLoading: true, error: null });
@@ -283,6 +306,7 @@ export const useAuthStore = create<AuthState>()(
         setSecondaryUserdata([]);
         setSelectedUser(null as any);
         setAvailableCoins(0);
+        setCurrentSubscription(null);
         set({
           token: null,
           userDetails: null,

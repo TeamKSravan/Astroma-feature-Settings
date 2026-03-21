@@ -15,8 +15,21 @@ import WalletScreen from '../screens/app/wallet/WalletScreen';
 import { Ai, Comp, Home, Report, Wallet } from '../constants/svgpath';
 import MainScreen from '../screens/app/compatibility/MainScreen';
 import { useWalletStore } from '../store/useWalletStore';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
+
+const Stack = createNativeStackNavigator();
+
+function ChatStack() {
+  return (
+      <Stack.Navigator initialRouteName={"ChatScreen"} screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="ChatScreen" component={ChatScreen} options={{ gestureEnabled: Platform.OS === 'ios' ? false : true }}/>
+        <Stack.Screen name="ChatHistory" component={ChatHistory} />
+        <Stack.Screen name="AiAstrologer" component={AiAstrologer} />
+      </Stack.Navigator>
+  );
+}
 
 export default function BottomTabNavigator() {
   const insets = useSafeAreaInsets();
@@ -73,7 +86,8 @@ export default function BottomTabNavigator() {
       />
       <Tab.Screen
         name="AI Astrologer"
-        component={availableCoins >= lowerCount ? ChatScreen : AiAstrologer}
+        component={ChatStack}
+        // component={availableCoins >= lowerCount ? ChatScreen : AiAstrologer}
         options={{
           tabBarIcon: ({ focused, color }) => (
             <View style={styles.iconContainer}>

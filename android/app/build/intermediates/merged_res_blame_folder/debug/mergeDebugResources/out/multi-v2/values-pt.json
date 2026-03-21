@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeDebugResources-47:/values-pt/values-pt.xml",
+            "outputFile": "com.astroma.app-mergeDebugResources-55:/values-pt/values-pt.xml",
             "map": [
                 {
                     "source": "/Users/sravi/.gradle/caches/8.13/transforms/875344938fbd01c56216ad280a96946d/transformed/browser-1.2.0/res/values-pt/values-pt.xml",

@@ -2,6 +2,7 @@
   "buildFiles": [
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
     "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-iap/android/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -50,6 +51,11 @@
       "toolchain": "toolchain",
       "abi": "x86_64",
       "artifactName": "react_codegen_NitroModulesSpec"
+    },
+    "react_codegen_RNCNetInfoSpec::@c36c96bfd5b5770618a5": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_RNCNetInfoSpec"
     },
     "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c": {
       "toolchain": "toolchain",

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import imagepath from '../../../constants/imagepath';
 import { AiAstrologerIcon, TwinStars } from '../../../constants/svgpath';
 import i18n from '../../../translation/i18n';
@@ -17,10 +17,23 @@ import { fonts, options } from '../../../constants/fonts';
 import BaseView from '../../../utils/BaseView';
 import { purchaseProduct } from '../../../services/iapService';
 import OrderSummaryModal from '../../../components/modals/OrderSummary';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useWalletStore } from '../../../store/useWalletStore';
 
 export default function AiAstrologer(props: any) {
+  const { availableCoins } = useWalletStore();
+  const navigation = useNavigation();
+  const lowerCount = 1;
   const [selectedOption, setSelectedOption] = useState<any>(null);
   const [showOrderSummaryModal, setShowOrderSummaryModal] = useState(false);
+
+  useEffect(() => {
+    if (availableCoins >= lowerCount) {
+      navigation.navigate('ChatScreen' as never);
+    }
+  }, [availableCoins]);
+
+
   const handleOptionPress = (option: any) => {
     setSelectedOption(option);
     // Navigate immediately when option is clicked
@@ -54,7 +67,7 @@ export default function AiAstrologer(props: any) {
 
           <AiAstrologerIcon />
           </View> */}
-          <Image source={imagepath.grouped} style={styles.img} />
+          <Image source={imagepath.grouped} resizeMode='contain' style={styles.img} />
           <View style={styles.personalisedView}>
             <Text style={styles.personalisedText}>{i18n.t('ai.chat')}</Text>
             <TwinStars />

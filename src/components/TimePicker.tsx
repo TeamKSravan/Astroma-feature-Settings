@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: verticalScale(20),
   },
   picker: {
     height: verticalScale(200),

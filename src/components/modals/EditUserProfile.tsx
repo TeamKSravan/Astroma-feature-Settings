@@ -13,6 +13,7 @@ import { AstrologyApiKey } from '../../constants/Keys';
 import useValidation from '../../hooks/useValidation';
 import CustomDateInput from '../CustomDateInput';
 import moment from 'moment';
+import { capitalizeFirstLetter } from '../../utils/methods';
 
 type EditUserProfileProps = {
   userdata: any;
@@ -31,6 +32,7 @@ const ProfileInput = ({
   dropdown = false,
   data = [],
   error = '',
+  maxLength = 30,
 }: {
   label: string,
   placeholder: string,
@@ -40,6 +42,7 @@ const ProfileInput = ({
   dropdown?: boolean,
   data?: any[],
   error?: string,
+  maxLength?: number,
 }) => {
   return (
     <View style={styles.inputContainer}>
@@ -66,6 +69,7 @@ const ProfileInput = ({
           <CustomTextInput
             placeholder={placeholder}
             value={value}
+            maxLength={maxLength}
             onChangeText={onChangeText}
             inputStyle={{
               height: verticalScale(50),
@@ -96,7 +100,7 @@ export default function EditUserProfile(props: EditUserProfileProps) {
   const { editUserDetail } = useProfileStore();
 
   useEffect(() => {
-    setFullName(props.userdata?.name || '');
+    setFullName(capitalizeFirstLetter(props.userdata?.name || ''));
     setGender(props.userdata?.gender || '');
     // setDateOfBirth(props.userdata?.date_of_birth || '');
     setDateOfBirth(props.userdata?.date_of_birth ? moment(props.userdata?.date_of_birth).format('DDMMYYYY') : '');
@@ -150,9 +154,9 @@ export default function EditUserProfile(props: EditUserProfileProps) {
     }
     const updatedData = {
       id: props.userdata?._id?.$oid,
-      name: fullName,
+      name: capitalizeFirstLetter(fullName),
       gender: gender,
-      date_of_birth: dateOfBirth,
+      date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
       place_of_birth: placeOfBirth,
       time_of_birth: timeOfBirth,
     };

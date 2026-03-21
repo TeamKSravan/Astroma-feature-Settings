@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground, Image } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, Image, Modal as RNModal, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 import { colors } from '../../constants/colors';
 import { fonts } from '../../constants/fonts';
-import { moderateScale, scale } from '../../utils/scale';
+import { moderateScale, scale, verticalScale } from '../../utils/scale';
 import { BonusSparkle } from '../../constants/svgpath';
 import imagepath from '../../constants/imagepath';
 import i18n from '../../translation/i18n';
@@ -17,15 +17,17 @@ type ReceiveBonusModalProps = {
 export default function ReceiveBonusModal(props: ReceiveBonusModalProps) {
   const { closeModal, visible, coinAmount = 50 } = props;
 
-  return (
-    <Modal
-      animationIn="fadeIn"
-      animationOut="fadeOut"
-      onBackdropPress={closeModal}
-      backdropOpacity={0.8}
-      isVisible={visible}
+  return Platform.OS === 'ios' ? (
+    <RNModal
+      transparent={true}
+      visible={visible}
+      onRequestClose={closeModal}
+      animationType="slide"
+      presentationStyle="overFullScreen"
+      statusBarTranslucent={true}
+      hardwareAccelerated={true}
     >
-      <View style={styles.modalWrapper}>
+      <View style={styles.modalWrapperIos}>
         <ImageBackground source={imagepath.BlackZodiacBg} style={styles.backgroundContainer}>
           <View style={styles.bonusHeaderContainer}>
             <View style={styles.headerTextContainer}>
@@ -52,32 +54,78 @@ export default function ReceiveBonusModal(props: ReceiveBonusModalProps) {
           <View style={styles.decorativeBottomBar} />
         </ImageBackground>
       </View>
-    </Modal>
+    </RNModal>
+  ) : (
+    (
+      <Modal
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={closeModal}
+        backdropOpacity={0.8}
+        isVisible={visible}
+      >
+        <View style={styles.modalWrapperIos}>
+          <ImageBackground source={imagepath.BlackZodiacBg} style={styles.backgroundContainer}>
+            <View style={styles.bonusHeaderContainer}>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.congratulationsText}>{i18n.t('report.congratulations')}</Text>
+                <Text style={styles.bonusDescriptionText}>{i18n.t('report.welcomeBonus')}</Text>
+              </View>
+              <BonusSparkle />
+            </View>
+
+            <View style={styles.bonusCoinsContainer}>
+              <View style={styles.coinImagesContainer}>
+                <Image
+                  source={imagepath.coinSpark}
+                  style={styles.coinSparkleImage}
+                />
+                <Image
+                  source={imagepath.Coins}
+                  style={styles.coinMainImage}
+                />
+              </View>
+              <Text style={styles.bonusAmountText}>{coinAmount}</Text>
+            </View>
+            <View style={styles.decorativeBottomBar} />
+          </ImageBackground>
+        </View>
+      </Modal>
+    )
   );
 }
 
 const styles = StyleSheet.create({
+  modalWrapperIos: {
+    // flex: 1,
+    justifyContent: 'flex-end',
+  },
   modalWrapper: {
     backgroundColor: colors.modalbg,
-    width: '100%',
     borderRadius: 16,
     borderWidth: 0.3,
     borderColor: colors.primary,
+    height: scale(300),
   },
   backgroundContainer: {
     height: scale(300),
+    backgroundColor: colors.modalbg,
     borderRadius: 16,
+    borderWidth: 0.3,
+    borderColor: colors.primary,
     alignItems: 'center',
     overflow: 'hidden',
+    marginBottom: verticalScale(90),
   },
   bonusHeaderContainer: {
     flexDirection: 'row',
-    padding: scale(5),
+    paddingTop: scale(10),
+    paddingHorizontal: scale(5),
     marginTop: scale(10),
   },
   headerTextContainer: {
     flex: 1,
-    alignItems: 'flex-start',
+    // alignItems: 'flex-end',
     marginLeft: scale(15),
   },
   congratulationsText: {
@@ -87,11 +135,11 @@ const styles = StyleSheet.create({
     marginTop: scale(10),
   },
   bonusDescriptionText: {
-    fontSize: scale(13),
+    fontSize: scale(14),
     color: colors.primary,
     fontFamily: fonts.regular,
-    marginRight: scale(12),
-    textAlign: 'center',
+    marginTop: scale(5),
+    textAlign: 'left',
   },
   bonusCoinsContainer: {
     flex: 1,

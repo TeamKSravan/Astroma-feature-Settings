@@ -9,6 +9,7 @@
 #include "autolinking.h"
 #include <rnasyncstorage.h>
 #include <rnclipboard.h>
+#include <RNCNetInfoSpec.h>
 #include <lottiereactnative.h>
 #include <react/renderer/components/lottiereactnative/ComponentDescriptors.h>
 #include <RNDatePickerSpecs.h>
@@ -41,6 +42,10 @@ return module_rnasyncstorage;
 auto module_rnclipboard = rnclipboard_ModuleProvider(moduleName, params);
 if (module_rnclipboard != nullptr) {
 return module_rnclipboard;
+}
+auto module_RNCNetInfoSpec = RNCNetInfoSpec_ModuleProvider(moduleName, params);
+if (module_RNCNetInfoSpec != nullptr) {
+return module_RNCNetInfoSpec;
 }
 auto module_lottiereactnative = lottiereactnative_ModuleProvider(moduleName, params);
 if (module_lottiereactnative != nullptr) {

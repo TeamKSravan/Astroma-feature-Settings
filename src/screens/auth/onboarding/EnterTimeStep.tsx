@@ -12,7 +12,7 @@ import { colors } from '../../../constants/colors';
 interface EnterTimeStepProps {
   value: Date;
   onChangeTime: (time: Date) => void;
-  onChangeTimezone: (timezone: any) => void;
+  onChangeTimezone?: (timezone: any) => void;
   isActive: boolean;
 }
 
@@ -24,7 +24,7 @@ export default function EnterTimeStep({
 }: EnterTimeStepProps) {
   // ✅ Added: Track if animation has already run
   const hasAnimated = useRef(false);
-  const currentTimeZone = { label: moment.tz.guess(), value: moment.tz.guess() };
+  const currentTimeZone = { label: `(GMT${moment.tz(moment.tz.guess()).format('Z')}) ${moment.tz.guess()}`, value: moment.tz.guess() };
   const [timezone, setTimezone] = useState(currentTimeZone);
   const [showTimeZoneModal, setShowTimeZoneModal] = useState(false);
   // Main image animation - start from smaller and transparent
@@ -257,13 +257,13 @@ export default function EnterTimeStep({
       </View>
 
       <View style={styles.pickerContainer}>
-        <View style={styles.TimezoneContainer}>
+        {/* <View style={styles.TimezoneContainer}>
           <Text style={styles.TimezoneTitle}>Timezone</Text>
           <TouchableOpacity style={styles.changeTimezoneButton} onPress={() => setShowTimeZoneModal(true)}>
             <Text style={styles.changeTimezoneText}>{timezone?.label ?? timezone}</Text>
           </TouchableOpacity>
-        </View>
-        <TimeZoneModal visible={showTimeZoneModal} closeModal={() => setShowTimeZoneModal(false)} value={timezone?.value} onTimezoneSelect={handleTimezoneSelect} />
+        </View> */}
+        {/* <TimeZoneModal visible={showTimeZoneModal} closeModal={() => setShowTimeZoneModal(false)} value={timezone?.value} onTimezoneSelect={handleTimezoneSelect} /> */}
         <TimePicker value={value} onChange={onChangeTime} />
       </View>
     </View>
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   TimezoneContainer: {
     alignSelf: 'center',
     width: '80%',
-    marginTop: verticalScale(10),
+    marginTop: verticalScale(20),
     // backgroundColor: colors.lightBlack,
     // paddingVertical: verticalScale(15),
     // paddingHorizontal: scale(20),
