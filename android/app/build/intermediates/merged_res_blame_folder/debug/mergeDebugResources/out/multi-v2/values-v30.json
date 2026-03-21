@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeDebugResources-55:/values-v30/values-v30.xml",
+            "outputFile": "com.astroma.app-mergeDebugResources-60:/values-v30/values-v30.xml",
             "map": [
                 {
-                    "source": "/Users/sravi/Documents/project/Astroma-feature-Settings/node_modules/react-native-keyboard-controller/android/build/intermediates/packaged_res/debug/packageDebugResources/values-v30/values-v30.xml",
+                    "source": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-keyboard-controller/android/build/intermediates/packaged_res/debug/packageDebugResources/values-v30/values-v30.xml",
                     "from": {
                         "startLines": "2,5,8,11,14",
                         "startColumns": "4,4,4,4,4",

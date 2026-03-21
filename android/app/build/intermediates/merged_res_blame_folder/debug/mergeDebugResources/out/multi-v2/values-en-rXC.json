@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeDebugResources-55:/values-en-rXC/values-en-rXC.xml",
+            "outputFile": "com.astroma.app-mergeDebugResources-60:/values-en-rXC/values-en-rXC.xml",
             "map": [
                 {
-                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/776e1f2ef2fd636dc8226db9caa8b20a/transformed/appcompat-1.7.0/res/values-en-rXC/values-en-rXC.xml",
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/f84fdf68f84c30891ff2364b0b166d17/transformed/appcompat-1.7.1/res/values-en-rXC/values-en-rXC.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/8add93aaebf9d0fec36d7cf50f9a62b1/transformed/core-1.13.1/res/values-en-rXC/values-en-rXC.xml",
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/91cc2b8ec253803e668c30c8ed59a679/transformed/core-1.17.0/res/values-en-rXC/values-en-rXC.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/875344938fbd01c56216ad280a96946d/transformed/browser-1.2.0/res/values-en-rXC/values-en-rXC.xml",
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/3cc4d9a0d7c5a447888b6c36cce2fd27/transformed/browser-1.2.0/res/values-en-rXC/values-en-rXC.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",

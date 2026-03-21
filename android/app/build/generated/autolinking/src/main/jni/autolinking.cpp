@@ -15,8 +15,8 @@
 #include <RNDatePickerSpecs.h>
 #include <react/renderer/components/RNDatePickerSpecs/ComponentDescriptors.h>
 #include <RNIap.h>
-#include <reactnativekeyboardcontroller.h>
-#include <react/renderer/components/reactnativekeyboardcontroller/ComponentDescriptors.h>
+#include <RNKC.h>
+#include <react/renderer/components/RNKC/ComponentDescriptors.h>
 #include <NitroModulesSpec.h>
 #include <pagerview.h>
 #include <react/renderer/components/pagerview/ComponentDescriptors.h>
@@ -59,9 +59,9 @@ auto module_RNIap = RNIap_ModuleProvider(moduleName, params);
 if (module_RNIap != nullptr) {
 return module_RNIap;
 }
-auto module_reactnativekeyboardcontroller = reactnativekeyboardcontroller_ModuleProvider(moduleName, params);
-if (module_reactnativekeyboardcontroller != nullptr) {
-return module_reactnativekeyboardcontroller;
+auto module_RNKC = RNKC_ModuleProvider(moduleName, params);
+if (module_RNKC != nullptr) {
+return module_RNKC;
 }
 auto module_NitroModulesSpec = NitroModulesSpec_ModuleProvider(moduleName, params);
 if (module_NitroModulesSpec != nullptr) {
@@ -110,6 +110,8 @@ providerRegistry->add(concreteComponentDescriptorProvider<KeyboardControllerView
 providerRegistry->add(concreteComponentDescriptorProvider<KeyboardGestureAreaComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<OverKeyboardViewComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<KeyboardBackgroundViewComponentDescriptor>());
+providerRegistry->add(concreteComponentDescriptorProvider<ClippingScrollViewDecoratorViewComponentDescriptor>());
+providerRegistry->add(concreteComponentDescriptorProvider<KeyboardToolbarGroupViewComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNCViewPagerComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNCSafeAreaProviderComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNCSafeAreaViewComponentDescriptor>());
@@ -124,7 +126,7 @@ providerRegistry->add(concreteComponentDescriptorProvider<RNSScreenComponentDesc
 providerRegistry->add(concreteComponentDescriptorProvider<RNSScreenFooterComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNSScreenContentWrapperComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNSModalScreenComponentDescriptor>());
-providerRegistry->add(concreteComponentDescriptorProvider<RNSBottomTabsComponentDescriptor>());
+providerRegistry->add(concreteComponentDescriptorProvider<RNSTabsHostComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNSSafeAreaViewComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNSVGCircleComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNSVGClipPathComponentDescriptor>());

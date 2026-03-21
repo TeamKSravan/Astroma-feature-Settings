@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.astroma.app-mergeDebugResources-55:/values-es-rES/values-es-rES.xml",
+            "outputFile": "com.astroma.app-mergeDebugResources-60:/values-es-rES/values-es-rES.xml",
             "map": [
                 {
-                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/af14e38e4b514ad018d670c192390e94/transformed/react-android-0.82.0-debug/res/values-es-rES/values-es-rES.xml",
+                    "source": "/Users/sravi/.gradle/caches/8.13/transforms/21665df48decfbada7f4877ea6202bae/transformed/react-android-0.82.0-debug/res/values-es-rES/values-es-rES.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
