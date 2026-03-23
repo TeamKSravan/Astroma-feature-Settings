@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import RootNavigator from './src/navigation/RootNavigator';
+import {
+  initializePushNotifications,
+  setupForegroundMessageHandler,
+} from './src/services/NotificationServices';
 
 LogBox.ignoreLogs([
   '[RN-IAP] Failed to initialize IAP connection',
@@ -14,6 +18,14 @@ LogBox.ignoreLogs([
 ]);
 
 export default function App() {
+  useEffect(() => {
+    initializePushNotifications().catch((err) =>
+      console.error('Push notification init failed:', err)
+    );
+    const unsubscribe = setupForegroundMessageHandler();
+    return () => unsubscribe();
+  }, []);
+
   return <RootNavigator />;
 }
 

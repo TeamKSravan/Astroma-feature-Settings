@@ -1,26 +1,26 @@
 {
-  "root": "/Users/sravi/Documents/project/p/Astroma",
-  "reactNativePath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native",
+  "root": "/Users/sravi/Documents/project/Astroma",
+  "reactNativePath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native",
   "reactNativeVersion": "0.82",
   "dependencies": {
     "@react-native-async-storage/async-storage": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-async-storage/async-storage",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-async-storage/async-storage",
       "name": "@react-native-async-storage/async-storage",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec",
           "version": "2.2.0",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-async-storage/async-storage/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-async-storage/async-storage/android",
           "packageImportPath": "import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;",
           "packageInstance": "new AsyncStoragePackage()",
           "buildTypes": [],
           "libraryName": "rnasyncstorage",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -29,23 +29,23 @@
       }
     },
     "@react-native-clipboard/clipboard": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-clipboard/clipboard",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-clipboard/clipboard",
       "name": "@react-native-clipboard/clipboard",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-clipboard/clipboard/RNCClipboard.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-clipboard/clipboard/RNCClipboard.podspec",
           "version": "1.16.3",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-clipboard/clipboard/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-clipboard/clipboard/android",
           "packageImportPath": "import com.reactnativecommunity.clipboard.ClipboardPackage;",
           "packageInstance": "new ClipboardPackage()",
           "buildTypes": [],
           "libraryName": "rnclipboard",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -54,23 +54,23 @@
       }
     },
     "@react-native-community/netinfo": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-community/netinfo",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-community/netinfo",
       "name": "@react-native-community/netinfo",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-community/netinfo/react-native-netinfo.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-community/netinfo/react-native-netinfo.podspec",
           "version": "12.0.1",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-community/netinfo/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-community/netinfo/android",
           "packageImportPath": "import com.reactnativecommunity.netinfo.NetInfoPackage;",
           "packageInstance": "new NetInfoPackage()",
           "buildTypes": [],
           "libraryName": "RNCNetInfoSpec",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -79,17 +79,17 @@
       }
     },
     "lottie-react-native": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/lottie-react-native",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/lottie-react-native",
       "name": "lottie-react-native",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/lottie-react-native/lottie-react-native.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/lottie-react-native/lottie-react-native.podspec",
           "version": "7.3.6",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/lottie-react-native/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/lottie-react-native/android",
           "packageImportPath": "import com.airbnb.android.react.lottie.LottiePackage;",
           "packageInstance": "new LottiePackage()",
           "buildTypes": [],
@@ -97,7 +97,7 @@
           "componentDescriptors": [
             "LottieAnimationViewComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/lottie-react-native/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -106,17 +106,17 @@
       }
     },
     "react-native-date-picker": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-date-picker",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-date-picker",
       "name": "react-native-date-picker",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-date-picker/react-native-date-picker.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-date-picker/react-native-date-picker.podspec",
           "version": "5.0.13",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-date-picker/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-date-picker/android",
           "packageImportPath": "import com.henninghall.date_picker.DatePickerPackage;",
           "packageInstance": "new DatePickerPackage()",
           "buildTypes": [],
@@ -124,7 +124,7 @@
           "componentDescriptors": [
             "RNDatePickerComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-date-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -133,22 +133,22 @@
       }
     },
     "react-native-fs": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-fs",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-fs",
       "name": "react-native-fs",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-fs/RNFS.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-fs/RNFS.podspec",
           "version": "2.20.0",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-fs/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-fs/android",
           "packageImportPath": "import com.rnfs.RNFSPackage;",
           "packageInstance": "new RNFSPackage()",
           "buildTypes": [],
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-fs/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-fs/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -157,23 +157,23 @@
       }
     },
     "react-native-iap": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-iap",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-iap",
       "name": "react-native-iap",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-iap/RNIap.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-iap/RNIap.podspec",
           "version": "13.0.4",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-iap/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-iap/android",
           "packageImportPath": "import com.dooboolab.rniap.RNIapPackage;",
           "packageInstance": "new RNIapPackage()",
           "buildTypes": [],
           "libraryName": "RNIap",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-iap/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-iap/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -182,17 +182,17 @@
       }
     },
     "react-native-keyboard-controller": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-keyboard-controller",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-keyboard-controller",
       "name": "react-native-keyboard-controller",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-keyboard-controller/react-native-keyboard-controller.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-keyboard-controller/react-native-keyboard-controller.podspec",
           "version": "1.21.1",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-keyboard-controller/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-keyboard-controller/android",
           "packageImportPath": "import com.reactnativekeyboardcontroller.KeyboardControllerPackage;",
           "packageInstance": "new KeyboardControllerPackage()",
           "buildTypes": [],
@@ -205,7 +205,7 @@
             "ClippingScrollViewDecoratorViewComponentDescriptor",
             "KeyboardToolbarGroupViewComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-keyboard-controller/android/src/main/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-keyboard-controller/android/src/main/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -214,22 +214,22 @@
       }
     },
     "react-native-linear-gradient": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-linear-gradient",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-linear-gradient",
       "name": "react-native-linear-gradient",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-linear-gradient/BVLinearGradient.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-linear-gradient/BVLinearGradient.podspec",
           "version": "2.8.3",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-linear-gradient/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-linear-gradient/android",
           "packageImportPath": "import com.BV.LinearGradient.LinearGradientPackage;",
           "packageInstance": "new LinearGradientPackage()",
           "buildTypes": [],
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-linear-gradient/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-linear-gradient/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -238,23 +238,23 @@
       }
     },
     "react-native-nitro-modules": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-nitro-modules",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-nitro-modules",
       "name": "react-native-nitro-modules",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-nitro-modules/NitroModules.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-nitro-modules/NitroModules.podspec",
           "version": "0.27.6",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-nitro-modules/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-nitro-modules/android",
           "packageImportPath": "import com.margelo.nitro.NitroModulesPackage;",
           "packageInstance": "new NitroModulesPackage()",
           "buildTypes": [],
           "libraryName": "NitroModulesSpec",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-nitro-modules/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -263,17 +263,17 @@
       }
     },
     "react-native-pager-view": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-pager-view",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-pager-view",
       "name": "react-native-pager-view",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-pager-view/react-native-pager-view.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-pager-view/react-native-pager-view.podspec",
           "version": "6.9.1",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-pager-view/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-pager-view/android",
           "packageImportPath": "import com.reactnativepagerview.PagerViewPackage;",
           "packageInstance": "new PagerViewPackage()",
           "buildTypes": [],
@@ -281,7 +281,7 @@
           "componentDescriptors": [
             "RNCViewPagerComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -290,23 +290,23 @@
       }
     },
     "react-native-reanimated": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-reanimated",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-reanimated",
       "name": "react-native-reanimated",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-reanimated/RNReanimated.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-reanimated/RNReanimated.podspec",
           "version": "4.2.3",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-reanimated/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-reanimated/android",
           "packageImportPath": "import com.swmansion.reanimated.ReanimatedPackage;",
           "packageInstance": "new ReanimatedPackage()",
           "buildTypes": [],
           "libraryName": "rnreanimated",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -315,17 +315,17 @@
       }
     },
     "react-native-safe-area-context": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-safe-area-context",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-safe-area-context",
       "name": "react-native-safe-area-context",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-safe-area-context/react-native-safe-area-context.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-safe-area-context/react-native-safe-area-context.podspec",
           "version": "5.7.0",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-safe-area-context/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-safe-area-context/android",
           "packageImportPath": "import com.th3rdwave.safeareacontext.SafeAreaContextPackage;",
           "packageInstance": "new SafeAreaContextPackage()",
           "buildTypes": [],
@@ -334,7 +334,7 @@
             "RNCSafeAreaProviderComponentDescriptor",
             "RNCSafeAreaViewComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -343,17 +343,17 @@
       }
     },
     "react-native-screens": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-screens",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-screens",
       "name": "react-native-screens",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-screens/RNScreens.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-screens/RNScreens.podspec",
           "version": "4.24.0",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-screens/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-screens/android",
           "packageImportPath": "import com.swmansion.rnscreens.RNScreensPackage;",
           "packageInstance": "new RNScreensPackage()",
           "buildTypes": [],
@@ -373,7 +373,7 @@
             "RNSTabsHostComponentDescriptor",
             "RNSSafeAreaViewComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -382,11 +382,11 @@
       }
     },
     "react-native-simple-toast": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-simple-toast",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-simple-toast",
       "name": "react-native-simple-toast",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-simple-toast/react-native-simple-toast.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-simple-toast/react-native-simple-toast.podspec",
           "version": "3.3.2",
           "configurations": [],
           "scriptPhases": []
@@ -395,17 +395,17 @@
       }
     },
     "react-native-svg": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-svg",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-svg",
       "name": "react-native-svg",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-svg/RNSVG.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-svg/RNSVG.podspec",
           "version": "15.15.4",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-svg/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-svg/android",
           "packageImportPath": "import com.horcrux.svg.SvgPackage;",
           "packageInstance": "new SvgPackage()",
           "buildTypes": [],
@@ -441,7 +441,7 @@
             "RNSVGTSpanComponentDescriptor",
             "RNSVGUseComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -450,17 +450,17 @@
       }
     },
     "react-native-webview": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-webview",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-webview",
       "name": "react-native-webview",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-webview/react-native-webview.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-webview/react-native-webview.podspec",
           "version": "13.16.1",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-webview/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-webview/android",
           "packageImportPath": "import com.reactnativecommunity.webview.RNCWebViewPackage;",
           "packageInstance": "new RNCWebViewPackage()",
           "buildTypes": [],
@@ -468,7 +468,7 @@
           "componentDescriptors": [
             "RNCWebViewComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-webview/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-webview/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -477,23 +477,23 @@
       }
     },
     "react-native-worklets": {
-      "root": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-worklets",
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-worklets",
       "name": "react-native-worklets",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-worklets/RNWorklets.podspec",
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-worklets/RNWorklets.podspec",
           "version": "0.7.4",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-worklets/android",
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-worklets/android",
           "packageImportPath": "import com.swmansion.worklets.WorkletsPackage;",
           "packageInstance": "new WorkletsPackage()",
           "buildTypes": [],
           "libraryName": "rnworklets",
           "componentDescriptors": [],
-          "cmakeListsPath": "/Users/sravi/Documents/project/p/Astroma/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -664,7 +664,7 @@
         {
           "name": "--path <path>",
           "description": "Path to the React Native project root.",
-          "default": "/Users/sravi/Documents/project/p/Astroma/ios"
+          "default": "/Users/sravi/Documents/project/Astroma/ios"
         },
         {
           "name": "--platform <string>",
@@ -966,7 +966,7 @@
   ],
   "project": {
     "ios": {
-      "sourceDir": "/Users/sravi/Documents/project/p/Astroma/ios",
+      "sourceDir": "/Users/sravi/Documents/project/Astroma/ios",
       "xcodeProject": {
         "name": "Astroma.xcworkspace",
         "path": ".",
@@ -975,7 +975,7 @@
       "assets": []
     },
     "android": {
-      "sourceDir": "/Users/sravi/Documents/project/p/Astroma/android",
+      "sourceDir": "/Users/sravi/Documents/project/Astroma/android",
       "appName": "app",
       "packageName": "com.astroma",
       "applicationId": "com.astroma",

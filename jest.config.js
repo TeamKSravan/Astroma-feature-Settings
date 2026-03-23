@@ -1,30 +1,37 @@
 const { transform } = require("typescript");
 
 module.exports = {
-  preset: '@testing-library/react-native',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  setupFilesAfterEnv: ['./jest.setup.js'],
-  transform:{
-    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest', 
+  preset: "react-native",
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  setupFilesAfterEnv: ["./jest-setup.ts"],
+  transform: {
+    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native|@react-navigation|react-native-reanimated|react-native-gesture-handler|react-native-safe-area-context|react-native-screens|react-native-webview|react-native-svg|react-native-vector-icons|react-native-tab-view|react-native-pager-view|react-native-modal|react-native-date-picker|react-native-iap|react-native-nitro-modules|react-native-clipboard|react-native-async-storage|react-native-worklets|react-native-worklets-core|react-native-worklets-interop|react-native-worklets-modules|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-worklets-services|react-native-worklets-utils|react-native-worklets-hooks|react-native-worklets-context|react-native-worklets-providers|react-native-work
+    "node_modules/(?!(jest-)?react-native|@react-native|@react-navigation|react-native-reanimated|react-native-gesture-handler|react-native-safe-area-context|react-native-screens|react-native-webview|react-native-svg|react-native-vector-icons|react-native-tab-view|react-native-pager-view|react-native-modal|react-native-date-picker|react-native-iap|react-native-nitro-modules|@react-native-async-storage/async-storage)",
   ],
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$',
-  testpathignorepatterns: ['/node_modules/', '/android/', '/ios/'],
-  
+  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+  testPathIgnorePatterns: ["/node_modules/", "/android/", "/ios/"],
+
   moduleNameMapper: {
-    '^react-native$': 'react-native-web',
-    '^react-native-vector-icons$': 'react-native-vector-icons-web',
-    '<rootDir>/__mocks__/react-native-responsive-fontsize.js': '<rootDir>/__mocks__/react-native-responsive-fontsize.js',
+    "\\.svg$": "<rootDir>/__mocks__/svgMock.tsx",
+    "react-native-responsive-fontsize": "<rootDir>/__mocks__/react-native-responsive-fontsize.tsx",
   },
-  collectcoverage: true,
-  coveragerporter: ['json','lcov', 'text', 'clover'],
-  collectcoveragefrom: ['src/**/*.ts', 'src/**/*.tsx','!src/**/*.d.ts','!src/**/*.js','!src/**/*.jsx', 'src/navigation/**/*.ts', 'src/navigation/**/*.tsx'], 
+  collectCoverage: true,
+  coverageReporters: ["json", "lcov", "text", "clover"],
+  collectCoverageFrom: [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "!src/**/*.d.ts",
+    "!src/**/*.js",
+    "!src/**/*.jsx",
+    "src/navigation/**/*.ts",
+    "src/navigation/**/*.tsx",
+  ],
   globals: {
-    'ts-jest': {
+    "ts-jest": {
       babelConfig: true,
-      tsconfig: 'tsconfig.json',
+      tsconfig: "tsconfig.json",
     },
   },
 };

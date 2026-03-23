@@ -9,13 +9,11 @@ import CustomButton from '../../../components/CustomButton';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import { useAuthStore } from '../../../store/useAuthStore';
-import LanguageModal from '../../../components/modals/LanguageModal';
 
 export default function WelcomeScreen(props: any) {
-  const { setHasSeenWelcome, currentLanguage } = useAuthStore();
+  const { setHasSeenWelcome } = useAuthStore();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-
   const handleGetStarted = () => {
     console.log('Marking welcome screen as seen');
     setHasSeenWelcome(true);

@@ -81,10 +81,6 @@ interface AuthState {
   logout: () => void;
 }
 
-const { setSecondaryUserdata, setSelectedUser } = useProfileStore.getState();
-const { setAvailableCoins } = useWalletStore.getState();
-const { setCurrentSubscription } = useWalletStore.getState();
-
 export const useAuthStore = create<AuthState>()(
   persist(
     set => ({
@@ -303,10 +299,10 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
-        setSecondaryUserdata([]);
-        setSelectedUser(null as any);
-        setAvailableCoins(0);
-        setCurrentSubscription(null);
+        useProfileStore.getState().setSecondaryUserdata([]);
+        useProfileStore.getState().setSelectedUser(null as any);
+        useWalletStore.getState().setAvailableCoins(0);
+        useWalletStore.getState().setCurrentSubscription(null);
         set({
           token: null,
           userDetails: null,

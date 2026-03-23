@@ -1,3 +1,5 @@
+declare module 'react-native-push-notification';
+
 declare module '*.svg' {
   import * as React from 'react';
   import { SvgProps } from 'react-native-svg';

@@ -38,7 +38,7 @@ export default function CoinSummary(props: CoinSummaryProps) {
       <View style={styles.modalView}>
         <View style={styles.ceneteredView}>
           <CoinSumTitle />
-          <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+          <TouchableOpacity testID="close-button" onPress={closeModal} style={styles.closeButton}>
             <ModalClose width={24} height={24} />
           </TouchableOpacity>
           <Text style={styles.orderTitle}>{i18n.t('coinSummary.downloadTitle', { title })}</Text>

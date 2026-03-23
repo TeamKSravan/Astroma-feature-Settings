@@ -6,6 +6,8 @@ buildscript {
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
         kotlinVersion = "2.1.20"
+        // Force react-native-push-notification to use AndroidX instead of old support library
+        supportLibVersion = "1.6.1"
     }
     repositories {
         google()
@@ -21,8 +23,20 @@ buildscript {
         classpath("com.android.tools.build:gradle:8.11.1")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath 'com.google.gms:google-services:4.4.2'
+        classpath 'com.google.gms:google-services:4.4.4'
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// Exclude old Android Support Library to resolve duplicate class conflicts with AndroidX
+subprojects { subproject ->
+    subproject.configurations.all {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+        exclude group: 'com.android.support', module: 'support-core-ui'
+        exclude group: 'com.android.support', module: 'support-fragment'
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
+}

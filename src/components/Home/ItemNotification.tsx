@@ -49,7 +49,7 @@ const NotiIcon = ({ type }: { type: NotificationType }) => {
 
 const ItemNotification = ({ item, onPress }: ItemNotificationProps) => {
     return (
-        <TouchableOpacity style={styles.notificationItemContainer} onPress={() => onPress(item._id)}>
+        <TouchableOpacity testID="item-notification" style={styles.notificationItemContainer} onPress={() => onPress(item._id)}>
             <View style={styles.notificationItemRow}>
                 <View style={styles.notiIconContainer}>
                     <NotiIcon type={item.type} />

@@ -30,7 +30,7 @@ export default function ListEmptyComponent({
           {description && <Text style={styles.deleteText}>{description}</Text>}
         </View>
         {!noButton && <View style={styles.buttonView}>
-          <TouchableOpacity style={styles.noView} onPress={() => addUser && addUser()}>
+          <TouchableOpacity testID="add-user-button" style={styles.noView} onPress={() => addUser && addUser()}>
             <Text style={styles.noText}>{addUserText}</Text>
           </TouchableOpacity>
         </View>}

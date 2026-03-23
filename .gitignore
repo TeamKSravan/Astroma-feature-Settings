@@ -30,10 +30,20 @@ build/
 local.properties
 *.iml
 *.hprof
-.cxx/
+.cxx
 *.keystore
 !debug.keystore
 .kotlin/
+
+# Android build outputs
+android/.gradle/
+android/.idea/
+android/app/build/
+android/app/.cxx/
+android/app/release/
+android/build/
+*.apk
+*.aab
 
 # node.js
 #
