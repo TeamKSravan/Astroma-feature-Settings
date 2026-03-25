@@ -51,7 +51,7 @@ AxiosBase.interceptors.response.use(
     //   return Promise.reject(new Error(i18n.t('common.connectionError')));
     // }
 
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
       const { logout } = useAuthStore.getState();
 
       logout();

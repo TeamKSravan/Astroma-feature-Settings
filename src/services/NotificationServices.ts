@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
+import { useHomeStore } from '../store/useHomeStore';
 
 const CHANNEL_ID = 'default';
 
@@ -14,7 +15,7 @@ function displayNotification(
   data?: Record<string, string>
 ) {
   PushNotification.localNotification({
-    channelId: CHANNEL_ID,
+    ...(Platform.OS === 'android' && { channelId: CHANNEL_ID }),
     title,
     message: body,
     ...(data && { userInfo: data }),
@@ -73,8 +74,9 @@ export async function initializePushNotifications() {
 
   // 2. Configure react-native-push-notification (for local notifications & taps)
   PushNotification.configure({
-    onRegister: (token: { token: string }) => {
+    onRegister: async (token: { token: string }) => {
       console.log('Push token:', token);
+      await useHomeStore.getState().saveFCMToken(token.token);
     },
     onNotification: (notification: { userInteraction?: boolean; data?: Record<string, unknown> }) => {
       console.log('Notification received/opened:', notification);
@@ -96,11 +98,6 @@ export async function initializePushNotifications() {
 
   // 3. Request permission and get FCM token
   const hasPermission = await requestUserPermission();
-  if (hasPermission) {
-    const token = await getFCMToken();
-    // TODO: Send token to your backend for targeting: await api.registerDeviceToken(token);
-    return token;
-  }
   return null;
 }
 

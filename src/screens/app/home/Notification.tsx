@@ -35,6 +35,13 @@ function NotificationScreen(props: any) {
         }
     };
 
+    const markAllAsReadNotification = async () => {
+        const result = await markAsRead();
+        if (result.success) {
+            fetchNotificationList();
+        }
+    };
+
     const markAsReadNotification = async (notificationId: string) => {
         const result = await markAsRead(notificationId);
         if (result.success) {
@@ -49,7 +56,6 @@ function NotificationScreen(props: any) {
     };
 
     const isAllRead = data.every((item) => item.is_read);
-    console.log('isAllRead', isAllRead);
     return (
         <BaseView backgroundImage={imagepath.NotificationBG}>
             <View style={styles.headerContainer}>
@@ -58,20 +64,20 @@ function NotificationScreen(props: any) {
                     <View style={styles.helloView}>
                         <Text style={styles.nameText}>{i18n.t('notifications.title')}</Text>
                     </View>
-                    {data.length > 0 && !isAllRead && <TouchableOpacity style={styles.markAllReadContainer}>
+                    {data.length > 0 && !isAllRead && <TouchableOpacity style={styles.markAllReadContainer} onPress={markAllAsReadNotification}>
                         <Text style={styles.markAllReadText}>{i18n.t('notifications.markAllRead')}</Text>
                     </TouchableOpacity>}
                 </View>
             </View>
 
             <View style={styles.mainView}>
-                <FlatList
-                    data={data}
+                {data.length > 0 && <FlatList
+                    data={[]}
                     renderItem={({ item }) => <ItemNotification item={item} onPress={(notificationId: string) => markAsReadNotification(notificationId)} />}
                     keyExtractor={(item) => item._id}
                     showsVerticalScrollIndicator={false}
                     bounces={false}
-                    contentContainerStyle={{ paddingBottom: verticalScale(60) }}
+                    // contentContainerStyle={{ paddingBottom: verticalScale(60), marginTop: 20 }}
                     ItemSeparatorComponent={() => <View style={styles.notificationItemSeparator} />}
                     refreshControl={
                         <RefreshControl
@@ -80,8 +86,14 @@ function NotificationScreen(props: any) {
                             tintColor={colors.primary}
                         />
                     }
-                    ListEmptyComponent={() => <ListEmptyComponent title={i18n.t('notifications.noNotifications')} noButton={true} />}
-                />
+                    ListEmptyComponent={() => 
+                        <ListEmptyComponent 
+                        title={i18n.t('notifications.noNotifications')} 
+                        titleStyle={styles.noNotificationsTitle} 
+                        noButton={true} 
+                        containerStyle={styles.noNotificationsContainer} 
+                    />}
+                />}
             </View>
         </BaseView>
     );
@@ -97,7 +109,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: verticalScale(10),
+        marginBottom: verticalScale(15),
     },
     backButton: {
         width: scale(30),
@@ -136,5 +148,16 @@ const styles = StyleSheet.create({
         backgroundColor: colors.lightGray,
         marginHorizontal: scale(15),
         marginVertical: verticalScale(5),
+    },
+    noNotificationsTitle: {
+        marginTop: -15,
+        fontSize: moderateScale(16),
+        color: colors.lightGray,
+        fontFamily: fonts.semiBold,
+        lineHeight: 25,
+        textAlign: 'center',
+    },
+    noNotificationsContainer: {
+        marginTop: 20,
     },
 });

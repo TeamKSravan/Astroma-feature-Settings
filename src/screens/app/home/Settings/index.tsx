@@ -25,6 +25,7 @@ import { useAuthStore } from '../../../../store/useAuthStore';
 import BackButton from '../../../../components/BackButton';
 import ZodicSign from '../../../../components/ZodicSign';
 import { capitalizeFirstLetter } from '../../../../utils/methods';
+import { useProfileStore } from '../../../../store/useProfileStore';
 
 
 const LanguageDropdown = ({ data = [], value, onChangeText }: { data: any[], value: string, onChangeText: (text: string) => void }) => {
@@ -115,7 +116,7 @@ export default function SettingScreen(props: any) {
     const [notification, setNotification] = React.useState(true);
     const [showLogoutModal, setShowLogoutModal] = React.useState(false);
     const { isNotificationEnabled, setIsNotificationEnabled, currentLanguage, setCurrentLanguage } = useAuthStore();
-
+    const { editPrimaryUserDetail } = useProfileStore();
     useEffect(() => {
         i18n.locale = currentLanguage;
     }, [currentLanguage]);
@@ -124,13 +125,26 @@ export default function SettingScreen(props: any) {
         setCurrentLanguage(locale);
         i18n.locale = locale;
     };
+
+    const saveNotificationSettings = async (boolean: boolean) => {
+        await editPrimaryUserDetail({
+            is_push_notifications_enabled: boolean,
+        }).then((result) => {
+            console.log('editPrimaryUserDetail', result);
+            if (result.success) {
+                console.log('Push notification saved successfully');
+            } else {
+                console.log('Error saving push notification:', result.message);
+            }
+        });
+    }
     const MenuList1 = [
         { icon: <FaceMask />, title: i18n.t('settings.rateUs'), onPress: () => { openDummyPlayStore() } },
         { icon: <Contact />, title: i18n.t('settings.contactUs'), onPress: () => { props.navigation.navigate('ContactUs') } },
         { icon: <Transaction />, title: i18n.t('settings.transactionHistory'), onPress: () => { props.navigation.navigate('TransactionHistory') } },
         { icon: <Profile />, title: i18n.t('settings.userProfile'), onPress: () => { props.navigation.navigate('UserProfile') } },
     ]
-    
+
     const MenuList2 = [
         { icon: <Language />, title: i18n.t('settings.changeLanguage'), onPress: () => { } },
         { icon: <Logout />, title: i18n.t('settings.logout'), onPress: () => { setShowLogoutModal(true) } },
@@ -168,12 +182,15 @@ export default function SettingScreen(props: any) {
                     <View style={styles.notificationView}>
                         <Bell />
                         <Text style={styles.notificationText}>{i18n.t('settings.notification')}</Text>
-                        <Switch 
-                        thumbColor={colors.white}
-                        ios_backgroundColor={colors.lightGray}
-                        trackColor={{ false: colors.lightGray, true: '#4BB05D' }} 
-                        value={isNotificationEnabled} 
-                        onValueChange={setIsNotificationEnabled} />
+                        <Switch
+                            thumbColor={colors.white}
+                            ios_backgroundColor={colors.lightGray}
+                            trackColor={{ false: colors.lightGray, true: '#4BB05D' }}
+                            value={isNotificationEnabled}
+                            onValueChange={(boolean)=>{
+                                saveNotificationSettings(boolean);
+                                setIsNotificationEnabled(boolean);
+                            }} />
                     </View>
 
                     <View style={styles.menuListContainer}>

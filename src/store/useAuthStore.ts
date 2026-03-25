@@ -214,6 +214,7 @@ export const useAuthStore = create<AuthState>()(
             token,
             userDetails: {
               id: user._id,
+              _id: { $oid: user._id },
               name: user?.name,
               phone: user.phone,
               country_code: user?.country_code,

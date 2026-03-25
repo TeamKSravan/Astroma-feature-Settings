@@ -1,5 +1,5 @@
 import { Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
 import i18n from '../../../translation/i18n';
@@ -20,10 +20,12 @@ import UserList from '../../../components/UserList';
 import { useWalletStore } from '../../../store/useWalletStore';
 import NotificationBell from '../../../components/NotificationBell';
 import { capitalizeFirstLetter } from '../../../utils/methods';
+import { useFocusEffect } from '@react-navigation/native';
+import { getFCMToken, requestUserPermission } from '../../../services/NotificationServices';
 
 export default function HomeScreen(props: any) {
   const { isGetBonus, setIsGetBonus, userDetails, currentLanguage } = useAuthStore();
-  const { getDashboardData } = useHomeStore.getState();
+  const { getDashboardData, saveFCMToken } = useHomeStore.getState();
   const [overview, setOverview] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [predictions, setPredictions] = useState(null);
@@ -40,6 +42,24 @@ export default function HomeScreen(props: any) {
   const [refreshing, setRefreshing] = useState(false);
   const { getUserDetail, selectedUser, secondaryUserdata } = useProfileStore();
   const { getPlanDetails, myLastSubscription, setCurrentSubscription } = useWalletStore();
+
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('selectedUser?._id?.$oid : ', selectedUser?._id?.$oid);
+      fetchDashboardData();
+    }, [selectedUser?._id?.$oid, secondaryUserdata, currentLanguage])
+  );
+  useEffect(() => {
+    const checkPermission = async () => {
+      const hasPermission = await requestUserPermission();
+      if (hasPermission) {
+        const token = await getFCMToken();
+        saveFCMToken(token, Platform.OS === 'ios' ? 'ios' : 'android');
+      }
+    }
+    checkPermission();
+  }, []);
 
   useEffect(() => {
     fetchUserDetail();
@@ -74,28 +94,30 @@ export default function HomeScreen(props: any) {
     }
   }, [isGetBonus]);
 
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    const result = await getDashboardData(selectedUser?._id?.$oid ?? '');
+    console.log('selectedUser?._id?.$oid : ', selectedUser?._id?.$oid);
+    console.log('Dashboard data : ', result);
+    if (result.success) {
+      setOverview(result.overview);
+      setPredictions(result.predictions);
+      setSigns([
+        { label: i18n.t('home.sunSign'), value: result?.predictions?.sun_sign },
+        { label: i18n.t('home.luckyNumber'), value: result?.predictions?.lucky_number },
+        { label: i18n.t('home.moonSign'), value: result?.predictions?.moon_sign },
+        { label: i18n.t('home.luckyColor'), value: result?.predictions?.lucky_color },
+        { label: i18n.t('home.luckyTime'), value: result?.predictions?.lucky_time },
+      ]);
+      setZodicSign(result?.predictions?.zodiac_sign);
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
-      const result = await getDashboardData(selectedUser?._id?.$oid ?? '');
-      console.log('Dashboard data : ', result);
-      if (result.success) {
-        setOverview(result.overview);
-        setPredictions(result.predictions);
-        setSigns([
-          { label: i18n.t('home.sunSign'), value: result?.predictions?.sun_sign },
-          { label: i18n.t('home.luckyNumber'), value: result?.predictions?.lucky_number },
-          { label: i18n.t('home.moonSign'), value: result?.predictions?.moon_sign },
-          { label: i18n.t('home.luckyColor'), value: result?.predictions?.lucky_color },
-          { label: i18n.t('home.luckyTime'), value: result?.predictions?.lucky_time },
-        ]);
-        setZodicSign(result?.predictions?.zodiac_sign);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
-    };
+
     fetchDashboardData();
   }, [getDashboardData, selectedUser?._id?.$oid, secondaryUserdata, currentLanguage]);
 

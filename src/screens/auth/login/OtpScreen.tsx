@@ -15,6 +15,7 @@ import Loader from '../../../components/Loader';
 import { useProfileStore } from '../../../store/useProfileStore';
 import BackButton from '../../../components/BackButton';
 import LanguageModal from '../../../components/modals/LanguageModal';
+import { getFCMToken } from '../../../services/NotificationServices';
 const TIMER_DURATION = 300; // 5 minutes in seconds
 
 const formatTime = (seconds: number): string => {

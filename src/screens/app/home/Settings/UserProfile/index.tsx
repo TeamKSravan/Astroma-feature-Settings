@@ -72,7 +72,7 @@ export default function UserProfile({ navigation }: any) {
                     </View>
                 </View>
             </View>
-            <FlatList data={data}
+            {data.length > 0 && <FlatList data={data}
                 bounces={false}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.container}
@@ -90,7 +90,7 @@ export default function UserProfile({ navigation }: any) {
                 <EmptyList addUser={() => {
                     navigation.navigate('OnboardingScreen', { onBoardType: 'combatUser', onGoBack: fetchUserDetail, })
                 }} title={i18n.t('userProfile.emptyListTitle')} description={i18n.t('userProfile.emptyListDescription')} addUserText={i18n.t('userProfile.addUserText')} />}
-            />
+            />}
             <DeleteModal closeModal={() => setShowDeleteModal(false)} visible={showDeleteModal} handleVerify={deleteProfile} />
             <EditUserProfile userdata={selectedUserData} closeModal={() => setShowEditModal(false)} visible={showEditModal} reload={fetchUserDetail} />
             {isLoading && <Loader />}

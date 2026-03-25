@@ -106,6 +106,7 @@ export default function LoginScreen(props: any) {
     console.log('Country code:', country.cca2);
   };
   const handleLogin = async () => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
     if (!selectedCountry) {
       setError({
         phone: i18n.t('login.selectCountry'),
@@ -160,14 +161,15 @@ export default function LoginScreen(props: any) {
       console.log('Login error:', error);
     }
   };
+  const scrollViewRef = useRef<ScrollView>(null);
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
-      <View style={styles.container}>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 90}
-        >
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 50}
+      >
+        <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
           <View style={[styles.img, { width: '100%' }]}>
             <Animated.View style={[styles.smallImg, { top: 110, left: 55 }, createElementStyle(sparkle1)]}>
               <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
@@ -210,15 +212,14 @@ export default function LoginScreen(props: any) {
               error={error?.phone || ''}
             />
           </View>
-          {/* </ScrollView> */}
-        </KeyboardAvoidingView>
-      </View>
-          <CustomButton
-            title={i18n.t('login.loginn')}
-            style={styles.buttonStyle}
-            onPress={handleLogin}
-            disabled={phoneNumber.length == 0}
-          />
+        </ScrollView>
+        <CustomButton
+          title={i18n.t('login.loginn')}
+          style={styles.buttonStyle}
+          onPress={handleLogin}
+          disabled={phoneNumber.length == 0}
+        />
+      </KeyboardAvoidingView>
       {isLoading && <Loader />}
     </BaseView>
   );
@@ -226,12 +227,12 @@ export default function LoginScreen(props: any) {
 const styles = StyleSheet.create({
   img: {
     alignSelf: 'center',
-    marginTop: verticalScale(20),
+    marginTop: Platform.OS === 'ios' ? verticalScale(0) : verticalScale(20),
   },
   mainView: {
     flex: 1,
     paddingHorizontal: scale(16),
-    marginTop: verticalScale(20),
+    marginTop: Platform.OS === 'ios' ? verticalScale(10) : verticalScale(20),
   },
   loginText: {
     color: colors.white,
@@ -247,14 +248,10 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     marginHorizontal: scale(16),
-
-    // marginTop: verticalScale(25),
-    // marginBottom: verticalScale(130),
-    // marginBottom: verticalScale(50),
+    marginTop: verticalScale(20),
   },
   container: {
     flex: 1,
-    paddingVertical: verticalScale(5),
   },
   smallImg: {
     position: 'absolute',
@@ -267,145 +264,3 @@ const styles = StyleSheet.create({
     height: 12
   },
 });
-
-// import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-// import React, { useState } from 'react';
-// import { Country } from 'react-native-country-picker-modal';
-
-// import imagepath from '../../../constants/imagepath';
-// import { moderateScale, scale, verticalScale } from '../../../utils/scale';
-// import i18n from '../../../translation/i18n';
-// import { colors } from '../../../constants/colors';
-// import { fonts } from '../../../constants/fonts';
-// import CustomTextInput from '../../../components/CustomTextInput';
-// import CustomButton from '../../../components/CustomButton';
-// import CountryCodePicker from '../../../components/CountryCodePicker';
-// import { ToastMessage } from '../../../components/ToastMessage';
-// import useValidation from '../../../hooks/useValidation';
-// import { useAuthStore } from '../../../store/useAuthStore';
-// import Loader from '../../../components/Loader';
-// import BaseView from '../../../utils/BaseView';
-
-// export default function LoginScreen(props: any) {
-//   const [phoneNumber, setPhoneNumber] = useState('');
-
-//   // 👇 Set India (+91) as the default selected country
-//   const [selectedCountry, setSelectedCountry] = useState<Country>({
-//     callingCode: ['91'],
-//     cca2: 'IN',
-//     currency: 'INR',
-//     flag: '🇮🇳',
-//     name: 'India',
-//     region: 'Asia',
-//     subregion: 'Southern Asia',
-//   } as Country);
-
-//   const { sendOTP, isLoading } = useAuthStore();
-//   const { validate } = useValidation();
-
-//   const handleCountrySelect = (country: Country) => {
-//     setSelectedCountry(country);
-//     console.log('Selected country:', country);
-//     console.log('Calling code:', country.callingCode[0]);
-//     console.log('Country code:', country.cca2);
-//   };
-
-//   const handleLogin = async () => {
-//     if (!selectedCountry) {
-//       ToastMessage(i18n.t('login.selectCountry'));
-//       return;
-//     }
-
-//     if (
-//       !validate('phone', phoneNumber, {
-//         countryCode: selectedCountry.cca2,
-//         minLength: 7,
-//         maxLength: 15,
-//       })
-//     ) {
-//       return;
-//     }
-
-//     try {
-//       const fullPhoneNumber = `+${selectedCountry.callingCode[0]}${phoneNumber}`;
-
-//       console.log('Full phone number:', fullPhoneNumber);
-
-//       const result = await sendOTP(fullPhoneNumber);
-//       if (result.success) {
-//         ToastMessage(i18n.t('login.otpSent'));
-//         setTimeout(() => {
-//           props.navigation.navigate('OtpScreen', {
-//             phone: fullPhoneNumber,
-//           });
-//         }, 500);
-//       } else {
-//         ToastMessage(result.message || i18n.t('login.genericError'));
-//       }
-//     } catch (error: any) {
-//       ToastMessage(error?.message || i18n.t('login.genericError'));
-//       console.log('Login error:', error);
-//     }
-//   };
-
-//   return (
-//     <BaseView backgroundImage={imagepath.homeBg}>
-//       <ScrollView scrollEnabled={false} showsVerticalScrollIndicator={false} c>
-//         <Image source={imagepath.grouped2} style={styles.img} />
-//         <View style={styles.mainView}>
-//           <Text style={styles.loginText}>{i18n.t('login.login')}</Text>
-//           <Text style={styles.emailText}>{i18n.t('login.phone')}</Text>
-
-//           <CustomTextInput
-//             placeholder={i18n.t('login.enterPhone')}
-//             value={phoneNumber}
-//             onChangeText={(txt) => setPhoneNumber(txt.replace(/[^0-9]/g, ''))}
-//             keyboardType="phone-pad"
-//             maxLength={15}
-//             leftComponent={
-//               <CountryCodePicker
-//                 onSelect={handleCountrySelect}
-//                 countryCode={selectedCountry?.cca2 || 'IN'}
-//               />
-//             }
-//           />
-//         </View>
-//       </ScrollView>
-//       <CustomButton
-//         title={i18n.t('login.loginn')}
-//         style={styles.buttonStyle}
-//         onPress={handleLogin}
-//       />
-
-//       {isLoading && <Loader />}
-//     </BaseView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   img: {
-//     alignSelf: 'center',
-//     marginTop: verticalScale(20),
-//   },
-//   mainView: {
-//     flex: 1,
-//     paddingHorizontal: scale(16),
-//     marginTop: verticalScale(20),
-//   },
-//   loginText: {
-//     color: colors.white,
-//     fontFamily: fonts.bold,
-//     fontSize: moderateScale(30),
-//     marginBottom: verticalScale(10),
-//   },
-//   emailText: {
-//     color: colors.white,
-//     fontFamily: fonts.regular,
-//     fontSize: moderateScale(12),
-//     marginVertical: verticalScale(8),
-//   },
-//   buttonStyle: {
-//     marginHorizontal: scale(16),
-//     marginBottom: verticalScale(20),
-//   },
-// });

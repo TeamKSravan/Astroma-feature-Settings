@@ -70,6 +70,8 @@ export default function UserList({ primaryUser, showAddUser = true, disableUserS
     useEffect(() => {
         console.log('selectedUser : ', selectedUser);
     }, [selectedUser]);
+    
+    var comparePrimaryUser = primaryUser?.id === selectedUser?.id 
     return (
         <View style={styles.Container}>
             <ScrollView
@@ -81,7 +83,7 @@ export default function UserList({ primaryUser, showAddUser = true, disableUserS
             >
                 {primaryUser && (
                     <View style={styles.signContainer}>
-                        <TouchableOpacity activeOpacity={1} style={primaryUser?._id?.$oid === selectedUser?._id?.$oid ? styles.selectedcircle : styles.circle} onPress={() => disableUserSelection ? null : setSelectedUser(primaryUser?._id?.$oid === selectedUser?._id?.$oid ? null : primaryUser)}>
+                        <TouchableOpacity activeOpacity={1} style={comparePrimaryUser ? styles.selectedcircle : styles.circle} onPress={() => disableUserSelection ? null : setSelectedUser(primaryUser)}>
                             <UserIcon sign={primaryUser?.zodiac_sign ?? ''} />
                         </TouchableOpacity>
                         <Text numberOfLines={1} lineBreakMode='tail' style={styles.profileNameText}>{i18n.t('userList.me')}</Text>

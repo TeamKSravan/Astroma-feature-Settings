@@ -32,7 +32,7 @@ const ProfileInput = ({
   dropdown = false,
   data = [],
   error = '',
-  maxLength = 30,
+  maxLength = 60,
 }: {
   label: string,
   placeholder: string,
@@ -144,21 +144,21 @@ export default function EditUserProfile(props: EditUserProfileProps) {
     } else {
       setErrors(prev => ({ ...prev, place: '' }));
     }
-    validationError = validate('gender', gender);
-    console.log('gender validationError : ', validationError);
-    if (validationError) {
-      setErrors(prev => ({ ...prev, gender: validationError }));
-      return;
-    } else {
-      setErrors(prev => ({ ...prev, gender: '' }));
-    }
+    // validationError = validate('gender', gender);
+    // console.log('gender validationError : ', validationError);
+    // if (validationError) {
+    //   setErrors(prev => ({ ...prev, gender: validationError }));
+    //   return;
+    // } else {
+    //   setErrors(prev => ({ ...prev, gender: '' }));
+    // }
     const updatedData = {
       id: props.userdata?._id?.$oid,
       name: capitalizeFirstLetter(fullName),
-      gender: gender,
       date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
       place_of_birth: placeOfBirth,
       time_of_birth: timeOfBirth,
+      ...(gender ? { gender } : {}),
     };
     editUserDetail(updatedData).then((result) => {
       if (result.success) {
@@ -286,6 +286,18 @@ export default function EditUserProfile(props: EditUserProfileProps) {
     </TouchableOpacity>
   );
 
+
+  const onNameChange = (text: string) => {
+    let capitalizeText = capitalizeFirstLetter(text);
+    if(capitalizeText.length > 50) {
+      setFullName(capitalizeText);
+      setErrors(prev => ({ ...prev, name: i18n.t('profile.nameTooLong') }));
+    } else {
+      setFullName(capitalizeText);
+      setErrors(prev => ({ ...prev, name: '' }));
+    }
+  };
+
   return (
     <Modal
       animationIn="fadeIn"
@@ -299,7 +311,7 @@ export default function EditUserProfile(props: EditUserProfileProps) {
           <Text style={styles.orderTitle}>{i18n.t('editUserProfile.title')}</Text>
         </View>
         <ScrollView bounces={false} >
-          <ProfileInput label={i18n.t('profile.fullName')} placeholder={i18n.t('profile.fullName')} value={fullName} onChangeText={setFullName} error={errors?.name} />
+          <ProfileInput label={i18n.t('profile.fullName')} placeholder={i18n.t('profile.fullName')} value={fullName} onChangeText={onNameChange} error={errors?.name} />
           <ProfileInput label={i18n.t('profile.dateOfBirth')} placeholder={i18n.t('profile.dateOfBirth')} value={dateOfBirth} onChangeText={setDateOfBirth} forDate={true} error={errors?.dateofbirth} />
           <ProfileInput label={i18n.t('profile.timeOfBirth')} placeholder={i18n.t('profile.timeOfBirth')} value={timeOfBirth} onChangeText={setTimeOfBirth} error={errors?.time} />
           <View style={styles.inputWrapper}>
