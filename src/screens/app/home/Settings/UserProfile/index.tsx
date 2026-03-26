@@ -61,6 +61,12 @@ export default function UserProfile({ navigation }: any) {
         }
     };
 
+
+
+    const ListEmpty = () => <EmptyList addUser={() => {
+        navigation.navigate('OnboardingScreen', { onBoardType: 'combatUser', onGoBack: fetchUserDetail, })
+    }} title={i18n.t('userProfile.emptyListTitle')} description={i18n.t('userProfile.emptyListDescription')} addUserText={i18n.t('userProfile.addUserText')} />
+
     return (
         <BaseView backgroundImage={imagepath.walletBg}>
             <View style={styles.headerContainer}>
@@ -72,7 +78,7 @@ export default function UserProfile({ navigation }: any) {
                     </View>
                 </View>
             </View>
-            {data.length > 0 && <FlatList data={data}
+            {!isLoading && <FlatList data={data}
                 bounces={false}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.container}
@@ -86,10 +92,7 @@ export default function UserProfile({ navigation }: any) {
                         setSelectedUserData(item);
                     }}
                 />}
-                ListEmptyComponent={
-                <EmptyList addUser={() => {
-                    navigation.navigate('OnboardingScreen', { onBoardType: 'combatUser', onGoBack: fetchUserDetail, })
-                }} title={i18n.t('userProfile.emptyListTitle')} description={i18n.t('userProfile.emptyListDescription')} addUserText={i18n.t('userProfile.addUserText')} />}
+                ListEmptyComponent={ListEmpty}
             />}
             <DeleteModal closeModal={() => setShowDeleteModal(false)} visible={showDeleteModal} handleVerify={deleteProfile} />
             <EditUserProfile userdata={selectedUserData} closeModal={() => setShowEditModal(false)} visible={showEditModal} reload={fetchUserDetail} />

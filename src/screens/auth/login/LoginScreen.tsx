@@ -24,6 +24,7 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import Loader from '../../../components/Loader';
 import BaseView from '../../../utils/BaseView';
 import { useWalletStore } from '../../../store/useWalletStore';
+import { requestUserPermission } from '../../../services/NotificationServices';
 export default function LoginScreen(props: any) {
   const [phoneNumber, setPhoneNumber] = useState(__DEV__ ? '8980698248' : '');
   const [error, setError] = useState({});
@@ -90,6 +91,7 @@ export default function LoginScreen(props: any) {
   };
 
   useEffect(() => {
+    requestUserPermission();
     createSparkleAnimation(sparkle1, 0);
     createSparkleAnimation(sparkle2, 300);
     createSparkleAnimation(sparkle3, 600);

@@ -1,0 +1,17 @@
+diff --git a/node_modules/react-native-nitro-modules/android/build.gradle b/node_modules/react-native-nitro-modules/android/build.gradle
+index 775c082..db10e76 100644
+--- a/node_modules/react-native-nitro-modules/android/build.gradle
++++ b/node_modules/react-native-nitro-modules/android/build.gradle
+@@ -143,10 +143,8 @@ repositories {
+ 
+ 
+ dependencies {
+-  // For < 0.71, this will be from the local maven repo
+-  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
+-  //noinspection GradleDynamicVersion
+-  implementation "com.facebook.react:react-native:+"
++  // RN 0.71+ publishes Prefab (ReactAndroid) from react-android only; react-native:+ does not supply CMake.
++  implementation "com.facebook.react:react-android"
+ }
+ 
+ if (isNewArchitectureEnabled()) {

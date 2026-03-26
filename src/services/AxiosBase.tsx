@@ -52,13 +52,17 @@ AxiosBase.interceptors.response.use(
     // }
 
     if (error.response?.status === 401 || error.response?.status === 403) {
-      const { logout } = useAuthStore.getState();
-
-      logout();
+      const { logout, token } = useAuthStore.getState();
+      console.log('token', token);
+      if (token) {
+        logout();
+      } else {
+        console.log('error?.response?.data?.detail', error?.response?.data?.detail);
+        ToastMessage(error?.response?.data?.detail || i18n.t('toast.unauthorized'));
+      }
 
       return Promise.reject(new Error('Unauthorized – Please login again'));
     }
-
     return Promise.reject(error);
   },
 );

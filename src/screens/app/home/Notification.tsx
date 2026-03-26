@@ -17,11 +17,14 @@ import { useHomeStore } from '../../../store/useHomeStore';
 import ItemNotification from '../../../components/Home/ItemNotification';
 import i18n from '../../../translation/i18n';
 import ListEmptyComponent from '../../../components/Common/ListEmptyComponent';
+import Loader from '../../../components/Loader';
+import { useAuthStore } from '../../../store/useAuthStore';
 
 function NotificationScreen(props: any) {
     const [data, setData] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const { getNotificationList, markAsRead } = useHomeStore();
+    const { isLoading } = useAuthStore();
 
     useEffect(() => {
         fetchNotificationList();
@@ -69,9 +72,8 @@ function NotificationScreen(props: any) {
                     </TouchableOpacity>}
                 </View>
             </View>
-
             <View style={styles.mainView}>
-                {data.length > 0 && <FlatList
+                {!isLoading && <FlatList
                     data={[]}
                     renderItem={({ item }) => <ItemNotification item={item} onPress={(notificationId: string) => markAsReadNotification(notificationId)} />}
                     keyExtractor={(item) => item._id}
@@ -95,6 +97,7 @@ function NotificationScreen(props: any) {
                     />}
                 />}
             </View>
+            {isLoading && <Loader />}
         </BaseView>
     );
 }

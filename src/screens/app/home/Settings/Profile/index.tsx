@@ -267,14 +267,6 @@ export default function Profile({ navigation }: any) {
     } else {
       setErrors(prev => ({ ...prev, time: '' }));
     }
-    validationError = validate('gender', gender);
-    if (validationError) {
-      // ToastMessage(validationError);
-      setErrors(prev => ({ ...prev, gender: validationError }));
-      return;
-    } else {
-      setErrors(prev => ({ ...prev, gender: '' }));
-    }
 
     editPrimaryUserDetail({
       name: capitalizeFirstLetter(fullName),
@@ -285,7 +277,7 @@ export default function Profile({ navigation }: any) {
       lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
       long: coordinates.lng === '' ? '78.0081' : coordinates.lng,
       time_of_birth: timeOfBirth ? moment(timeOfBirth, 'HH:mm').format('HH:mm') : '',
-      gender: gender,
+      ...(gender ? { gender } : {}),
     }).then((result) => {
       console.log('editPrimaryUserDetail', result);
       if (result.success) {
@@ -469,7 +461,7 @@ export default function Profile({ navigation }: any) {
   const onNameChange = (text: string) => {
     let capitalizeText = capitalizeFirstLetter(text);
     if(capitalizeText.length > 50) {
-      setFullName(capitalizeText);
+      setFullName(capitalizeText.slice(0, 50));
       setErrors(prev => ({ ...prev, name: i18n.t('profile.nameTooLong') }));
     } else {
       setFullName(capitalizeText);

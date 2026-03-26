@@ -116,11 +116,6 @@ export default function HomeScreen(props: any) {
     }
   };
 
-  useEffect(() => {
-
-    fetchDashboardData();
-  }, [getDashboardData, selectedUser?._id?.$oid, secondaryUserdata, currentLanguage]);
-
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchUserDetail();

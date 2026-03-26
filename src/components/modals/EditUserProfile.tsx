@@ -290,7 +290,7 @@ export default function EditUserProfile(props: EditUserProfileProps) {
   const onNameChange = (text: string) => {
     let capitalizeText = capitalizeFirstLetter(text);
     if(capitalizeText.length > 50) {
-      setFullName(capitalizeText);
+      setFullName(capitalizeText.slice(0, 50));
       setErrors(prev => ({ ...prev, name: i18n.t('profile.nameTooLong') }));
     } else {
       setFullName(capitalizeText);

@@ -120,6 +120,9 @@ android {
         checkReleaseBuilds false
         abortOnError false
     }
+    buildFeatures {
+        prefab true
+    }
 }
 
 apply from: 'ensure-codegen-dirs.gradle'

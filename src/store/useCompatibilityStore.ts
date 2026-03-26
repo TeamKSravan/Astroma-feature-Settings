@@ -44,6 +44,9 @@ export const useCompatibilityStore = create<CompatibilityState>()(
         const { setLoading } = useAuthStore.getState();
         setLoading(true);
         try {
+          console.log('data', data);
+          console.log('withReport', withReport);
+          console.log('isCompare', isCompare);
           const response = await AxiosBase.post(`/compatibility/report?pdf_report=${withReport}`, {
             profile_id: data.profile_id,
             type: data.type,
