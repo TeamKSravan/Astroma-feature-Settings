@@ -1,25 +1,22 @@
 import { Image, StyleSheet, View, Animated, ScrollView } from 'react-native';
-import React, { useEffect, useRef } from 'react';
-import { BackArrow, Rashi1 } from '../../../constants/svgpath';
+import React, { useEffect, useRef, useState } from 'react';
 import i18n from '../../../translation/i18n';
-import { moderateScale, scale, verticalScale } from '../../../utils/scale';
-import { colors } from '../../../constants/colors';
-import { fonts, height } from '../../../constants/fonts';
+import { verticalScale } from '../../../utils/scale';
 import CustomTextInput from '../../../components/CustomTextInput';
 import imagepath from '../../../constants/imagepath';
+import { capitalizeFirstLetter } from '../../../utils/methods';
 
 interface EnterNameStepProps {
   value: string;
   onChangeText: (text: string) => void;
-  isActive: boolean;
 }
 
 export default function EnterNameStep({
   value,
   onChangeText,
 
-  isActive,
 }: EnterNameStepProps) {
+  const [errors, setErrors] = useState({});
   // Main image animation - start from smaller and transparent
   const rashiOpacity = useRef(new Animated.Value(0)).current;
   const rashiScale = useRef(new Animated.Value(0.7)).current; // Start smaller for more visible growth
@@ -120,6 +117,17 @@ export default function EnterNameStep({
       opacity,
       transform: [{ scale }],
     };
+  };
+
+  const onNameChange = (text: string) => {
+    let capitalizeText = capitalizeFirstLetter(text);
+    if(capitalizeText.length > 50) {
+      onChangeText(capitalizeText.slice(0, 50));
+      setErrors(prev => ({ ...prev, name: i18n.t('profile.nameTooLong') }));
+    } else {
+      onChangeText(capitalizeText);
+      setErrors(prev => ({ ...prev, name: '' }));
+    }
   };
 
   return (
@@ -320,8 +328,9 @@ export default function EnterNameStep({
       <CustomTextInput
         placeholder={i18n.t('name.name')}
         value={value}
-        onChangeText={(txt) => onChangeText(txt.replace(/[^a-zA-Z\s]/g, '').slice(0, 40))}
+        onChangeText={onNameChange}
         inputStyle={{ marginTop: verticalScale(40) }}
+        error={errors?.name}
       />
     </ScrollView>
   );

@@ -209,7 +209,7 @@ export const useAuthStore = create<AuthState>()(
             otp: data.otp,
           });
           const { token, user } = response;
-
+          console.log('user =>', user);
           set({
             token,
             userDetails: {
@@ -225,8 +225,11 @@ export const useAuthStore = create<AuthState>()(
               long: user?.long,
               gender: user?.gender,
               isOnboarded: user?.is_onboarded,
+              timezone: user?.timezone,
+              isPushNotificationEnabled: user?.is_push_notifications_enabled,
               zodiac_sign: user?.zodiac_sign,
             },
+            setIsNotificationEnabled: user?.is_push_notifications_enabled,
             isAuthenticated: true,
             isLoading: false,
           });

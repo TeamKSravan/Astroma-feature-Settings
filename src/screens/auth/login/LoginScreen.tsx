@@ -91,7 +91,9 @@ export default function LoginScreen(props: any) {
   };
 
   useEffect(() => {
-    requestUserPermission();
+    void requestUserPermission().catch((e) =>
+      console.warn('Notification permission:', e)
+    );
     createSparkleAnimation(sparkle1, 0);
     createSparkleAnimation(sparkle2, 300);
     createSparkleAnimation(sparkle3, 600);

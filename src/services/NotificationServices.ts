@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { useHomeStore } from '../store/useHomeStore';
@@ -36,13 +36,31 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   displayNotification(title, body, remoteMessage.data as Record<string, string>);
 });
 
-export async function requestUserPermission() {
+export async function requestUserPermission(): Promise<boolean> {
+  if (Platform.OS === 'android') {
+    // API 33+: Android shows the notification permission dialog here.
+    // messaging().requestPermission() is a no-op on Android for this.
+    if (Platform.Version >= 33) {
+      const status = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      const granted = status === PermissionsAndroid.RESULTS.GRANTED;
+      if (granted) {
+        console.log('Notification permission granted (Android)');
+      } else {
+        console.log('Notification permission not granted:', status);
+      }
+      return granted;
+    }
+    return true;
+  }
+
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
   if (enabled) {
-    console.log('Notification permission granted');
+    console.log('Notification permission granted (iOS)');
   }
   return enabled;
 }
@@ -76,7 +94,8 @@ export async function initializePushNotifications() {
   PushNotification.configure({
     onRegister: async (token: { token: string }) => {
       console.log('Push token:', token);
-      await useHomeStore.getState().saveFCMToken(token.token);
+      const deviceType = Platform.OS === 'ios' ? 'ios' : 'android';
+      await useHomeStore.getState().saveFCMToken(token.token, deviceType);
     },
     onNotification: (notification: { userInteraction?: boolean; data?: Record<string, unknown> }) => {
       console.log('Notification received/opened:', notification);
