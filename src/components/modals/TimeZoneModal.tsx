@@ -29,7 +29,8 @@ export default function TimeZoneModal(props: TimeZoneModalProps) {
 
   useEffect(() => {
     const zones = moment.tz.names().map(zone => ({
-      label: `(GMT${moment.tz(zone).format('Z')}) ${zone}`,
+      label: zone,
+      // label: `(GMT${moment.tz(zone).format('Z')}) ${zone}`,
       value: zone
     }));
     setTimezones(zones);

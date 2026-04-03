@@ -5,8 +5,9 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Animated,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import imagepath from '../../../constants/imagepath';
 import { AiAstrologerIcon, TwinStars } from '../../../constants/svgpath';
 import i18n from '../../../translation/i18n';
@@ -54,6 +55,70 @@ export default function AiAstrologer(props: any) {
     purchaseProduct(productId);
   };
 
+    // Sparkle twinkle animation refs (one per CSparkle)
+    const sparkle1 = useRef(new Animated.Value(0)).current;
+    const sparkle2 = useRef(new Animated.Value(0)).current;
+    const sparkle3 = useRef(new Animated.Value(0)).current;
+    const sparkle4 = useRef(new Animated.Value(0)).current;
+    const sparkle5 = useRef(new Animated.Value(0)).current;
+    const sparkle6 = useRef(new Animated.Value(0)).current;
+    const sparkle7 = useRef(new Animated.Value(0)).current;
+    const sparkle8 = useRef(new Animated.Value(0)).current;
+    const sparkle9 = useRef(new Animated.Value(0)).current;
+    const sparkle10 = useRef(new Animated.Value(0)).current;
+    const createSparkleAnimation = (animValue: Animated.Value, delay: number) => {
+      Animated.sequence([
+        Animated.delay(delay),
+        Animated.timing(animValue, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(animValue, {
+              toValue: 1.25,
+              duration: 3000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(animValue, {
+              toValue: 0.75,
+              duration: 3000,
+              useNativeDriver: true,
+            }),
+          ]),
+        ).start();
+      });
+    };
+  
+  
+    const createElementStyle = (animValue: Animated.Value) => {
+      const opacity = animValue.interpolate({
+        inputRange: [0, 0.75, 1, 1.25],
+        outputRange: [0, 0.4, 1, 0.5],
+      });
+      const scale = animValue.interpolate({
+        inputRange: [0, 0.75, 1, 1.25],
+        outputRange: [0, 0.7, 1, 1.2],
+      });
+      return { opacity, transform: [{ scale }] };
+    };
+  
+    useEffect(() => {
+      createSparkleAnimation(sparkle1, 0);
+      createSparkleAnimation(sparkle2, 300);
+      createSparkleAnimation(sparkle3, 600);
+      createSparkleAnimation(sparkle4, 900);
+      createSparkleAnimation(sparkle5, 1200);
+      createSparkleAnimation(sparkle6, 1500);
+      createSparkleAnimation(sparkle7, 1800);
+      createSparkleAnimation(sparkle8, 0);
+      createSparkleAnimation(sparkle9, 600);
+      createSparkleAnimation(sparkle10, 800);
+
+    }, []);
+
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
       <CommonHeader
@@ -67,10 +132,40 @@ export default function AiAstrologer(props: any) {
 
           <AiAstrologerIcon />
           </View> */}
-          <Image source={imagepath.grouped} resizeMode='contain' style={styles.img} />
+          {/* <Image source={imagepath.grouped} resizeMode='contain' style={styles.img} /> */}
+          <View style={[styles.img, { width: '100%' }]}>
+            <Animated.View style={[styles.smallImg, { top: 110, left: 55 }, createElementStyle(sparkle1)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { top: 100, left: 65 }, createElementStyle(sparkle2)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Animated.View style={[styles.smallImg, { bottom: 60, left: 100 }, createElementStyle(sparkle3)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
+            </Animated.View>
+            <Animated.View style={[styles.smallImg, { bottom: 15, right: 180 }, createElementStyle(sparkle4)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { bottom: 80, right: 75 }, createElementStyle(sparkle5)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { top: 65, right: 100 }, createElementStyle(sparkle6)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { top: 110, right: 150 }, createElementStyle(sparkle7)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Image source={imagepath.grouped2} resizeMode='contain' style={styles.img} />
+          </View>
           <View style={styles.personalisedView}>
             <Text style={styles.personalisedText}>{i18n.t('ai.chat')}</Text>
-            <TwinStars />
+            <Animated.View style={[styles.regularImg, {left: 0, top: 0}, createElementStyle(sparkle9)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 15, height: 15 }} />
+            </Animated.View>
+            <Animated.View style={[styles.regularImg, {left: -6, top: -5},  createElementStyle(sparkle10)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 15, height: 15 }} />
+            </Animated.View>
+            {/* <TwinStars /> */}
           </View>
           <Text style={styles.getText}>{i18n.t('ai.get')}</Text>
           <View style={styles.optionsContainer}>
@@ -164,5 +259,19 @@ const styles = StyleSheet.create({
   },
   scroll: {
     paddingBottom: 70,
+  },
+  smallImg: {
+    position: 'absolute',
+    width: 8,
+    height: 8
+  },
+  regularImg: {
+    width: 10,
+    height: 10
+  },
+  mediumImg: {
+    position: 'absolute',
+    width: 12,
+    height: 12
   },
 });

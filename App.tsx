@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import RootNavigator from './src/navigation/RootNavigator';
 import {
   initializePushNotifications,
@@ -26,6 +27,10 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  return <RootNavigator />;
+  return (
+    <KeyboardProvider>
+      <RootNavigator />
+    </KeyboardProvider>
+  );
 }
 

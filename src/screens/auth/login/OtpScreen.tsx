@@ -1,4 +1,4 @@
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
@@ -15,8 +15,8 @@ import Loader from '../../../components/Loader';
 import { useProfileStore } from '../../../store/useProfileStore';
 import BackButton from '../../../components/BackButton';
 import LanguageModal from '../../../components/modals/LanguageModal';
-import { getFCMToken } from '../../../services/NotificationServices';
-const TIMER_DURATION = 300; // 5 minutes in seconds
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+const TIMER_DURATION = 120; // 2 minutes in seconds
 
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
@@ -26,10 +26,11 @@ const formatTime = (seconds: number): string => {
 
 export default function OtpScreen(props: any) {
   const { country_code: country_codeParam, phone: phoneParam, isOnboarded: isOnboardedParam } = props.route?.params || {};
-  const [otp, setOtp] = useState('123456');
+  const [otp, setOtp] = useState('');
   const [showLanguageModal, setShowLanguageModal] = useState(isOnboardedParam ? false : true);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const [timer, setTimer] = useState<number>(TIMER_DURATION);
+  /** Elapsed seconds in the current resend cooldown (0 → TIMER_DURATION). */
+  const [elapsed, setElapsed] = useState(0);
   const { login, isLoading, userDetails, sendOTP, setIsGetBonus, currentLanguage } = useAuthStore();
   const { setSecondaryUserdata } = useProfileStore();
   const { validate } = useValidation();
@@ -90,6 +91,17 @@ export default function OtpScreen(props: any) {
     createSparkleAnimation(sparkle6, 1500);
     createSparkleAnimation(sparkle7, 1800);
   }, []);
+
+  const cooldownActive = elapsed < TIMER_DURATION;
+  useEffect(() => {
+    if (!cooldownActive) {
+      return;
+    }
+    const id = setInterval(() => {
+      setElapsed(prev => (prev >= TIMER_DURATION ? prev : prev + 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [cooldownActive]);
 
   const phone = phoneParam || '';
   const country_code = country_codeParam || '';
@@ -152,6 +164,7 @@ export default function OtpScreen(props: any) {
       if (result.success) {
         ToastMessage(i18n.t('toast.otpSentSuccess'));
         setOtp('');
+        setElapsed(0);
       } else {
         ToastMessage(
           result.message || i18n.t('toast.failedToResendOtp'),
@@ -170,73 +183,93 @@ export default function OtpScreen(props: any) {
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
       <BackButton style={styles.backButton} />
-      {/* <Image source={imagepath.grouped2} style={styles.img} /> */}
-      <View style={[styles.img, { width: '100%' }]}>
-        <Animated.View style={[styles.smallImg, { top: 110, left: 55 }, createElementStyle(sparkle1)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
-        </Animated.View>
-        <Animated.View style={[styles.mediumImg, { top: 100, left: 65 }, createElementStyle(sparkle2)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
-        </Animated.View>
-        <Animated.View style={[styles.smallImg, { bottom: 60, left: 100 }, createElementStyle(sparkle3)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
-        </Animated.View>
-        <Animated.View style={[styles.smallImg, { bottom: 15, right: 180 }, createElementStyle(sparkle4)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
-        </Animated.View>
-        <Animated.View style={[styles.mediumImg, { bottom: 80, right: 75 }, createElementStyle(sparkle5)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
-        </Animated.View>
-        <Animated.View style={[styles.mediumImg, { top: 65, right: 100 }, createElementStyle(sparkle6)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
-        </Animated.View>
-        <Animated.View style={[styles.mediumImg, { top: 110, right: 150 }, createElementStyle(sparkle7)]}>
-          <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
-        </Animated.View>
-        <Image source={imagepath.grouped2} resizeMode='contain' style={styles.img} />
-      </View>
-      <View style={styles.mainView}>
-        <Text style={styles.loginText}>{i18n.t('login.auth')}</Text>
-        <Text style={styles.emailText}>
-          {i18n.t('login.code')}
-          {phone ? ` sent to ${phone}` : ''}
-        </Text>
-        <OTPInputView
-          style={styles.otpInput}
-          pinCount={6}
-          codeInputFieldStyle={styles.underlineStyleBase}
-          selectionColor={colors.white}
-          onCodeChanged={code => setOtp(code)}
-          code={otp}
-          keyboardType="number-pad"
-          autoFocusOnLoad={false}
-        />
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={styles.timeLabel}>{formatTime(timer)}</Text>
-          <View style={styles.resendView}>
-            <Text style={styles.didntText}>{i18n.t('login.didnt')}</Text>
-            <TouchableOpacity style={styles.touchView} onPress={handleResendOtp}>
-              <Text style={styles.resendText}>{i18n.t('login.resend')}</Text>
-            </TouchableOpacity>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+        automaticOffset
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          bounces={false}
+        >
+          <View style={[styles.img, { width: '100%' }]}>
+            <Animated.View style={[styles.smallImg, { top: 110, left: 55 }, createElementStyle(sparkle1)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { top: 100, left: 65 }, createElementStyle(sparkle2)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Animated.View style={[styles.smallImg, { bottom: 60, left: 100 }, createElementStyle(sparkle3)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
+            </Animated.View>
+            <Animated.View style={[styles.smallImg, { bottom: 15, right: 180 }, createElementStyle(sparkle4)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { bottom: 80, right: 75 }, createElementStyle(sparkle5)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { top: 65, right: 100 }, createElementStyle(sparkle6)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Animated.View style={[styles.mediumImg, { top: 110, right: 150 }, createElementStyle(sparkle7)]}>
+              <Image source={imagepath.CSparkle} style={{ width: 12, height: 12 }} />
+            </Animated.View>
+            <Image source={imagepath.grouped2} resizeMode="contain" style={styles.img} />
           </View>
-        </View>
-      </View>
-      <CustomButton
-        title={i18n.t('login.loginn')}
-        style={styles.buttonStyle}
-        onPress={handleVerifyOtp}
-        disabled={otp.length == 0}
-      />
-      <LanguageModal 
+          <View style={styles.mainView}>
+            <Text style={styles.loginText}>{i18n.t('login.auth')}</Text>
+            <Text style={styles.emailText}>
+              {i18n.t('login.code')}
+              {phone ? ` sent to ${phone}` : ''}
+            </Text>
+            <OTPInputView
+              style={styles.otpInput}
+              pinCount={6}
+              codeInputFieldStyle={styles.underlineStyleBase}
+              selectionColor={colors.white}
+              onCodeChanged={code => setOtp(code)}
+              code={otp}
+              keyboardType="number-pad"
+              autoFocusOnLoad={false}
+            />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.timeLabel}>{formatTime(elapsed)}</Text>
+              <View style={styles.resendView}>
+                <Text style={styles.didntText}>{i18n.t('login.didnt')}</Text>
+                <TouchableOpacity disabled={cooldownActive} style={styles.touchView} onPress={handleResendOtp}>
+                  <Text style={styles.resendText}>{i18n.t('login.resend')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+        <CustomButton
+          title={i18n.t('login.loginn')}
+          style={styles.buttonStyle}
+          onPress={handleVerifyOtp}
+          disabled={otp.length == 0}
+        />
+      </KeyboardAvoidingView>
+      <LanguageModal
         visible={showLanguageModal}
         value={currentLanguage}
-        closeModal={() => setShowLanguageModal(false)} /> 
+        closeModal={() => setShowLanguageModal(false)} />
       {isLoading && <Loader />}
     </BaseView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: verticalScale(12),
+  },
   img: {
     alignSelf: 'center',
     marginTop: verticalScale(20),
@@ -246,7 +279,6 @@ const styles = StyleSheet.create({
     marginLeft: scale(10),
   },
   mainView: {
-    flex: 1,
     paddingHorizontal: scale(16),
     marginTop: verticalScale(20),
   },

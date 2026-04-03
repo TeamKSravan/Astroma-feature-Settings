@@ -1,1 +1,2 @@
 export const AstrologyApiKey = 'NjQ3MTQ0OjJjZGNjNzcwYWY3NzgxOTZlNDg5OTZlMThjYjcwOWE1YTRiN2NmMjE'
+export const GoogleApiKey = 'AIzaSyAPFvs4Tt0Y1n0E8hR8Q3GRrLyp3RQ2brQ';

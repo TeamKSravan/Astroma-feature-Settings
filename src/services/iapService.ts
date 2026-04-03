@@ -220,7 +220,7 @@ const handlePurchaseUpdate = async (purchase, onSuccess) => {
 
 const handlePurchaseUpdateNew = async (purchase, onSuccess) => {
   try {
-    // console.log('Processing purchase update:', purchase);
+    console.log('Processing purchase update:', purchase);
 
     if (purchase.transactionReceipt) {
       const isValid = await verifyPurchaseWithBackend(purchase);

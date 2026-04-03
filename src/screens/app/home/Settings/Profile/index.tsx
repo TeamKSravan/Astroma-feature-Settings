@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { use, useCallback, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -150,11 +150,13 @@ export default function Profile({ navigation }: any) {
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [placeOfBirth, setPlaceOfBirth] = useState('');
   const [timeOfBirth, setTimeOfBirth] = useState('');
+  const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [predictions, setPredictions] = useState([]);
+  const [otp, setOtp] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
 
@@ -162,8 +164,8 @@ export default function Profile({ navigation }: any) {
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSelectingRef = useRef<boolean>(false);
   const { validate } = useValidation();
-  const { sendOTP, isLoading, userDetails, deleteAccount, logout } = useAuthStore();
-  const { getUserDetail, getPrimaryUserDetail, editPrimaryUserDetail } = useProfileStore();
+  const { toVerifyPhoneNumber, sendOTP, isLoading, userDetails, deleteAccount, logout, verifyOTP } = useAuthStore();
+  const { getUserDetail, getPrimaryUserDetail, editPrimaryUserDetail, isPhoneNumberExists } = useProfileStore();
 
   const getCountryCodeFromCallingCode = async callingCode => {
     const countries = await getAllCountries();
@@ -183,6 +185,7 @@ export default function Profile({ navigation }: any) {
       setSelectedCountry(country),
     );
     setPhoneNo(userDetails?.phone || '');
+    setIsPhoneVerified(true)
     // CustomDateInput expects digits in DDMMYYYY format (it will display as DD/MM/YYYY)
     setDateOfBirth(userDetails?.dateOfBirth ? moment(userDetails.dateOfBirth).format('DDMMYYYY') : '');
     setPlaceOfBirth(userDetails?.place || '');
@@ -201,6 +204,61 @@ export default function Profile({ navigation }: any) {
     console.log('userDetails : ', userDetails);
     const result = await getPrimaryUserDetail();
     console.log('User data : ', result);
+  };
+
+  const checkIfPhoneNumberExists = async () => {
+    let validationError = validate('phone', phoneNo, {
+      countryCode: selectedCountry?.cca2 || '',
+      minLength: 7,
+      maxLength: 15,
+    });
+    if (validationError) {
+      // ToastMessage(validationError);
+      setErrors(prev => ({ ...prev, phone: validationError }));
+      return null;
+    } else {
+      setErrors(prev => ({ ...prev, phone: '' }));
+      const result = await isPhoneNumberExists({
+        phone: phoneNo,
+        country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
+      });
+      console.log('checkIfPhoneNumberExists', result);
+      if (result.success) {
+        setIsPhoneVerified(false);
+        return result?.is_phone_number_exists ?? null;
+      }
+      return null;
+    }
+  };690633169
+
+  const handleResendOtp = async () => {
+    const isPhoneNumberExists = await checkIfPhoneNumberExists();
+    if (isPhoneNumberExists === true) {
+      ToastMessage(i18n.t('toast.phoneNumberAlreadyExists'));
+      return;
+    } else if (isPhoneNumberExists === false) {
+      try {
+        const result = await toVerifyPhoneNumber({
+          country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
+          phone: phoneNo || '',
+        });
+        if (result.success) {
+          ToastMessage(i18n.t('toast.otpSentSuccess'));
+          setShowVerifyModal(true)
+        } else {
+          ToastMessage(
+            result.message || i18n.t('toast.failedToResendOtp'),
+          );
+        }
+      } catch (error: any) {
+        console.error('Resend OTP Error:', error);
+
+        const errorMessage =
+          error?.message || i18n.t('toast.failedToResendOtp');
+
+        ToastMessage(errorMessage);
+      }
+    }
   };
 
   const deleteUserAccount = () => {
@@ -243,6 +301,12 @@ export default function Profile({ navigation }: any) {
     } else {
       setErrors(prev => ({ ...prev, phone: '' }));
     }
+    if(!isPhoneVerified && userDetails?.phone !== phoneNo){
+      setErrors(prev => ({ ...prev, phone: i18n.t('toast.phoneNumberNotVerified') }));
+      return;
+    } else {
+      setErrors(prev => ({ ...prev, phone: '' }));
+    }
     validationError = validate('dateofbirth', dateOfBirth);
     if (validationError) {
       // ToastMessage(validationError);
@@ -267,11 +331,24 @@ export default function Profile({ navigation }: any) {
     } else {
       setErrors(prev => ({ ...prev, time: '' }));
     }
+   
+
+    // console.log('api data  : ', {
+    //   name: capitalizeFirstLetter(fullName),
+    //   phone: phoneNo,
+    //   country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
+    //   date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+    //   place_of_birth: placeOfBirth,
+    //   lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
+    //   long: coordinates.lng === '' ? '78.0081' : coordinates.lng,
+    //   time_of_birth: timeOfBirth ? moment(timeOfBirth, 'HH:mm').format('HH:mm') : '',
+    //   ...(gender ? { gender } : {}),
+    // });
 
     editPrimaryUserDetail({
       name: capitalizeFirstLetter(fullName),
       phone: phoneNo,
-      country_code: selectedCountry?.callingCode?.[0] || userDetails?.country_code || '',
+      country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
       date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
       place_of_birth: placeOfBirth,
       lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
@@ -282,19 +359,11 @@ export default function Profile({ navigation }: any) {
       console.log('editPrimaryUserDetail', result);
       if (result.success) {
         ToastMessage(result.message);
-        // setFullName(result?.data?.name || '');
-        // setPhoneNo(result?.data?.phone || '');
-        // setDateOfBirth(result?.data?.dateOfBirth || '');
-        // setPlaceOfBirth(result?.data?.place || '');
-        // setTimeOfBirth(result?.data?.timeOfBirth || '');
-        // setGender(result?.data?.gender || '');
         setIsEditable(false);
         navigation.goBack();
         setErrors({});
         fetchUserDetail();
-      } else {
-        ToastMessage(result.message || i18n.t('profile.updateFailed'));
-      }
+      } 
     });
   }
   const handleCountrySelect = (country: Country) => {
@@ -457,10 +526,9 @@ export default function Profile({ navigation }: any) {
     </TouchableOpacity>
   );
 
-
   const onNameChange = (text: string) => {
     let capitalizeText = capitalizeFirstLetter(text);
-    if(capitalizeText.length > 50) {
+    if (capitalizeText.length > 50) {
       setFullName(capitalizeText.slice(0, 50));
       setErrors(prev => ({ ...prev, name: i18n.t('profile.nameTooLong') }));
     } else {
@@ -469,6 +537,26 @@ export default function Profile({ navigation }: any) {
     }
   };
 
+  // useEffect(() => {
+  //   console.log('isPhoneVerified : ', isPhoneVerified);
+  //   console.log('userDetails?.phone : ', userDetails?.phone);
+  //   console.log('phoneNo : ', phoneNo);
+  //   console.log('userDetails?.phone !== phoneNo : ', userDetails?.phone !== phoneNo);
+  // }, [userDetails?.phone, phoneNo]);
+
+
+  const onPhoneChange = (text: string) => {
+    let phoneNumber = text.trim();
+    setPhoneNo(phoneNumber);
+    console.log('phoneNumber : ', text);
+    if(userDetails?.phone !== phoneNumber){
+      setIsPhoneVerified(false);
+      console.log('setIsPhoneVerified(false)');
+    } else {
+      setIsPhoneVerified(true);
+      console.log('setIsPhoneVerified(true)');
+    }
+  };
 
   return (
     <BaseView backgroundImage={imagepath.reportBg}>
@@ -500,14 +588,14 @@ export default function Profile({ navigation }: any) {
               forPhone={true}
               placeholder={i18n.t('profile.phoneNo')}
               value={phoneNo}
-              onChangeText={setPhoneNo}
+              onChangeText={onPhoneChange}
               phoneNo={phoneNo}
-              setPhoneNo={setPhoneNo}
+              setPhoneNo={onPhoneChange}
               handleCountrySelect={handleCountrySelect}
               selectedCountry={selectedCountry}
               editable={isEditable}
               rightComponent={
-                <TouchableOpacity activeOpacity={0.8} onPress={() => setShowVerifyModal(true)}>
+                userDetails?.phone !== phoneNo && <TouchableOpacity activeOpacity={0.8} onPress={handleResendOtp}>
                   <Text style={styles.verifyText}>{i18n.t('profile.verify')}</Text>
                 </TouchableOpacity>
               }
@@ -561,7 +649,12 @@ export default function Profile({ navigation }: any) {
               <Text style={styles.deleteAccountButtonText}>{i18n.t('profile.deleteAc')}</Text>
             </TouchableOpacity>}
             <DeleteUserModal closeModal={() => setShowDeleteModal(false)} visible={showDeleteModal} handleVerify={deleteUserAccount} />
-            <OTPVerification closeModal={() => setShowVerifyModal(false)} visible={showVerifyModal} />
+            <OTPVerification
+              country_code={`+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || ''}
+              visible={showVerifyModal}
+              phone={phoneNo}
+              closeModal={() => setShowVerifyModal(false)}
+            />
           </View>
           {isEditable && <CustomButton
             title={i18n.t('profile.saveChanges')}

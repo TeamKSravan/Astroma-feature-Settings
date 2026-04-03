@@ -33,6 +33,7 @@
     "react-native-country-picker-modal": "^2.0.0",
     "react-native-date-picker": "^5.0.13",
     "react-native-fs": "^2.20.0",
+    "react-native-geolocation-service": "^5.3.1",
     "react-native-iap": "^13.0.4",
     "react-native-keyboard-controller": "^1.19.0",
     "react-native-linear-gradient": "^2.8.3",

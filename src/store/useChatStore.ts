@@ -300,6 +300,7 @@ export const useChatStore = create<ChatState>()(
       getRemainingReports: async (userId: string) => {
         const { setLoading, currentLanguage } = useAuthStore.getState();
         setLoading(true);
+        console.log('userId in getRemainingReports : ', userId);
         try {
           const response = await AxiosBase.get(`/report/remaining${userId ? `?profile_id=${userId}` : ''}`);
           setLoading(false);

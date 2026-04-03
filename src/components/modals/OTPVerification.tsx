@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { Pressable, StyleSheet, Text, View, TextInput } from 'react-native';
 import Modal from 'react-native-modal';
 import { colors } from '../../constants/colors';
 import { fonts } from '../../constants/fonts';
 import { scale, verticalScale } from '../../utils/scale';
 import CustomButton from '../CustomButton';
 import i18n from '../../translation/i18n';
-import { Send, TaskDone } from '../../constants/svgpath';
+import { TaskDone } from '../../constants/svgpath';
+import { ToastMessage } from '../ToastMessage';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const OTP_LENGTH = 6;
-const TIMER_DURATION = 300; // 5 minutes in seconds
+const TIMER_DURATION = 120; // 2 minutes in seconds
 const getInitialOtp = () => Array(OTP_LENGTH).fill('');
 
 const formatTime = (seconds: number): string => {
@@ -20,16 +22,20 @@ const formatTime = (seconds: number): string => {
 
 type OTPVerificationProps = {
   closeModal: () => void;
+  country_code?: string;
+  phone?: string;
   visible: boolean;
-  verifyOtp?: () => void;
 };
 
 export default function OTPVerification(props: OTPVerificationProps) {
-  const { closeModal, visible, verifyOtp } = props;
+  const { closeModal, visible, phone, country_code } = props;
+  const { sendOTP, verifyOTP } = useAuthStore();
   const [otp, setOtp] = useState<string[]>(getInitialOtp());
   const [timer, setTimer] = useState<number>(TIMER_DURATION);
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef(timer);
+  timerRef.current = timer;
 
   const resetOtp = useCallback(() => {
     setOtp(getInitialOtp());
@@ -85,29 +91,76 @@ export default function OTPVerification(props: OTPVerificationProps) {
     }
   }, [otp]);
 
-  const handleVerify = useCallback(() => {
-    const otpString = otp.join('');
-    if (otpString.length === OTP_LENGTH) {
-      closeModal();
-      setTimeout(() => {
-        verifyOtp?.();
-      }, 500);
-    }
-  }, [otp, closeModal, verifyOtp]);
-
   const resetTimer = useCallback(() => {
     setTimer(TIMER_DURATION);
   }, []);
 
-  const handleResendOtp = useCallback(() => {
-    console.log('Resend OTP');
-    resetOtp();
-    resetTimer();
-  }, [resetOtp, resetTimer]);
+  const resendOtp = useCallback(async () => {
+    if (timerRef.current > 0) {
+      return;
+    }
+    if (!phone) {
+      ToastMessage(i18n.t('toast.phoneNumberNotFound'));
+      return;
+    }
+    try {
+      const result = await sendOTP({
+        country_code: country_code || '',
+        phone: phone,
+      });
+
+      if (result.success) {
+        ToastMessage(i18n.t('toast.otpSentSuccess'));
+        setOtp(getInitialOtp());
+        inputRefs.current[0]?.focus();
+        resetTimer();
+      } else {
+        ToastMessage(
+          result.message || i18n.t('toast.failedToResendOtp'),
+        );
+      }
+    } catch (error: any) {
+      console.error('Resend OTP Error:', error);
+
+      const errorMessage =
+        error?.message || i18n.t('toast.failedToResendOtp');
+
+      ToastMessage(errorMessage);
+    }
+  }, [phone, country_code, sendOTP, resetTimer]);
+
+
+  const verifyOtpAction = useCallback(async () => {
+    try {
+      const data = {
+        phone: phone || '',
+        country_code: country_code || '',
+        otp: otp.join(''),
+      };
+
+      console.log('verifyOTP', data);
+
+      const result = await verifyOTP(data);
+
+      if (result.success) {
+        ToastMessage(i18n.t('toast.otpVerifiedSuccess'));
+        closeModal();
+      } else {
+        ToastMessage(result.message || i18n.t('toast.invalidOtp'));
+        closeModal();
+      }
+    } catch (error: any) {
+      console.log('verifyOTP Error:', error);
+      const errorMessage = error?.message || i18n.t('toast.invalidOtp');
+      ToastMessage(errorMessage);
+    }
+  }, [phone, country_code, otp, closeModal]);
 
   const isOtpComplete = useMemo(() => {
     return otp.every(digit => digit !== '') && otp.join('').length === OTP_LENGTH;
   }, [otp]);
+
+  const canResend = timer === 0;
 
   // Reset OTP and timer when modal opens
   useEffect(() => {
@@ -194,15 +247,23 @@ export default function OTPVerification(props: OTPVerificationProps) {
           </View>
           <Text style={styles.timeLabel}>{formatTime(timer)}</Text>
         </View>
-        <Text style={styles.orderLabel}>
-          {i18n.t('otpVerification.didntReceive')}{' '}
-          <Text onPress={handleResendOtp} style={styles.orderLabel2}>
-            {i18n.t('otpVerification.resendCode')}
+        <View style={styles.resendRow}>
+          <Text style={[styles.orderLabel, styles.resendPrefix]}>
+            {i18n.t('otpVerification.didntReceive')}{' '}
           </Text>
-        </Text>
+          <Pressable
+            onPress={resendOtp}
+            disabled={!canResend}
+            hitSlop={8}
+          >
+            <Text style={[styles.orderLabel2, !canResend && styles.orderLabel2Disabled]}>
+              {i18n.t('otpVerification.resendCode')}
+            </Text>
+          </Pressable>
+        </View>
         <CustomButton
           title={i18n.t('otpVerification.verifyOtp')}
-          onPress={handleVerify}
+          onPress={verifyOtpAction}
           style={styles.buttonStyle}
           disabled={!isOtpComplete}
           icon={isOtpComplete ? <TaskDone /> : null}
@@ -239,11 +300,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: verticalScale(5),
   },
+  resendRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: verticalScale(5),
+  },
+  resendPrefix: {
+    marginTop: 0,
+  },
   orderLabel2: {
     fontSize: scale(12),
     color: colors.primary,
     fontFamily: fonts.regular,
     textAlign: 'center',
+  },
+  orderLabel2Disabled: {
+    color: colors.gray,
+    opacity: 0.6,
   },
   buttonStyle: {
     marginTop: verticalScale(50),

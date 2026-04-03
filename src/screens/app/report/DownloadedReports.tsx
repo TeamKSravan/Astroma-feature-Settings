@@ -10,7 +10,7 @@ import {
   PermissionsAndroid,
   Alert,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Love, ReportDownload, ReportQuestion, ViewReport } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
@@ -46,23 +46,23 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
   const { selectedUser } = useProfileStore();
   console.log('selectedUser', selectedUser);
   
-  useEffect(() => {
-    // Call getUserReports when tabIndex is 1 (downloadedReport tab is active)
-    if (tabIndex === 1) {
-      getUserReports(selectedUser?._id?.$oid ?? '').then(response => {
-        if (response.success) {
-          console.log('Reports Response:', response.data);
-          setUserReports(response.data as any);
-          setEmptyMessage('');
-        } else {
-          console.log('Error:', response.message);
-          setEmptyMessage(i18n.t('report.noDownloadedReports'));
-          setUserReports([]);
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabIndex]);
+  useFocusEffect(
+    useCallback(() => { 
+      if (tabIndex === 1) {
+        getUserReports(selectedUser?._id?.$oid ?? '').then(response => {
+          if (response.success) {
+            console.log('Reports Response:', response.data);
+            setUserReports(response.data as any);
+            setEmptyMessage('');
+          } else {
+            console.log('Error:', response.message);
+            setEmptyMessage(i18n.t('report.noDownloadedReports'));
+            setUserReports([]);
+          }
+        });
+      }
+    }, [selectedUser?._id?.$oid, tabIndex])
+  );
 
   const handleViewReport = (item: any) => {
     getViewReport(item?._id?.$oid)
@@ -75,19 +75,19 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       })
   };
 
-  const handleGenerateReport = (item: any) => {
-    console.log('Item:', item);
-    console.log('Item ID:', item?._id?.$oid);
-    console.log('Selected User ID:', selectedUser?._id?.$oid);
-    getGenerateReport(item?._id?.$oid, false, selectedUser?._id?.$oid ?? '')
-      .then(response => {
-        console.log('Response:', response);
-        if (response.success) {
-          console.log('Response data: => ', response.data);
-          navigation.navigate('ChatScreen', { chatType: 'report', reportId: item?._id?.$oid, report: response });
-        }
-      })
-  };
+  // const handleGenerateReport = (item: any) => {
+  //   console.log('Item:', item);
+  //   console.log('Item ID:', item?._id?.$oid);
+  //   console.log('Selected User ID:', selectedUser?._id?.$oid);
+  //   getGenerateReport(item?._id?.$oid, false, selectedUser?._id?.$oid ?? '')
+  //     .then(response => {
+  //       console.log('Response:', response);
+  //       if (response.success) {
+  //         console.log('Response data: => ', response.data);
+  //         navigation.navigate('ChatScreen', { chatType: 'report', reportId: item?._id?.$oid, report: response });
+  //       }
+  //     })
+  // };
 
   const handleDownloadReport = (item: any) => {
     console.log('Item:', item);

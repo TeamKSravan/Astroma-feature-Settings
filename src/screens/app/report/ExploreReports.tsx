@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ReportLock } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
@@ -25,6 +25,7 @@ import EmptyCredits from '../../../components/EmptyCredits';
 import CoinSummaryModal from '../../../components/modals/CoinSummary';
 import CategorySign, { Type } from '../../../components/CategorySign';
 import DownloadSuccess from '../../../components/modals/DownloadSuccess';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function ExploreReports() {
@@ -40,10 +41,12 @@ export default function ExploreReports() {
   const [showOrderSummaryModal, setShowOrderSummaryModal] = useState(false);
   const [showDownloadSuccessModal, setShowDownloadSuccessModal] = useState(false);
 
-  useEffect(() => {
-    fetchReports();
-  }, []);
 
+  useFocusEffect(
+    useCallback(() => { 
+      fetchReports();
+    }, [selectedUser?._id?.$oid])
+  );
 
   const fetchReports = () => {
     getRemainingReports(selectedUser?._id?.$oid ?? '').then(response => {

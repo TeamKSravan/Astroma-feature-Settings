@@ -74,7 +74,7 @@ function NotificationScreen(props: any) {
             </View>
             <View style={styles.mainView}>
                 {!isLoading && <FlatList
-                    data={[]}
+                    data={data}
                     renderItem={({ item }) => <ItemNotification item={item} onPress={(notificationId: string) => markAsReadNotification(notificationId)} />}
                     keyExtractor={(item) => item._id}
                     showsVerticalScrollIndicator={false}

@@ -9,6 +9,7 @@ import {
   FlatList,
   TextInput,
   Keyboard,
+  PermissionsAndroid,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import CustomTextInput from '../../../components/CustomTextInput';
@@ -16,10 +17,11 @@ import i18n from '../../../translation/i18n';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import imagepath from '../../../constants/imagepath';
 import { colors } from '../../../constants/colors';
-import { AstrologyApiKey } from '../../../constants/Keys';
+import { AstrologyApiKey, GoogleApiKey } from '../../../constants/Keys';
 import RadioSection from '../../../components/RadioSection';
 import moment from 'moment-timezone';
 import TimeZoneModal from '../../../components/modals/TimeZoneModal';
+import Geolocation from 'react-native-geolocation-service';
 import { fonts } from '../../../constants/fonts';
 
 interface EnterPlaceStepProps {
@@ -67,6 +69,66 @@ export default function EnterPlaceStep({
   const inputRef = useRef<TextInput>(null);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
+
+  const getLocation = (): Promise<{ lat: string; lng: string }> => {
+    return new Promise((resolve, reject) => {
+      Geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          console.log('Lat:', latitude, 'Lng:', longitude);
+          resolve({ lat: latitude.toString(), lng: longitude.toString() });
+        },
+        error => {
+          console.log(error);
+          reject(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 10000,
+        }
+      );
+    });
+  };
+
+  const requestLocationPermission = (): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(result => {
+        resolve(result === PermissionsAndroid.RESULTS.GRANTED);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  };
+
+  useEffect(() => {
+    requestLocationPermission().then(permissionGranted => {
+      if (permissionGranted) {
+        getLocation().then(location => {
+          if (location) {
+            getMyTimezone(location.lat, location.lng);
+          }
+        });
+      } else {
+        console.log('permission denied');
+      }
+    }).catch(error => {
+      console.log('error => ', error);
+    });
+  }, []);
+
+  const getMyTimezone = async (lat: string, lng: string) => {
+    let apiurl = `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=1711795200&key=${GoogleApiKey}`;
+    fetch(apiurl)
+      .then(response => response.json())
+      .then(json => {
+        console.log('getMyTimezone => json', json);
+        setTimezone({ label: json.timeZoneId, value: json.timeZoneId });
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }
   /** Sanitize latitude input: allow digits, one minus, one dot, and optionally at end space + N or S (user types letter manually). Returns full string for display; use latToNumeric() for API. */
   const sanitizeLatInput = (text: string): string => {
     const trimmed = text.trim();
@@ -269,6 +331,7 @@ export default function EnterPlaceStep({
       if (response.ok) {
         const json = await response.json();
         console.log('json', json);
+        getMyTimezone(json[0].lat, json[0].lon);
         setPredictions(json);
       } else {
         setPredictions([]);

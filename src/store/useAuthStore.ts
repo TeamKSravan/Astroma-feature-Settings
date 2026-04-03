@@ -48,6 +48,12 @@ interface LoginData {
   otp: string;
 }
 
+interface VerifyOTPData {
+  phone: string;
+  country_code: string;
+  otp: string;
+}
+
 interface AuthState {
   token: string | null;
   isGetBonus: boolean;
@@ -77,6 +83,8 @@ interface AuthState {
   ) => Promise<{ success: boolean; message?: string; isOnboarded?: boolean }>;
   getLoginUserDetails: () => Promise<{ success: boolean; message?: string }>;
   resendOTP: (phone: string) => Promise<{ success: boolean; message?: string }>;
+  toVerifyPhoneNumber: (data: sendOTPData) => Promise<{ success: boolean; message?: string }>;
+  verifyOTP: (data: VerifyOTPData) => Promise<{ success: boolean; message?: string }>;
   deleteAccount: () => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
 }
@@ -199,6 +207,28 @@ export const useAuthStore = create<AuthState>()(
           };
         }
       },
+      toVerifyPhoneNumber: async (data: sendOTPData) => {
+        console.log('send otp : ', data);
+
+        set({ isLoading: true, error: null });
+        try {
+          const response = await AxiosBase.post('/auth/request-otp/phone', {
+            country_code: data.country_code.trim(),
+            phone: data.phone.trim(),
+          });
+          console.log('Response from sendOTP', response);
+          set({ isLoading: false });
+          return { success: true };
+        } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.detail || 'Failed to send OTP';
+          set({ isLoading: false, error: errorMessage });
+          return {
+            success: false,
+            message: errorMessage,
+          };
+        }
+      },
 
       login: async (data: LoginData) => {
         set({ isLoading: true, error: null });
@@ -229,7 +259,7 @@ export const useAuthStore = create<AuthState>()(
               isPushNotificationEnabled: user?.is_push_notifications_enabled,
               zodiac_sign: user?.zodiac_sign,
             },
-            setIsNotificationEnabled: user?.is_push_notifications_enabled,
+            isNotificationEnabled: user?.is_push_notifications_enabled ?? false,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -284,6 +314,23 @@ export const useAuthStore = create<AuthState>()(
           };
         }
       },
+      verifyOTP: async (data: VerifyOTPData) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await AxiosBase.post('/auth/verify-otp', {
+            phone: data.phone.trim(),
+            country_code: data.country_code.trim(),
+            otp: data.otp,
+          });
+          console.log('Response from verifyOTP', response);
+          set({ isLoading: false });
+          return { success: true };
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.detail || 'Failed to verify OTP';
+          set({ isLoading: false, error: errorMessage });
+          return { success: false, message: errorMessage };
+        }
+      },
       deleteAccount: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -318,6 +365,41 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: state => ({
+        token: state.token,
+        isGetBonus: state.isGetBonus,
+        userDetails: state.userDetails,
+        isAuthenticated: state.isAuthenticated,
+        isNotificationEnabled: state.isNotificationEnabled,
+        currentLanguage: state.currentLanguage,
+        hasSeenWelcome: state.hasSeenWelcome,
+      }),
+      merge: (persisted, current) => {
+        const p = persisted as Record<string, unknown> | undefined;
+        if (!p || typeof p !== 'object') {
+          return current;
+        }
+        return {
+          ...current,
+          ...(p.token !== undefined ? { token: p.token as string | null } : {}),
+          ...(typeof p.isGetBonus === 'boolean' ? { isGetBonus: p.isGetBonus } : {}),
+          ...(p.userDetails !== undefined
+            ? { userDetails: p.userDetails as UserDetails | null }
+            : {}),
+          ...(typeof p.isAuthenticated === 'boolean'
+            ? { isAuthenticated: p.isAuthenticated }
+            : {}),
+          ...(typeof p.isNotificationEnabled === 'boolean'
+            ? { isNotificationEnabled: p.isNotificationEnabled }
+            : {}),
+          ...(typeof p.currentLanguage === 'string'
+            ? { currentLanguage: p.currentLanguage }
+            : {}),
+          ...(typeof p.hasSeenWelcome === 'boolean'
+            ? { hasSeenWelcome: p.hasSeenWelcome }
+            : {}),
+        };
+      },
     },
   ),
 );

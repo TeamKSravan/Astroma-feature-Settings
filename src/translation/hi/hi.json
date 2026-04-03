@@ -285,7 +285,9 @@
     "failedToResendOtp": "OTP पुनः भेजने में विफल। कृपया पुनः प्रयास करें।",
     "profileCompletedSuccess": "प्रोफ़ाइल सफलतापूर्वक पूर्ण हुई!",
     "failedToCompleteOnboarding": "ऑनबोर्डिंग पूरा करने में विफल। कृपया पुनः प्रयास करें।",
-    "failedToGenerateQuery": "क्वेरी जनरेट करने में विफल"
+    "failedToGenerateQuery": "क्वेरी जनरेट करने में विफल",
+    "phoneNumberAlreadyExists": "फोन नंबर पहले से मौजूद है",
+    "phoneNumberNotVerified": "फोन नंबर सत्यापित नहीं है। कृपया अपना फोन नंबर सत्यापित करें।"
   },
   "validation": {
     "nameRequired": "नाम आवश्यक है",

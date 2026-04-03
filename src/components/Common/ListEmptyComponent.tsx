@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   deleteTitle: {
-    fontSize: scale(24),
+    fontSize: scale(20),
     color: colors.white,
     fontFamily: fonts.bold,
     textAlign: 'center',

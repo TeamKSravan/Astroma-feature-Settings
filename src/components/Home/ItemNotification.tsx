@@ -10,7 +10,9 @@ interface Notification {
     _id: string;
     title: string;
     message: string;
-    send_at: string;
+    /** API may use send_at or sent_at */
+    send_at?: string;
+    sent_at?: string;
     is_read: boolean;
     type: NotificationType;
 }
@@ -48,6 +50,7 @@ const NotiIcon = ({ type }: { type: NotificationType }) => {
 }
 
 const ItemNotification = ({ item, onPress }: ItemNotificationProps) => {
+    const sentAt = item.send_at ?? item.sent_at;
     return (
         <TouchableOpacity testID="item-notification" style={styles.notificationItemContainer} onPress={() => onPress(item._id)}>
             <View style={styles.notificationItemRow}>
@@ -57,7 +60,7 @@ const ItemNotification = ({ item, onPress }: ItemNotificationProps) => {
                 <View style={styles.notificationItemLeft}>
                     <Text style={styles.notificationItemTitle}>{item.title}</Text>
                     <Text numberOfLines={2} ellipsizeMode='tail' style={styles.notificationItemSubtitle}>{item.message}</Text>
-                    <Text style={styles.notificationItemDate}>{timeAgo(item.send_at)}</Text>
+                    <Text style={styles.notificationItemDate}>{timeAgo(sentAt) || ''}</Text>
                 </View>
                 {!item.is_read && <View style={styles.markTag} />}
             </View>

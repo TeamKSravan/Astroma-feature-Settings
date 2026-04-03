@@ -135,11 +135,24 @@ export default function HomeScreen(props: any) {
     }
     setRefreshing(false);
   };
+
+  const truncateText = (text, limit = 12) => {
+    if (!text) return '';
+    return text.length > limit ? text.slice(0, limit) + '...' : text;
+  };
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
       <View style={styles.headerView}>
         <View style={styles.helloView}>
-          <Text style={styles.nameText}>{i18n.t('home.hello')} {selectedUser?.name?.split(" ")[0] ?? userDetails?.name?.split(" ")[0]}</Text>{/* selectedUser?.name ?? userDetails?.name */}
+          {/* <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.nameText, {maxWidth: '65%'}]}>{i18n.t('home.hello')} {selectedUser?.name?.split(" ")[0] ?? userDetails?.name?.split(" ")[0]}</Text> */}
+          <Text numberOfLines={1} style={styles.nameText}>
+            {i18n.t('home.hello')}{' '}
+            {truncateText(
+              selectedUser?.name?.split(' ')[0] ??
+              userDetails?.name?.split(' ')[0],
+              12
+            ) + ''}
+          </Text>
           <Text style={styles.dateText}>{moment(selectedUser?.date_of_birth ?? userDetails?.dateOfBirth).format('MMM DD, YYYY')} - {moment(selectedUser?.time_of_birth ?? userDetails?.timeOfBirth, ["HH:mm", "HHmm", "h:mm A"]).format('hh:mm A')}</Text>
           {/* <Text style={styles.dateText}>Sept 22, 1996- 09:45 AM</Text> */}
         </View>

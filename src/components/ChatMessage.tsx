@@ -103,7 +103,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       // console.log('index::::: ', index);
       const messageToCopy = (index == 0 && chatType === 'viewReport') ? message : `Ques- ${previousMessage}\n\n Ans- ${message}`;
       await Clipboard.setString(messageToCopy);
-      // ToastMessage(i18n.t('chat.copySuccess'));
+      Platform.OS === 'ios' && ToastMessage(i18n.t('chat.copySuccess'));
     } catch (error) {
       console.error('Failed to copy message:', error);
       // ToastMessage(i18n.t('chat.copyFailed'));

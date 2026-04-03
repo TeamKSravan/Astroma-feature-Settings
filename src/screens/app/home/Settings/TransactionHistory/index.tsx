@@ -88,6 +88,7 @@ export default function TransactionHistory({ navigation }: any) {
     }, [transactionList, selectedSortOptions]);
 
     const TransactionRenderItem = ({ transaction, type }: { transaction: any, type: 'purchase' | 'use' }) => {
+        const coinsColor = type == 'purchase' || transaction.title?.includes('bonus') || transaction.title?.toLowerCase()?.includes('reward') ? colors.green : colors.red2;
         return (
             <View style={styles.transactionItemContainer}>
                 <View style={styles.transactionItemRow}>
@@ -96,7 +97,9 @@ export default function TransactionHistory({ navigation }: any) {
                         <Text style={styles.transactionDate}>{`${moment(transaction.date).format('DD MMM YYYY')}  |  ${moment(transaction.date).format('hh:mm A')}`}</Text>
                     </View>
                     <Text style={[styles.transactionAmount, { color: colors.green }]}>{type !== 'purchase' ? ' ' : `$${transaction.amount?.split(' ')[0]}`}</Text>
-                    <Text style={[styles.transactionCoins, { color: type == 'purchase' || transaction.title?.includes('bonus') || transaction.title?.toLowerCase()?.includes('reward') ? colors.green : colors.red2 }]}>{type == 'purchase' ? ' ' : ''}{transaction.coins} {i18n.t('transactionHistory.coins')}</Text>
+                    <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.transactionCoins, { color: coinsColor }]}>{type == 'purchase' ? ' ' : ''}{transaction.coins} 
+                        <Text style={[styles.transactionCoinsText, { color: coinsColor }]}>{' ' + i18n.t('transactionHistory.coins')}</Text>
+                    </Text>
                 </View>
                 <View style={styles.transactionDivider} />
             </View>
@@ -142,7 +145,7 @@ export default function TransactionHistory({ navigation }: any) {
                             <View style={styles.tableHeaderRow}>
                                 <Text style={[styles.tableHeaderText, { flex: 1.8 }]}>{i18n.t('transactionHistory.transaction')}</Text>
                                 <Text style={[styles.tableHeaderText, { flex: 1 }]}>{i18n.t('transactionHistory.purchase')}</Text>
-                                <Text style={[styles.tableHeaderText, { flex: 1 }]}>{i18n.t('transactionHistory.coins')}</Text>
+                                <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.tableHeaderText, { flex: 1 }]}>{i18n.t('transactionHistory.coins')}</Text>
                             </View>
                             <FlatList
                                 data={filteredAndSortedList}
@@ -218,10 +221,14 @@ const styles = StyleSheet.create({
         fontFamily: fonts.semiBold,
         fontSize: moderateScale(16),
     },
+    transactionCoinsText: {
+        fontFamily: fonts.regular,
+        fontSize: moderateScale(14),
+    },
     transactionCoins: {
         flex: 1,
         fontFamily: fonts.semiBold,
-        fontSize: moderateScale(16),
+        fontSize: moderateScale(18),
     },
     transactionDivider: {
         width: '100%',

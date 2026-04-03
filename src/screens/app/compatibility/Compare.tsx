@@ -44,6 +44,7 @@ export default function Compare(props: any) {
   const [compareUser4, setCompareUser4] = useState<UserDetails | null>(null);
   const [pdfUrl, setPdfUrl] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [isDisabledGenerateReport, setIsDisabledGenerateReport] = useState(false);
 
   // Sparkle twinkle animation refs (one per CSparkle)
   const sparkle1 = useRef(new Animated.Value(0)).current;
@@ -85,6 +86,7 @@ export default function Compare(props: any) {
   useEffect(() => {
     if (compareType !== i18n.t('compat.selectType')) {
       setErrorCompare('');
+      setIsDisabledGenerateReport(true);
     }
   }, [compareType]);
 
@@ -187,14 +189,23 @@ export default function Compare(props: any) {
     console.log('onPressGenerateReport');
     if (selectedUser.length < 2 || selectedUser.length > 4) {
       ToastMessage(i18n.t('toast.selectUsersRange'));
+      setIsDisabledGenerateReport(true);
       return;
     }
     if (compareType === i18n.t('compat.selectType')) {
       setErrorCompare(i18n.t('toast.selectCompareType'));
+      setIsDisabledGenerateReport(true);
       return;
     }
     setShowCoinSummaryModal(true);
   };
+
+  useEffect(() => {
+    setIsDisabledGenerateReport(false);
+    console.log('selectedUser : ', selectedUser);
+  }, [selectedUser, compareType]);
+
+
   const handleUserSelect = (value: string) => {
     // Handle "Add Profile" case
     if (value === 'addProfile') {
@@ -433,6 +444,7 @@ export default function Compare(props: any) {
       <CustomButton
         title={i18n.t('compat.generate')}
         style={styles.generate}
+        disabled={isDisabledGenerateReport}
         onPress={onPressGenerateReport}
       />
       {isLoading && <Loader />}

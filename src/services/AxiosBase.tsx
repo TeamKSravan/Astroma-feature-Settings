@@ -63,6 +63,10 @@ AxiosBase.interceptors.response.use(
 
       return Promise.reject(new Error('Unauthorized – Please login again'));
     }
+    if(error.response?.status === 500) {
+      ToastMessage(error?.response?.data?.detail || i18n.t('toast.badRequest'));
+      return Promise.reject(new Error('Bad Request'));
+    }
     return Promise.reject(error);
   },
 );

@@ -32,6 +32,11 @@ interface UserBaseData {
     timezone?: string;
 }
 
+interface IsPhoneNumberExistsData {
+    phone: string;
+    country_code: string;
+}
+
 interface ProfileState {
     isLoading?: boolean;
     error?: string | null;
@@ -48,6 +53,7 @@ interface ProfileState {
     getUserDetail: (byID?: string) => Promise<{ success: boolean; data: any; message?: string }>;
     addUserDetail: (data: UserBaseData) => Promise<{ success: boolean; data?: any; message?: string }>;
     editUserDetail: (data: UserDetails) => Promise<{ success: boolean; data?: any; message?: string }>;
+    isPhoneNumberExists: (data: IsPhoneNumberExistsData) => Promise<{ success: boolean; is_phone_number_exists?: boolean; message?: string }>;
     deleteUser: (byID: string) => Promise<{ success: boolean; data?: any; message?: string }>;
 }
 
@@ -89,7 +95,7 @@ export const useProfileStore = create<ProfileState>()(
                 try {
                     console.log('before api data : ', data);
                     const response = (await AxiosBase.patch(`/user/`, data)) as ApiBody;
-                    const { result, message } = response;               
+                    const { result, message } = response;
                     console.log('Response from editUserProfile', result);
                     setUserDetails({
                         ...userDetails,
@@ -213,6 +219,20 @@ export const useProfileStore = create<ProfileState>()(
                         success: false,
                         message: errorMessage,
                     };
+                }
+            },
+            isPhoneNumberExists: async (data: IsPhoneNumberExistsData) => {
+                const { setLoading } = useAuthStore.getState();
+                setLoading(true);
+                try {
+                    const response = await AxiosBase.post(`/user/phone/duplicate`, data);
+                    console.log('Response from isPhoneNumberExists', response);
+                    setLoading(false);
+                    return { success: true, is_phone_number_exists: response?.result, message: response?.message };
+                } catch (error: any) {
+                    const errorMessage = error.response?.data?.detail || 'Failed to check if phone number exists';
+                    setLoading(false);
+                    return { success: false, message: errorMessage };
                 }
             },
             deleteUser: async (byID: string) => {

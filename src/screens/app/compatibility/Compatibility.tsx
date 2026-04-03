@@ -50,6 +50,7 @@ export default function Compatibility(props: any) {
   const [compareUser4, setCompareUser4] = useState<UserDetails | null>(null);
   const [pdfUrl, setPdfUrl] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [isDisabledGenerateReport, setIsDisabledGenerateReport] = useState(false);
 
   // Sparkle twinkle animation refs (one per CSparkle)
   const sparkle1 = useRef(new Animated.Value(0)).current;
@@ -91,6 +92,7 @@ export default function Compatibility(props: any) {
   useEffect(() => {
     if (compatibilityType !== i18n.t('compat.selectType')) {
       setErrorCombat('');
+      setIsDisabledGenerateReport(true);
     }
   }, [compatibilityType]);
 
@@ -189,8 +191,9 @@ export default function Compatibility(props: any) {
   }, [secondaryUserdata, userDetails]);
 
   useEffect(() => {
+    setIsDisabledGenerateReport(false);
     console.log('selectedUser : ', selectedUser);
-  }, [selectedUser]);
+  }, [selectedUser, compatibilityType]);
 
   const handleUserSelect = (value: string) => {
     // Check if user is already selected (check both _id.$oid and id)
@@ -254,10 +257,12 @@ export default function Compatibility(props: any) {
     console.log('selectedUser : ', selectedUser);
     if (selectedUser.length < 2 || selectedUser.length > 4) {
       ToastMessage(i18n.t('toast.selectUsersRange'));
+      setIsDisabledGenerateReport(true);
       return;
     }
     if (compatibilityType === i18n.t('compat.selectType')) {
       setErrorCombat(i18n.t('toast.selectCompatibilityType'));
+      setIsDisabledGenerateReport(true);
       return;
     }
     setShowCoinSummaryModal(true);
@@ -467,6 +472,7 @@ export default function Compatibility(props: any) {
       <CustomButton
         title={i18n.t('compat.generate')}
         style={styles.generate}
+        disabled={isDisabledGenerateReport}
         onPress={onPressGenerateReport}
       />
       {isLoading && <Loader />}

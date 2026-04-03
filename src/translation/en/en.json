@@ -239,7 +239,9 @@
         "failedToResendOtp": "Failed to resend OTP. Please try again.",
         "profileCompletedSuccess": "Profile completed successfully!",
         "failedToCompleteOnboarding": "Failed to complete onboarding. Please try again.",
-        "failedToGenerateQuery": "Failed to generate query"
+        "failedToGenerateQuery": "Failed to generate query",
+        "phoneNumberAlreadyExists": "Phone number already exists",
+        "phoneNumberNotVerified": "Phone number not verified. Please verify your phone number."
     },
     "validation": {
         "nameRequired": "Name is required",
