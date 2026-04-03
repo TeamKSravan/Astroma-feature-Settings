@@ -28,5 +28,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: colors.modalbg,
         borderRadius: scale(5),
+        zIndex: 1000,
     },
 });

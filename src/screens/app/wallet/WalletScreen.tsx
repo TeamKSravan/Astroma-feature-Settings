@@ -15,6 +15,7 @@ import BackButton from '../../../components/BackButton';
 import { purchaseProduct, purchaseSubscription } from '../../../services/iapService';
 import { useWalletStore } from '../../../store/useWalletStore';
 import Loader from '../../../components/Loader';
+import { formatNumberWithCommas } from '../../../utils/methods';
 
 type PlanOption = {
   id: string;
@@ -140,7 +141,7 @@ export default function WalletScreen(props: any) {
                   style={styles.coinsImage}
                 />
               </View>
-              <Text style={styles.coinCountText}>{availableCoins}</Text>
+              <Text style={styles.coinCountText}>{formatNumberWithCommas(availableCoins)}</Text>
 
             </View>
             <Text style={styles.availableCoinsText}>{i18n.t('wallet.availableCoins')}</Text>

@@ -1,4 +1,4 @@
-import { Animated, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
@@ -27,10 +27,12 @@ const formatTime = (seconds: number): string => {
 export default function OtpScreen(props: any) {
   const { country_code: country_codeParam, phone: phoneParam, isOnboarded: isOnboardedParam } = props.route?.params || {};
   const [otp, setOtp] = useState('');
+  const [disableButton, setDisableButton] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(isOnboardedParam ? false : true);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  /** Elapsed seconds in the current resend cooldown (0 → TIMER_DURATION). */
-  const [elapsed, setElapsed] = useState(0);
+  /** Seconds left before resend (2:00 → 0:00); same as OTPVerification modal. */
+  const [timer, setTimer] = useState(TIMER_DURATION);
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { login, isLoading, userDetails, sendOTP, setIsGetBonus, currentLanguage } = useAuthStore();
   const { setSecondaryUserdata } = useProfileStore();
   const { validate } = useValidation();
@@ -92,21 +94,27 @@ export default function OtpScreen(props: any) {
     createSparkleAnimation(sparkle7, 1800);
   }, []);
 
-  const cooldownActive = elapsed < TIMER_DURATION;
+  const canResend = timer === 0;
+  /** Shown as mm:ss countdown. */
+  const remainingSeconds = timer;
+
   useEffect(() => {
-    if (!cooldownActive) {
-      return;
-    }
-    const id = setInterval(() => {
-      setElapsed(prev => (prev >= TIMER_DURATION ? prev : prev + 1));
+    timerIntervalRef.current = setInterval(() => {
+      setTimer(prev => (prev <= 0 ? 0 : prev - 1));
     }, 1000);
-    return () => clearInterval(id);
-  }, [cooldownActive]);
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+    };
+  }, []);
 
   const phone = phoneParam || '';
   const country_code = country_codeParam || '';
 
   const handleVerifyOtp = async () => {
+    setDisableButton(true);
     let validationError = validate('otp', otp);
     if (validationError != '') {
       ToastMessage(validationError);
@@ -147,10 +155,15 @@ export default function OtpScreen(props: any) {
       console.log('login Error:', error);
       const errorMessage = error?.message || i18n.t('toast.invalidOtp');
       ToastMessage(errorMessage);
+    } finally {
+      setDisableButton(false);
     }
   };
 
   const handleResendOtp = async () => {
+    if (timer > 0) {
+      return;
+    }
     if (!phone) {
       ToastMessage(i18n.t('toast.phoneNumberNotFound'));
       return;
@@ -164,7 +177,7 @@ export default function OtpScreen(props: any) {
       if (result.success) {
         ToastMessage(i18n.t('toast.otpSentSuccess'));
         setOtp('');
-        setElapsed(0);
+        setTimer(TIMER_DURATION);
       } else {
         ToastMessage(
           result.message || i18n.t('toast.failedToResendOtp'),
@@ -236,10 +249,10 @@ export default function OtpScreen(props: any) {
               autoFocusOnLoad={false}
             />
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.timeLabel}>{formatTime(elapsed)}</Text>
+              <Text style={styles.timeLabel}>{formatTime(remainingSeconds)}</Text>
               <View style={styles.resendView}>
                 <Text style={styles.didntText}>{i18n.t('login.didnt')}</Text>
-                <TouchableOpacity disabled={cooldownActive} style={styles.touchView} onPress={handleResendOtp}>
+                <TouchableOpacity disabled={!canResend} style={styles.touchView} onPress={handleResendOtp}>
                   <Text style={styles.resendText}>{i18n.t('login.resend')}</Text>
                 </TouchableOpacity>
               </View>
@@ -250,7 +263,7 @@ export default function OtpScreen(props: any) {
           title={i18n.t('login.loginn')}
           style={styles.buttonStyle}
           onPress={handleVerifyOtp}
-          disabled={otp.length == 0}
+          disabled={otp.length == 0 || disableButton}
         />
       </KeyboardAvoidingView>
       <LanguageModal

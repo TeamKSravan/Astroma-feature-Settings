@@ -27,6 +27,7 @@ import { useWalletStore } from '../../../store/useWalletStore';
 import { requestUserPermission } from '../../../services/NotificationServices';
 export default function LoginScreen(props: any) {
   const [phoneNumber, setPhoneNumber] = useState(__DEV__ ? '8980698248' : '');
+  const [disableButton, setDisableButton] = useState(false);
   const [error, setError] = useState({});
   // :point_down: Set India (+91) as the default selected country
   const [selectedCountry, setSelectedCountry] = useState<Country>({
@@ -110,6 +111,7 @@ export default function LoginScreen(props: any) {
     console.log('Country code:', country.cca2);
   };
   const handleLogin = async () => {
+    setDisableButton(true);
     scrollViewRef.current?.scrollToEnd({ animated: true });
     if (!selectedCountry) {
       setError({
@@ -163,6 +165,8 @@ export default function LoginScreen(props: any) {
     } catch (error: any) {
       // ToastMessage(error?.message || i18n.t('login.genericError'));
       console.log('Login error:', error);
+    } finally {
+      setDisableButton(false);
     }
   };
   const scrollViewRef = useRef<ScrollView>(null);
@@ -221,7 +225,7 @@ export default function LoginScreen(props: any) {
           title={i18n.t('login.loginn')}
           style={styles.buttonStyle}
           onPress={handleLogin}
-          disabled={phoneNumber.length == 0}
+          disabled={phoneNumber.length == 0 || disableButton}
         />
       </KeyboardAvoidingView>
       {isLoading && <Loader />}

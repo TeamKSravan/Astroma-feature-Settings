@@ -288,7 +288,7 @@ export default function Compare(props: any) {
     if (timeOfBirth) {
       timeOfBirth = timeOfBirth.split(':').slice(0, 2).join(':');
     }
-    return dateOfBirth && timeOfBirth ? `${dateOfBirth} | ${timeOfBirth}` : '';
+    return dateOfBirth && timeOfBirth ? `${dateOfBirth} \n ${timeOfBirth}` : '';
   };
 
   const handleUserRemove = (user: any) => {
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
   centeredSparkleContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: verticalScale(200),
+    marginTop: verticalScale(170),
   },
   optionContainer: {
     paddingVertical: verticalScale(7),

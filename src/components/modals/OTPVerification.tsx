@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View, TextInput } from 'react-native';
 import Modal from 'react-native-modal';
 import { colors } from '../../constants/colors';
@@ -161,18 +161,17 @@ export default function OTPVerification(props: OTPVerificationProps) {
   }, [otp]);
 
   const canResend = timer === 0;
+  /** Seconds left in resend cooldown; shown as mm:ss from 2:00 down to 0:00. */
+  const remainingSeconds = timer;
 
-  // Reset OTP and timer when modal opens
-  useEffect(() => {
+  // Reset OTP and full cooldown before paint so the label never flashes 0:00 → 2:00
+  useLayoutEffect(() => {
     if (visible) {
-      resetOtp();
       resetTimer();
-    } else {
-      // Clear timer when modal closes
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-        timerIntervalRef.current = null;
-      }
+      resetOtp();
+    } else if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
     }
   }, [visible, resetOtp, resetTimer]);
 
@@ -187,18 +186,9 @@ export default function OTPVerification(props: OTPVerificationProps) {
       return;
     }
 
-    // Start timer when modal opens
+    // Keep interval running while visible so resetting to 2:00 after resend keeps counting down
     timerIntervalRef.current = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer <= 1) {
-          if (timerIntervalRef.current) {
-            clearInterval(timerIntervalRef.current);
-            timerIntervalRef.current = null;
-          }
-          return 0;
-        }
-        return prevTimer - 1;
-      });
+      setTimer(prev => (prev <= 0 ? 0 : prev - 1));
     }, 1000);
 
     return () => {
@@ -245,7 +235,7 @@ export default function OTPVerification(props: OTPVerificationProps) {
               </View>
             ))}
           </View>
-          <Text style={styles.timeLabel}>{formatTime(timer)}</Text>
+          <Text style={styles.timeLabel}>{formatTime(remainingSeconds)}</Text>
         </View>
         <View style={styles.resendRow}>
           <Text style={[styles.orderLabel, styles.resendPrefix]}>

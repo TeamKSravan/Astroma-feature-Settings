@@ -319,7 +319,7 @@ export default function Compatibility(props: any) {
           </TouchableOpacity>
           <View style={styles.userContentContainer}>
             <ZodicSign sign={user?.zodiac_sign || ''} width={80} height={80} />
-            <Text style={styles.nameText}>{user?.name || ''}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameText}>{user?.name + 'adsasdadasdasdasd'|| ''}</Text>
             <Text style={styles.dateText}>{formatUserDate(user)}</Text>
           </View>
 
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
   centeredSparkleContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: verticalScale(200),
+    marginTop: verticalScale(170),
   },
   optionContainer: {
     paddingVertical: verticalScale(7),

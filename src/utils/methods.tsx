@@ -3,6 +3,15 @@ export function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+/** Formats a number with comma thousands separators, e.g. `1000018` → `"1,000,018"`. */
+export function formatNumberWithCommas(value: number | string): string {
+    const n = typeof value === 'string' ? Number(value.trim()) : value;
+    if (!Number.isFinite(n)) {
+        return '';
+    }
+    return new Intl.NumberFormat('en-US').format(n);
+}
+
 export function timeAgo(inputDate: string | undefined | null) {
     if (inputDate == null || inputDate === '') {
         return '';
@@ -44,3 +53,4 @@ export function timeAgo(inputDate: string | undefined | null) {
     const diffInYears = Math.floor(diffInDays / 365);
     return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
 }
+

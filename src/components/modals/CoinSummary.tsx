@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import { colors } from '../../constants/colors';
@@ -19,12 +19,20 @@ type CoinSummaryProps = {
 export default function CoinSummary(props: CoinSummaryProps) {
   const { closeModal, visible, paynow, title, cost=0 } = props;
   const { availableCoins } = useWalletStore();
+  const [disableButton, setDisableButton] = useState(false);
 
   const handleYes = () => {
+    if (disableButton) {
+      return;
+    }
+    setDisableButton(true);
     closeModal();
     setTimeout(() => {
       paynow && paynow();
     }, 500);
+    setTimeout(() => {
+      setDisableButton(false);
+    }, 1000);
   };
 
   return (

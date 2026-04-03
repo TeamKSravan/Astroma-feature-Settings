@@ -5,6 +5,7 @@ import { colors } from '../constants/colors';
 import { moderateScale, scale, verticalScale } from '../utils/scale';
 import { fonts } from '../constants/fonts';
 import { useWalletStore } from '../store/useWalletStore';
+import { formatNumberWithCommas } from '../utils/methods';
 
 export default function CoinComponent() {
   const { availableCoins, getWalletDetails } = useWalletStore();
@@ -19,7 +20,7 @@ export default function CoinComponent() {
   return (
     <View style={styles.pinkView}>
       <Coin />
-      <Text style={styles.coinText}>{availableCoins}</Text>
+      <Text style={styles.coinText}>{formatNumberWithCommas(availableCoins)}</Text>
     </View>
   );
 }

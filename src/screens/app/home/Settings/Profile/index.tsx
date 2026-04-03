@@ -158,6 +158,7 @@ export default function Profile({ navigation }: any) {
   const [predictions, setPredictions] = useState([]);
   const [otp, setOtp] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
   const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
 
   const inputRef = useRef<TextInput>(null);
@@ -229,7 +230,7 @@ export default function Profile({ navigation }: any) {
       }
       return null;
     }
-  };690633169
+  };
 
   const handleResendOtp = async () => {
     const isPhoneNumberExists = await checkIfPhoneNumberExists();
@@ -274,12 +275,11 @@ export default function Profile({ navigation }: any) {
     });
   }
   const saveChanges = () => {
-    console.log('fullName : ', fullName);
-    console.log('dateOfBirth : ', dateOfBirth);
-    console.log('placeOfBirth : ', placeOfBirth);
-    console.log('timeOfBirth : ', timeOfBirth);
-    console.log('gender : ', gender);
-    console.log('selectedCountry : ', selectedCountry);
+    if (disableButton) {
+      return;
+    }
+
+    setDisableButton(true);
 
     let validationError = validate('name', fullName);
     if (validationError) {
@@ -301,7 +301,7 @@ export default function Profile({ navigation }: any) {
     } else {
       setErrors(prev => ({ ...prev, phone: '' }));
     }
-    if(!isPhoneVerified && userDetails?.phone !== phoneNo){
+    if (!isPhoneVerified && userDetails?.phone !== phoneNo) {
       setErrors(prev => ({ ...prev, phone: i18n.t('toast.phoneNumberNotVerified') }));
       return;
     } else {
@@ -331,7 +331,7 @@ export default function Profile({ navigation }: any) {
     } else {
       setErrors(prev => ({ ...prev, time: '' }));
     }
-   
+
 
     // console.log('api data  : ', {
     //   name: capitalizeFirstLetter(fullName),
@@ -344,27 +344,34 @@ export default function Profile({ navigation }: any) {
     //   time_of_birth: timeOfBirth ? moment(timeOfBirth, 'HH:mm').format('HH:mm') : '',
     //   ...(gender ? { gender } : {}),
     // });
-
-    editPrimaryUserDetail({
-      name: capitalizeFirstLetter(fullName),
-      phone: phoneNo,
-      country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
-      date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
-      place_of_birth: placeOfBirth,
-      lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
-      long: coordinates.lng === '' ? '78.0081' : coordinates.lng,
-      time_of_birth: timeOfBirth ? moment(timeOfBirth, 'HH:mm').format('HH:mm') : '',
-      ...(gender ? { gender } : {}),
-    }).then((result) => {
-      console.log('editPrimaryUserDetail', result);
-      if (result.success) {
-        ToastMessage(result.message);
-        setIsEditable(false);
-        navigation.goBack();
-        setErrors({});
-        fetchUserDetail();
-      } 
-    });
+    try {
+      editPrimaryUserDetail({
+        name: capitalizeFirstLetter(fullName),
+        phone: phoneNo,
+        country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
+        date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+        place_of_birth: placeOfBirth,
+        lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
+        long: coordinates.lng === '' ? '78.0081' : coordinates.lng,
+        time_of_birth: timeOfBirth ? moment(timeOfBirth, 'HH:mm').format('HH:mm') : '',
+        ...(gender ? { gender } : {}),
+      }).then((result) => {
+        console.log('editPrimaryUserDetail', result);
+        if (result.success) {
+          ToastMessage(result.message);
+          setIsEditable(false);
+          navigation.goBack();
+          setErrors({});
+          fetchUserDetail();
+        }
+      });
+    } catch (error) {
+      console.error('saveChanges Error:', error);
+    } finally {
+      setTimeout(() => {
+        setDisableButton(false);
+      }, 1000);
+    }
   }
   const handleCountrySelect = (country: Country) => {
     setSelectedCountry(country);
@@ -489,31 +496,6 @@ export default function Profile({ navigation }: any) {
     setTimeout(() => {
       isSelectingRef.current = false;
     }, 100);
-    // Keyboard.dismiss();
-
-    // setShowDropdown(false);
-    // setPredictions([]);
-
-    // const apiKey = 'AIzaSyB0FjlKAR4bnyS4M2Vs_BC-Rh-5ZW9bBGU';
-    // const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
-
-    // try {
-    //   const response = await fetch(url);
-    //   const json = await response.json();
-
-    //   const location = json?.result?.geometry?.location;
-
-    //   if (location) {
-    //     setCoordinates({
-    //       lat: location.lat,
-    //       lng: location.lng,
-    //     });
-    //   }
-
-    //   setPlaceOfBirth(description);
-    // } catch (error) {
-    //   // silent
-    // }
   };
 
   const renderDropdownItem = ({ item }: { item: any }) => (
@@ -549,7 +531,7 @@ export default function Profile({ navigation }: any) {
     let phoneNumber = text.trim();
     setPhoneNo(phoneNumber);
     console.log('phoneNumber : ', text);
-    if(userDetails?.phone !== phoneNumber){
+    if (userDetails?.phone !== phoneNumber) {
       setIsPhoneVerified(false);
       console.log('setIsPhoneVerified(false)');
     } else {
@@ -660,7 +642,7 @@ export default function Profile({ navigation }: any) {
             title={i18n.t('profile.saveChanges')}
             onPress={saveChanges}
             style={styles.saveChangesButton}
-            disabled={!isEditable}
+            disabled={disableButton}
           />}
           {isLoading && <Loader />}
         </ScrollView>
