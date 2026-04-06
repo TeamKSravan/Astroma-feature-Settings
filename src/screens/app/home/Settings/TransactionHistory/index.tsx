@@ -10,6 +10,7 @@ import i18n from '../../../../../translation/i18n';
 import BackButton from '../../../../../components/BackButton';
 import MultiSelectMenu from '../../../../../components/MultiSelectMenu';
 import { useProfileStore } from '../../../../../store/useProfileStore';
+import { formatNumberWithCommas } from '../../../../../utils/methods';
 import { useAuthStore } from '../../../../../store/useAuthStore';
 import Loader from '../../../../../components/Loader';
 import moment from 'moment';
@@ -96,8 +97,8 @@ export default function TransactionHistory({ navigation }: any) {
                         <Text style={styles.transactionTitle}>{transaction.title}</Text>
                         <Text style={styles.transactionDate}>{`${moment(transaction.date).format('DD MMM YYYY')}  |  ${moment(transaction.date).format('hh:mm A')}`}</Text>
                     </View>
-                    <Text style={[styles.transactionAmount, { color: colors.green }]}>{type !== 'purchase' ? ' ' : `$${transaction.amount?.split(' ')[0]}`}</Text>
-                    <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.transactionCoins, { color: coinsColor }]}>{type == 'purchase' ? ' ' : ''}{transaction.coins} 
+                    <Text style={[styles.transactionAmount, { color: colors.green }]}>{type !== 'purchase' ? ' ' : `$${formatNumberWithCommas(transaction.amount?.split(' ')[0])}`}</Text>
+                    <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.transactionCoins, { color: coinsColor }]}>{type == 'purchase' ? ' ' : ''}{formatNumberWithCommas(transaction.coins)} 
                         <Text style={[styles.transactionCoinsText, { color: coinsColor }]}>{' ' + i18n.t('transactionHistory.coins')}</Text>
                     </Text>
                 </View>
@@ -137,7 +138,7 @@ export default function TransactionHistory({ navigation }: any) {
                     </View>
                     <View style={styles.availableCoinsHeader}>
                         <Text style={styles.availableCoinsTitle}>{i18n.t('transactionHistory.availableCoins')}</Text>
-                        <Text style={styles.availableCoinsValue}>{availableCoins}</Text>
+                        <Text adjustsFontSizeToFit={true} numberOfLines={1} ellipsizeMode="tail" style={styles.availableCoinsValue}>{formatNumberWithCommas(availableCoins)}</Text>
                     </View>
                     <ScrollView bounces={false} style={styles.container}>
                         <View>

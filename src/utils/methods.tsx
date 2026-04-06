@@ -6,11 +6,28 @@ export function capitalizeFirstLetter(str: string) {
 /** Formats a number with comma thousands separators, e.g. `1000018` → `"1,000,018"`. */
 export function formatNumberWithCommas(value: number | string): string {
     const n = typeof value === 'string' ? Number(value.trim()) : value;
-    if (!Number.isFinite(n)) {
-        return '';
+  
+    if (!Number.isFinite(n)) return '';
+  
+    const abs = Math.abs(n); // handle negative
+    let formatted = '';
+  
+    if (abs >= 1_000_000_000) {
+      formatted =
+        (abs / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+    } else if (abs >= 1_000_000) {
+      formatted =
+        (abs / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    } else if (abs >= 1_000) {
+      formatted =
+        (abs / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    } else {
+      formatted = new Intl.NumberFormat('en-US').format(abs);
     }
-    return new Intl.NumberFormat('en-US').format(n);
-}
+  
+    // reapply sign
+    return n < 0 ? `-${formatted}` : formatted;
+  }
 
 export function timeAgo(inputDate: string | undefined | null) {
     if (inputDate == null || inputDate === '') {

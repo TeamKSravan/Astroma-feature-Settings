@@ -166,35 +166,6 @@ const handlePurchaseUpdate = async (purchase, onSuccess) => {
         console.error('Error acknowledging purchase:', ackError);
       }
 
-      // Extract plan details based on productId
-      const productId = purchase.productId;
-      let planName = 'Free Plan';
-      let minutesAllowed = 0;
-
-      if (productId.includes('apprentice')) {
-        planName = 'Apprentice';
-        minutesAllowed = 30;
-      } else if (productId.includes('visionary')) {
-        planName = 'Visionary';
-        minutesAllowed = 120;
-      } else if (productId.includes('legacy')) {
-        planName = 'Legacy';
-        minutesAllowed = 300;
-      }
-      // TODO: Save subscription info in store (Zustand)
-      // Note: Redux store was removed, need to implement with Zustand if needed
-      // store.dispatch(
-      //   setSubscription({
-      //     planId: productId,
-      //     minutesAllowed,
-      //     expiryDate: moment().add(1, 'month').toISOString(),
-      //     transactionId: purchase.transactionId,
-      //     receipt: purchase.transactionReceipt,
-      //     planName,
-      //     status: 'active',
-      //   }),
-      // );
-
       // Hide loader and show modal
       if (onSuccess) {
         if (!hasShownModal) {
@@ -232,17 +203,22 @@ const handlePurchaseUpdateNew = async (purchase, onSuccess) => {
       }
 
       try {
-        if (Platform.OS === 'ios') {
-          await finishTransaction({ purchase });
-          console.log('iOS transaction finished');
-        } else if (Platform.OS === 'android') {
-          if (purchase.purchaseToken) {
-            await acknowledgePurchaseAndroid({
-              token: purchase.purchaseToken,
-            });
-            console.log('Android purchase acknowledged');
-          }
-        }
+        // if (Platform.OS === 'ios') {
+        //   await finishTransaction({ purchase, isConsumable: true, });
+        //   console.log('iOS transaction finished');
+        // } else if (Platform.OS === 'android') {
+        //   if (purchase.purchaseToken) {
+        //     await acknowledgePurchaseAndroid({
+        //       token: purchase.purchaseToken,
+        //     });
+        //     console.log('Android purchase acknowledged');
+        //   }
+        // }
+        await finishTransaction({ 
+          purchase, 
+          isConsumable: true, 
+        });
+        console.log('iOS transaction finished');
       } catch (ackError) {
         console.error('Error acknowledging purchase:', ackError);
       }
@@ -250,15 +226,12 @@ const handlePurchaseUpdateNew = async (purchase, onSuccess) => {
       if (onSuccess) {
         onSuccess(purchase);
       }
-
       return true;
     }
-
     console.log('No transaction receipt found');
     return false;
   } catch (error) {
     console.error('Error handling purchase update:', error);
-    // STOP loader in case of error
     useAuthStore.getState().setLoading(false);
     return false;
   }

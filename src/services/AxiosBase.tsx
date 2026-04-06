@@ -22,7 +22,7 @@ AxiosBase.interceptors.request.use(
     }
     // Get token directly from Zustand store
     const token = useAuthStore.getState().token;
-    console.log('Bearer ', token);    
+    // console.log('Bearer ', token);    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -53,7 +53,7 @@ AxiosBase.interceptors.response.use(
 
     if (error.response?.status === 401 || error.response?.status === 403) {
       const { logout, token } = useAuthStore.getState();
-      console.log('token', token);
+      // console.log('token', token);
       if (token) {
         logout();
       } else {

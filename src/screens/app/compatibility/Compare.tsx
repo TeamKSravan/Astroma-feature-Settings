@@ -325,7 +325,7 @@ export default function Compare(props: any) {
           </TouchableOpacity>
           <View style={styles.userContentContainer}>
             <ZodicSign sign={user?.zodiac_sign || ''} width={80} height={80} />
-            <Text style={styles.nameText}>{user?.name || ''}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameText}>{user?.name || ''}</Text>
             <Text style={styles.dateText}>{formatUserDate(user)}</Text>
           </View>
         </View>

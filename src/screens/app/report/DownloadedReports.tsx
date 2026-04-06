@@ -65,7 +65,7 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
   );
 
   const handleViewReport = (item: any) => {
-    getViewReport(item?._id?.$oid)
+    getViewReport(item?._id?.$oid, selectedUser?._id?.$oid ?? '')
       .then(response => {
         console.log('Response:', response);
         if (response.success) {

@@ -41,7 +41,7 @@ interface ChatState {
   getUserReports: (userId: string) => Promise<{ success: boolean; data?: string; message?: string }>;
   addReport: (data: any) => Promise<{ success: boolean; data?: string; message?: string }>;
   AddUserReports: (reportID?: any, userId?: string) => Promise<{ success: boolean; data?: string; message?: string }>;
-  getViewReport: (reportID: any, combatReport?: boolean) => Promise<{ success: boolean; data?: string; message?: string }>;
+  getViewReport: (reportID: any, userId?: string) => Promise<{ success: boolean; data?: string; message?: string }>;
   getGenerateReport: (reportID: any, isPdfReport?: boolean, userId?: string) => Promise<{ success: boolean; data?: string; message?: string }>;
   generateQuery: (reportID: any, data: any) => Promise<{ success: boolean; data?: string; message?: string }>;
 }
@@ -210,8 +210,8 @@ export const useChatStore = create<ChatState>()(
       chatLike: async (conversationId: string, messageId: string, userId?: string) => {
         setLoading(true);
         try {
-          console.log('chat_id : ', messageId);
-          console.log('conversation_id : ', conversationId);
+          // console.log('chat_id : ', messageId);
+          // console.log('conversation_id : ', conversationId);
           const response = await AxiosBase.patch(`/astrology/chat/like${userId ? `?profile_id=${userId}` : ''}`, { chat_id: messageId, conversation_id: conversationId });
           console.log('Response from chatLike', response);
           setLoading(false);
@@ -254,7 +254,9 @@ export const useChatStore = create<ChatState>()(
       AddUserReports: async (reportID?: any, userId?: string) => {
         setLoading(true);
         try {
-          const response = await AxiosBase.post(`/report/user/${reportID}${userId ? `?profile_id=${userId}` : ''}`);
+          const url = `/report/user/${reportID}${userId ? `?profile_id=${userId}` : ''}`
+          console.log('AddUserReports url : ', url);
+          const response = await AxiosBase.post(url);
           console.log('Response from AddUserReports', response);
           setLoading(false);
 
@@ -270,7 +272,9 @@ export const useChatStore = create<ChatState>()(
       getUserReports: async (userId: string) => {
         setLoading(true);
         try {
-          const response = await AxiosBase.get(`/report/user${userId ? `?profile_id=${userId}` : ''}`);
+          let url = `/report/user${userId ? `?profile_id=${userId}` : ''}`
+          console.log('getUserReports url : ', url);
+          const response = await AxiosBase.get(url);
           console.log('Response from getUserReports', response);
           setLoading(false);
           return { success: true, data: response.result };
@@ -311,10 +315,12 @@ export const useChatStore = create<ChatState>()(
           return { success: false, message: error.response?.data?.detail || 'Error fetching compatibility' };
         }
       },
-      getViewReport: async (reportID: any, combatReport: boolean = false) => {
+      getViewReport: async (reportID: any, userId?: string) => {
         setLoading(true);
         try {
-          const response = await AxiosBase.get(`/compatibility/report/${reportID}/chat`);
+          const url = `/compatibility/report/${reportID}/chat${userId ? `?profile_id=${userId}` : ''}`
+          console.log('getViewReport url : ', url);
+          const response = await AxiosBase.get(url);
           console.log('Response from getViewReport', response);
           setLoading(false);
           return { success: true, data: response.result };

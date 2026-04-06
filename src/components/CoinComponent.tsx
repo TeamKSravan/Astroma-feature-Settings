@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 50,
     height: verticalScale(20),
+    width: scale(55),
   },
   coinText: {
     color: colors.white,
