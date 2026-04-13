@@ -14,6 +14,7 @@ import {
 import i18n from '../translation/i18n';
 import { useWalletStore } from '../store/useWalletStore';
 import { ToastProvider } from 'react-native-toast-notifications'
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 
@@ -75,15 +76,18 @@ export default function RootNavigator() {
   console.log('isAuthenticated', isAuthenticated);
   console.log('token', token);
   console.log('userDetails', userDetails);
+
   return (
     <ToastProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {(!isAuthenticated || !token || !userDetails?.isOnboarded) &&
-            <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
-            || <Stack.Screen name="AppNavigator" component={AppNavigator} />}
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {(!isAuthenticated || !token || !userDetails?.isOnboarded) &&
+              <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
+              || <Stack.Screen name="AppNavigator" component={AppNavigator} />}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
     </ToastProvider>
   );
 }

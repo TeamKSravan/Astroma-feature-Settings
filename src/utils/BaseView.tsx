@@ -7,6 +7,7 @@ import {
   ImageBackground,
   ImageSourcePropType,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { colors } from '../constants/colors';
@@ -29,26 +30,24 @@ const BaseView: React.FC<BaseViewProps> = ({
 }) => {
   if (backgroundImage) {
     return (
-      <SafeAreaProvider>
-        <ImageBackground
-          source={backgroundImage}
-          style={[styles.container, style]}
-          resizeMode={resizeMode}
-        >
-          <SafeAreaView style={[styles.content, contentContainerStyle]}>
-            {children}
-          </SafeAreaView>
-        </ImageBackground>
-      </SafeAreaProvider>
+      <ImageBackground
+        source={backgroundImage}
+        style={[styles.container, style]}
+        resizeMode={resizeMode}
+      >
+        <StatusBar translucent backgroundColor="transparent" />
+        <SafeAreaView style={[styles.content, contentContainerStyle]}>
+          {children}
+        </SafeAreaView>
+      </ImageBackground>
     );
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={[styles.container, style]}>
-        <View style={[styles.content, contentContainerStyle]}>{children}</View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView style={[styles.container, style]}>
+      <StatusBar translucent backgroundColor="transparent" />
+      <View style={[styles.content, contentContainerStyle]}>{children}</View>
+    </SafeAreaView>
   );
 };
 
