@@ -238,6 +238,7 @@
         "selectCompareType": "Please select a compare type",
         "downloadFailedFallback": "Failed to download file",
         "maxUsersCompatibility": "Maximum 4 users can be selected",
+        "maxUsersCompare": "Maximum 4 users can be compared",
         "selectUsersRange": "Please select at least 2 and at most 4 users",
         "reportGeneratedSuccess": "Report generated successfully",
         "notEnoughCoins": "You do not have enough coins (10 coins) to unlock this report",

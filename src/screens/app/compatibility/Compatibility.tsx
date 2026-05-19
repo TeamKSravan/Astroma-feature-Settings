@@ -92,7 +92,7 @@ export default function Compatibility(props: any) {
   useEffect(() => {
     if (compatibilityType !== i18n.t('compat.selectType')) {
       setErrorCombat('');
-      setIsDisabledGenerateReport(true);
+      // setIsDisabledGenerateReport(false);
     }
   }, [compatibilityType]);
 
@@ -206,7 +206,7 @@ export default function Compatibility(props: any) {
     }
 
     if (selectedUser.length >= 4) {
-      ToastMessage(i18n.t('toast.maxUsersCompatibility'));
+      showToastOnce(i18n.t('toast.maxUsersCompatibility'));
       return;
     }
     // Handle "Add Profile" case
@@ -215,7 +215,7 @@ export default function Compatibility(props: any) {
         navigation.navigate('OnboardingScreen' as never, { onBoardType: 'combatUser' } as never);
         return;
       } else {
-        ToastMessage(i18n.t('userList.maxUsers'));
+        showToastOnce(i18n.t('userList.maxUsers'));
         return;
       }
     }
@@ -236,7 +236,7 @@ export default function Compatibility(props: any) {
       } else if (compareUser4 === null) {
         setCompareUser4(userToAdd);
       } else {
-        ToastMessage(i18n.t('toast.maxUsersCompatibility'));
+        showToastOnce(i18n.t('toast.maxUsersCompatibility'));
         return;
       }
     }
@@ -252,17 +252,37 @@ export default function Compatibility(props: any) {
       }) || []);
     });
   }, [getCompatibilityTypeList]);
+  const isToastVisible =
+    useRef(false);
 
+  const showToastOnce = (message) => {
+
+    if (isToastVisible.current) {
+      return;
+    }
+
+    isToastVisible.current = true;
+    ToastMessage(message);
+    setTimeout(() => {
+      isToastVisible.current = false;
+    }, 4000);
+
+  };
   const onPressGenerateReport = () => {
     console.log('selectedUser : ', selectedUser);
     if (selectedUser.length < 2 || selectedUser.length > 4) {
-      ToastMessage(i18n.t('toast.selectUsersRange'));
-      setIsDisabledGenerateReport(true);
+      // ToastMessage(i18n.t('toast.selectUsersRange'));
+      showToastOnce(
+        i18n.t(
+          'toast.selectUsersRange'
+        )
+      );
+      // setIsDisabledGenerateReport(true);
       return;
     }
     if (compatibilityType === i18n.t('compat.selectType')) {
       setErrorCombat(i18n.t('toast.selectCompatibilityType'));
-      setIsDisabledGenerateReport(true);
+      // setIsDisabledGenerateReport(true);
       return;
     }
     setShowCoinSummaryModal(true);
@@ -270,16 +290,17 @@ export default function Compatibility(props: any) {
 
   const generateCompatibilityReport = () => {
     console.log('generateCompatibilityReport');
+    setShowCoinSummaryModal(false);
     createCompatibilityReport(true, { type: compatibilityType, profile_id: selectedUser.map((item: any) => item?._id?.$oid ?? '') }).then(async (res) => {
       console.log('Response from getCompatibilityReport', res);
       if (res.success) {
         setErrorCombat('')
         setShowGenerateReportModal(true);
         setPdfUrl(res.data || '')
-        ToastMessage(i18n.t('toast.reportGeneratedSuccess'));
-        await getWalletDetails();
+        showToastOnce(i18n.t('toast.reportGeneratedSuccess'));
+        await getWalletDetails({ silent: true });
       } else {
-        ToastMessage((res.data as string) || i18n.t('common.somethingWentWrong'));
+        showToastOnce((res.data as string) || i18n.t('common.somethingWentWrong'));
       }
     });
   };
@@ -319,7 +340,7 @@ export default function Compatibility(props: any) {
           </TouchableOpacity>
           <View style={styles.userContentContainer}>
             <ZodicSign sign={user?.zodiac_sign || ''} width={80} height={80} />
-            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameText}>{user?.name|| ''}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.nameText}>{user?.name || ''}</Text>
             <Text style={styles.dateText}>{formatUserDate(user)}</Text>
           </View>
 
@@ -472,7 +493,7 @@ export default function Compatibility(props: any) {
       <CustomButton
         title={i18n.t('compat.generate')}
         style={styles.generate}
-        disabled={isDisabledGenerateReport}
+        // disabled={isDisabledGenerateReport}
         onPress={onPressGenerateReport}
       />
       {isLoading && <Loader />}
@@ -625,6 +646,7 @@ const styles = StyleSheet.create({
   },
   emptyCreditsContainer: {
     marginBottom: verticalScale(50),
+    zIndex: 100,
   },
   errorText: {
     color: colors.red2,

@@ -279,6 +279,7 @@
     "selectCompareType": "कृपया तुलना प्रकार चुनें",
     "downloadFailedFallback": "फाइल डाउनलोड करने में विफल",
     "maxUsersCompatibility": "अधिकतम 4 उपयोगकर्ता चुन सकते हैं",
+    "maxUsersCompare": "अधिकतम 4 उपयोगकर्ता तुलना कर सकते हैं",
     "selectUsersRange": "कृपया कम से कम 2 और अधिकतम 4 उपयोगकर्ता चुनें",
     "reportGeneratedSuccess": "रिपोर्ट सफलतापूर्वक बनाई गई",
     "notEnoughCoins": "इस रिपोर्ट को अनलॉक करने के लिए आपके पास पर्याप्त सिक्के नहीं हैं (10 सिक्के)",

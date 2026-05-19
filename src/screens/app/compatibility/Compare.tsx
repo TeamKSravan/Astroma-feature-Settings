@@ -184,11 +184,27 @@ export default function Compare(props: any) {
       setcompareTypeList(res.data?.map((item: any) => ({ label: `${item?.type ? item?.type.charAt(0).toUpperCase() + item?.type.slice(1) : ''} Compare`, value: item?.type })));
     });
   }, [getCompatibilityTypeList]);
+  const isToastVisible = useRef(false);
+
+  const showToastOnce = (message) => {
+
+    if (isToastVisible.current) {
+      return;
+    }
+
+    isToastVisible.current = true;
+
+    ToastMessage(message);
+    setTimeout(() => {
+      isToastVisible.current = false;
+    }, 4000);
+
+  };
 
   const onPressGenerateReport = () => {
     console.log('onPressGenerateReport');
     if (selectedUser.length < 2 || selectedUser.length > 4) {
-      ToastMessage(i18n.t('toast.selectUsersRange'));
+      showToastOnce(i18n.t('toast.selectUsersRange'));
       setIsDisabledGenerateReport(true);
       return;
     }
@@ -207,16 +223,7 @@ export default function Compare(props: any) {
 
 
   const handleUserSelect = (value: string) => {
-    // Handle "Add Profile" case
-    if (value === 'addProfile') {
-      if (secondaryUserdata?.length <= secondaryUserLimit - 1) {
-        navigation.navigate('OnboardingScreen' as never, { onBoardType: 'combatUser' } as never);
-        return;
-      } else {
-        ToastMessage(i18n.t('userList.maxUsers'));
-        return;
-      }
-    }
+
 
     // Check if user is already selected (check both _id.$oid and id)
     const isAlreadySelected = selectedUser.some(
@@ -224,8 +231,24 @@ export default function Compare(props: any) {
     );
 
     // Don't add if already selected or if we've reached max 4 users
-    if (isAlreadySelected || selectedUser.length >= 4) {
+    if (isAlreadySelected) {
       return;
+    }
+
+    if (selectedUser.length >= 4) {
+      showToastOnce(i18n.t('toast.maxUsersCompare'));
+      return;
+    }
+
+    // Handle "Add Profile" case
+    if (value === 'addProfile') {
+      if (secondaryUserdata?.length <= secondaryUserLimit - 1) {
+        navigation.navigate('OnboardingScreen' as never, { onBoardType: 'combatUser' } as never);
+        return;
+      } else {
+        showToastOnce(i18n.t('userList.maxUsers'));
+        return;
+      }
     }
 
     // Find the user from secondaryUserdata
@@ -245,7 +268,7 @@ export default function Compare(props: any) {
       } else if (compareUser4 === null) {
         setCompareUser4(userToAdd);
       } else {
-        ToastMessage(i18n.t('toast.maxUsersCompatibility'));
+        showToastOnce(i18n.t('toast.maxUsersCompatibility'));
         return;
       }
     }
@@ -253,16 +276,17 @@ export default function Compare(props: any) {
 
   const generateCompatibilityReport = () => {
     console.log('generateCompatibilityReport');
+    setShowCoinSummaryModal(false);
     createCompatibilityReport(true, { type: compareType, profile_id: selectedUser.map((item: any) => item?._id?.$oid ?? '') }, true).then(async (res) => {
       console.log('Response from getcompareReport', res);
       if (res.success) {
         setErrorCompare('')
         setShowGenerateReportModal(true);
         setPdfUrl(res.data || '')
-        ToastMessage(i18n.t('toast.reportGeneratedSuccess'));
-        await getWalletDetails();
+        showToastOnce(i18n.t('toast.reportGeneratedSuccess'));
+        await getWalletDetails({ silent: true });
       } else {
-        ToastMessage((res.data as string) || i18n.t('common.somethingWentWrong'));
+        showToastOnce((res.data as string) || i18n.t('common.somethingWentWrong'));
       }
     });
   };
@@ -444,19 +468,19 @@ export default function Compare(props: any) {
       <CustomButton
         title={i18n.t('compat.generate')}
         style={styles.generate}
-        disabled={isDisabledGenerateReport}
+        // disabled={isDisabledGenerateReport}
         onPress={onPressGenerateReport}
       />
       {isLoading && <Loader />}
+      {availableCoins < lowerLimit && <View style={styles.emptyCreditsContainer}>
+        <EmptyCredits />
+      </View>}
       <CoinSummaryModal
         title={`Download ${compareType.charAt(0).toUpperCase() + compareType.slice(1)} ${i18n.t('compat.compareReport')}`}
         cost={10}
         closeModal={() => { setShowCoinSummaryModal(false) }}
         visible={showCoinSummaryModal}
         paynow={generateCompatibilityReport} />
-      {availableCoins < lowerLimit && <View style={styles.emptyCreditsContainer}>
-        <EmptyCredits />
-      </View>}
       <GenerateReportModal
         closeModal={() => { setShowGenerateReportModal(false) }}
         visible={showGenerateReportModal}
@@ -573,6 +597,7 @@ const styles = StyleSheet.create({
   },
   emptyCreditsContainer: {
     marginBottom: verticalScale(50),
+    zIndex: 120,
   },
   errorText: {
     color: colors.red2,
