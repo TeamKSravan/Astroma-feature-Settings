@@ -24,7 +24,7 @@ interface ChatState {
   chatHistory?: Array<any> | null;
   categories?: Array<any> | null;
   getCategories: () => Promise<{ success: boolean; data?: string; message?: string }>;
-  getQuestions: () => Promise<{ success: boolean; data?: string; message?: string }>;
+  getQuestions: (userId: string) => Promise<{ success: boolean; data?: string; message?: string }>;
   getChatMessageHistory: (chatHistoryId: string, userId: string) => Promise<{ success: boolean; data?: string; message?: string }>;
   getChatHistory: (userId: string, searchQuery?: string) => Promise<{ success: boolean; data?: string; message?: string }>;
   getChatHistoryById: (id: string) => Promise<{ success: boolean; data?: string; message?: string }>;
@@ -70,10 +70,10 @@ export const useChatStore = create<ChatState>()(
           return { success: false, data: errorMessage };
         }
       },
-      getQuestions: async () => {
+      getQuestions: async (userId: string) => {
         setLoading(true);
         try {
-          const response = await AxiosBase.post(`/astrology/questions`);
+          const response = await AxiosBase.post(`/astrology/questions${userId ? `?profile_id=${userId}` : ''}`);
           console.log('Response from getQuestions', response);
           setLoading(false);
           return { success: true, data: response.result };

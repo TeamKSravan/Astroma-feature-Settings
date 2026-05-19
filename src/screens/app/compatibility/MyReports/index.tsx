@@ -17,6 +17,7 @@ import { fonts } from '../../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../../utils/scale';
 import CompatibilityReports from './CompatibilityReports';
 import CompareReports from './CompareReports';
+import Downloads from './Downloads';
 
 const { width } = Dimensions.get('window');
 
@@ -62,6 +63,8 @@ export default function MyReportScreen(props: any) {
         return <CompatibilityReports />;
       case 'compareReports':
         return <CompareReports tabIndex={index} />;
+      case 'downloads':
+        return <Downloads tabIndex={index} />;
       default:
         return null;
     }

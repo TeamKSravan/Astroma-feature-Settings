@@ -1,21 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import CustomButton from '../../../components/CustomButton';
-import { useAuthStore } from '../../../store/useAuthStore';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
-import { Information } from '../../../constants/svgpath';
 import OrderSummaryModal from '../../../components/modals/OrderSummary';
 import i18n from '../../../translation/i18n';
-import BackButton from '../../../components/BackButton';
 import { purchaseProduct, purchaseSubscription } from '../../../services/iapService';
 import { useWalletStore } from '../../../store/useWalletStore';
 import Loader from '../../../components/Loader';
 import { formatNumberWithCommas } from '../../../utils/methods';
+import PlanComponent from './PlanComponent';
 
 type PlanOption = {
   id: string;
@@ -27,23 +24,39 @@ type PlanOption = {
   productID: string;
 };
 
-export default function WalletScreen(props: any) {
+function getLocalizedPlanFeatureLines(planId: string): string[] {
+  const storeName = Platform.OS === 'ios' ? 'App Store' : 'Google Play';
+  const replaceStorePlaceholder = (lines: string[]) => lines.map((line) => line.replace(/\{\{store\}\}/g, storeName));
+  const localeKey = (i18n.locale || 'en').replace(/-.*/, '');
+  const fromLocale = (i18n.translations as Record<string, { wallet?: { planFeatureSets?: Record<string, string[]> } }>)?.[localeKey]
+    ?.wallet?.planFeatureSets?.[planId];
+  if (Array.isArray(fromLocale) && fromLocale.length) {
+    return replaceStorePlaceholder(fromLocale);
+  }
+  const fromEn = (i18n.translations as Record<string, { wallet?: { planFeatureSets?: Record<string, string[]> } }>)?.en?.wallet
+    ?.planFeatureSets?.[planId];
+  return Array.isArray(fromEn) ? replaceStorePlaceholder(fromEn) : [];
+}
+
+const coinSparkImageSize = { width: scale(50), height: scale(50) };
+const KAV_BEHAVIOR = Platform.OS === 'ios' ? 'padding' as const : 'height' as const;
+const KAV_OFFSET = Platform.OS === 'ios' ? 10 : 60;
+
+function WalletScreen(props: any) {
   const { navigation, route } = props;
-  const { showBack = false } = route?.params || {};
 
   const [showOrderSummaryModal, setShowOrderSummaryModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<PlanOption | null>(null);
-  const [addCoinsAmount, setAddCoinsAmount] = useState('');
-  const [options, setOptions] = useState<PlanOption[]>([]);
-  const { plans, getPlanDetails, availableCoins, getWalletDetails, currentSubscription } = useWalletStore();
-  const { isLoading } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const { plans, availableCoins, getWalletDetails, getPlanDetails, currentSubscription } = useWalletStore();
 
-  // Sparkle twinkle animation for coinSpark
   const coinSparkAnim = useRef(new Animated.Value(0)).current;
-  const createSparkleAnimation = (animValue: Animated.Value, delay: number) => {
+  const hasFetchedSubRef = useRef<string | null>(null);
+
+  useEffect(() => {
     Animated.sequence([
-      Animated.delay(delay),
-      Animated.timing(animValue, {
+      Animated.delay(0),
+      Animated.timing(coinSparkAnim, {
         toValue: 1,
         duration: 1500,
         useNativeDriver: true,
@@ -51,12 +64,12 @@ export default function WalletScreen(props: any) {
     ]).start(() => {
       Animated.loop(
         Animated.sequence([
-          Animated.timing(animValue, {
+          Animated.timing(coinSparkAnim, {
             toValue: 1.25,
             duration: 3000,
             useNativeDriver: true,
           }),
-          Animated.timing(animValue, {
+          Animated.timing(coinSparkAnim, {
             toValue: 0.75,
             duration: 3000,
             useNativeDriver: true,
@@ -64,151 +77,135 @@ export default function WalletScreen(props: any) {
         ]),
       ).start();
     });
-  };
-  const createElementStyle = (animValue: Animated.Value) => {
-    const opacity = animValue.interpolate({
+  }, []);
+
+  const sparkleStyle = useMemo(() => {
+    const opacity = coinSparkAnim.interpolate({
       inputRange: [0, 0.75, 1, 1.25],
       outputRange: [0, 0.4, 1, 0.5],
     });
-    const scale = animValue.interpolate({
+    const s = coinSparkAnim.interpolate({
       inputRange: [0, 0.75, 1, 1.25],
       outputRange: [0, 0.7, 1, 1.2],
     });
-    return { opacity, transform: [{ scale }] };
-  };
-  useEffect(() => {
-    createSparkleAnimation(coinSparkAnim, 0);
-  }, []);
+    return { opacity, transform: [{ scale: s }] };
+  }, [coinSparkAnim]);
+
+  const subKey = currentSubscription?._id ?? '';
 
   useEffect(() => {
-    getAppWalletDetails();
-    console.log('currentSubscription', currentSubscription);
-  }, [currentSubscription]);
+    if (hasFetchedSubRef.current === subKey) return;
+    const fetch = async () => {
+      setIsLoading(true);
+      await Promise.all([
+        getWalletDetails({ silent: true }),
+        (!plans?.length ? getPlanDetails() : Promise.resolve()),
+      ]);
+      setIsLoading(false);
+      hasFetchedSubRef.current = subKey;
+    };
+    fetch();
+  }, [subKey, getWalletDetails, getPlanDetails, plans?.length]);
 
-  const getAppWalletDetails = async () => {
-    const res = await getWalletDetails();
-    console.log('Response from getWalletDetails', res);
-  }
-
-  const handleAddCoins = () => {
-    console.log('selectedPackage : ', selectedPackage);
+  const handleAddCoins = useCallback(() => {
     const productId = selectedPackage?.productID;
-    if (typeof productId !== 'string' || !productId.trim()) {
-      return;
-    }
+    if (typeof productId !== 'string' || !productId.trim()) return;
     if (Platform.OS === 'android') {
       if (!selectedPackage?.subscription) {
         purchaseProduct(productId);
-      }
-      else {
+      } else {
         purchaseSubscription(productId);
       }
     } else {
       purchaseSubscription(productId);
     }
-  };
+  }, [selectedPackage]);
 
+  const closeOrderSummary = useCallback(() => setShowOrderSummaryModal(false), []);
+  const onCancelPlan = useCallback(() => setSelectedPackage(null), []);
+  const onContinuePlan = useCallback(() => setShowOrderSummaryModal(true), []);
 
-  console.log('current plan : ', plans.some(plan => plan.id === currentSubscription?.plan_details?._id));
+  const subscriptionPlans = useMemo(
+    () => plans?.filter((o) => o.subscription) ?? [],
+    [plans],
+  );
+
+  const featureLinesMap = useMemo(
+    () => Object.fromEntries(subscriptionPlans.map(p => [p.id, getLocalizedPlanFeatureLines(p.id)])),
+    [subscriptionPlans],
+  );
+
+  const loader = useMemo(() => (
+    isLoading ? <Loader /> : null
+  ), [isLoading]);
+
+  const coinsDisplay = useMemo(() => (
+    <View style={styles.coinsDisplayContainer}>
+      <View style={styles.coinsRowContainer}>
+        <View>
+          <Animated.View style={[styles.coinSparkImage, sparkleStyle]}>
+            <Image source={imagepath.coinSpark} style={coinSparkImageSize} />
+          </Animated.View>
+          <Image source={imagepath.Coins} style={styles.coinsImage} />
+        </View>
+        <Text style={styles.coinCountText}>{formatNumberWithCommas(availableCoins)}</Text>
+      </View>
+      <Text style={styles.availableCoinsText}>{i18n.t('wallet.availableCoins')}</Text>
+    </View>
+  ), [availableCoins, sparkleStyle]);
+
+  const plansList = useMemo(() => (
+    <View style={styles.plansSection}>
+      <Text style={styles.plansSectionTitle}>{i18n.t('wallet.plans')}</Text>
+      <View style={styles.optionsContainer}>
+        {subscriptionPlans.map((option) => (
+          <PlanComponent
+            key={option.id}
+            option={option}
+            featureLines={featureLinesMap[option.id] ?? []}
+            selectedPackage={selectedPackage}
+            onPress={() => setSelectedPackage(option)}
+            onCancel={onCancelPlan}
+            onContinue={onContinuePlan}
+          />
+        ))}
+      </View>
+    </View>
+  ), [subscriptionPlans, featureLinesMap, selectedPackage, onCancelPlan, onContinuePlan]);
+
+  const orderModal = useMemo(() => (
+    <OrderSummaryModal
+      packageData={selectedPackage}
+      closeModal={closeOrderSummary}
+      visible={showOrderSummaryModal}
+      navigation={navigation}
+      paynow={handleAddCoins}
+    />
+  ), [selectedPackage, showOrderSummaryModal, closeOrderSummary, navigation, handleAddCoins]);
 
   return (
     <BaseView backgroundImage={imagepath.walletBg}>
-      {/* <View style={styles.headerContainer}>
-        {showBack && <BackButton />}
-      </View> */}
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 60}
+        behavior={KAV_BEHAVIOR}
+        keyboardVerticalOffset={KAV_OFFSET}
       >
         <ScrollView
-            bounces={false}
-            style={styles.container}
-            contentContainerStyle={styles.scrollContent}
-          >
-          {isLoading && <Loader />}
-          <View style={styles.coinsDisplayContainer}>
-            <View style={styles.coinsRowContainer}>
-              <View>
-                <Animated.View style={[styles.coinSparkImage, createElementStyle(coinSparkAnim)]}>
-                  <Image
-                    source={imagepath.coinSpark}
-                    style={{ width: scale(50), height: scale(50) }}
-                  />
-                </Animated.View>
-                <Image
-                  source={imagepath.Coins}
-                  style={styles.coinsImage}
-                />
-              </View>
-              <Text style={styles.coinCountText}>{formatNumberWithCommas(availableCoins)}</Text>
-
-            </View>
-            <Text style={styles.availableCoinsText}>{i18n.t('wallet.availableCoins')}</Text>
-          </View>
-          {false && <View style={styles.specialOfferBanner}>
-            <Text style={styles.specialofferText}>{i18n.t('wallet.specialOfferBanner')}</Text>
-            <Image
-              source={imagepath.offerSpark}
-              style={styles.offerSparkSmall}
-            />
-          </View>}
-          <View style={styles.plansSection}>
-            <Text style={styles.plansSectionTitle}>{i18n.t('wallet.plans')}</Text>
-            <View style={styles.optionsContainer}>
-              {plans?.filter((o) => o.subscription).map((option) => (
-                <TouchableOpacity
-                  key={option.id}
-                  // disabled={plans.some(plan => plan.id === currentSubscription?.plan_details?._id)}
-                  style={[
-                    styles.planCard,
-                    (currentSubscription?.plan_details?._id === option.id || selectedPackage?.id === option.id) && styles.planCardSelected,
-                  ]}
-                  onPress={() => {
-                    setSelectedPackage(option);
-                    setShowOrderSummaryModal(true);
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <View style={styles.planCardLeft}>
-                    <View style={styles.planCardHeader}>
-                      <Text style={styles.optionTitle}>{option.label}</Text>
-                      {option.subscription && (
-                        <View style={styles.infoIconWrap}>
-                          <Information />
-                        </View>
-                      )}
-                    </View>
-                    <View style={styles.coinsBadge}>
-                      <Text style={styles.coinsBadgeText}>{option.coin} Coins</Text>
-                    </View>
-                  </View>
-                  {option.cost != null && (
-                    <View style={styles.planCardRight}>
-                      {option.specialOffer && (
-                        <View style={styles.specialOfferBadge}>
-                          <Text style={styles.specialOfferBadgeText}>
-                            {i18n.t('wallet.specialOffer')}
-                          </Text>
-                          <Image
-                            source={imagepath.offerSpark}
-                            style={styles.offerSparkSmall}
-                          />
-                        </View>
-                      )}
-                      <Text style={styles.planPrice}>${option.cost}</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-          <OrderSummaryModal packageData={selectedPackage} closeModal={() => { setShowOrderSummaryModal(false) }} visible={showOrderSummaryModal} navigation={navigation} paynow={handleAddCoins} />
+          bounces={false}
+          style={styles.container}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {loader}
+          {coinsDisplay}
+          {plansList}
+          {orderModal}
         </ScrollView>
       </KeyboardAvoidingView>
     </BaseView>
   );
 }
+
+export default React.memo(WalletScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -217,7 +214,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   scrollContent: {
-    paddingBottom: verticalScale(40),
+    paddingBottom: verticalScale(80),
   },
   headerContainer: {
     flexDirection: 'row',
@@ -308,6 +305,7 @@ const styles = StyleSheet.create({
   plansSection: {
     marginTop: verticalScale(36),
     paddingHorizontal: scale(4),
+    gap: verticalScale(10),
   },
   plansSectionTitle: {
     color: colors.lightYellow,

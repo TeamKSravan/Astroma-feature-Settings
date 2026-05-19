@@ -10,6 +10,11 @@
         "next": "Next",
         "credentials": "Enter Credentials"
     },
+    "phone": {
+        "phone": "Enter Phone Number",
+        "next": "Next",
+        "credentials": "Enter Credentials"
+    },
     "birth": {
         "birth": "Enter Date of Birth"
     },
@@ -67,6 +72,11 @@
         "didnt": "Didn’t receive the OTP? ",
         "resend": "Resend Code",
         "loginn": "Login",
+        "loginFailed": "Login failed. Please try again.",
+        "loginSuccess": "Login successful",
+        "googleLogin": "Continue with Google",
+        "appleLogin": "Continue with Apple",
+        "or": "OR",
         "emailRequired": "Please enter your email",
         "invalidEmail": "Please enter a valid email address",
         "otpSent": "OTP has been sent to your Mobile Number",
@@ -279,6 +289,44 @@
         "plans": "Plans",
         "specialOfferBanner": "Special offer Get 200 coins in $ 20",
         "specialOffer": "Special Offer",
+        "coinsWithCount": "%{count} Coins",
+        "termsOfUse": "Terms of Use",
+        "privacyPolicy": "Privacy Policy",
+        "planFeatureSets": {
+            "6971de11677b74302af8ed0b": [
+                "Month Subscription (Auto-Renewable)",
+                "Receive 50 coins per month",
+                "Subscription renews automatically every month",
+                "Payment will be charged to your {{store}} account",
+                "You can manage or cancel your subscription in {{store}} Settings"
+            ],
+            "6971de39677b74302af8ed0c": [
+                "Month Subscription (Auto-Renewable)",
+                "Receive 100 coins per month",
+                "Subscription renews automatically every month",
+                "Payment will be charged to your {{store}} account",
+                "You can manage or cancel your subscription in {{store}} Settings"
+            ],
+            "6971de54677b74302af8ed0d": [
+                "Month Subscription (Auto-Renewable)",
+                "Receive 200 coins per month",
+                "Subscription renews automatically every month",
+                "Payment will be charged to your {{store}} account",
+                "You can manage or cancel your subscription in {{store}} Settings"
+            ],
+            "2": [
+                "One Time Payment",
+                "Receive 1 coin",
+                "Unlimited Reports Readings",
+                "Unlimited Daily Predictions"
+            ],
+            "3": [
+                "One Time Payment",
+                "Receive 10 coins",
+                "Unlimited Reports Readings",
+                "Unlimited Daily Predictions"
+            ]
+        },
         "addCoins": "Add Coins",
         "coins10": "10 Coins",
         "coins100": "100 Coins",
@@ -313,6 +361,7 @@
         "downloads": "Downloads",
         "noCompatibilityReports": "No reports available yet",
         "noDownloadedReports": "No Reports Found.",
+        "allReportsUnlocked": "You’ve unlocked all available reports",
         "welcomeBonus": "Welcome Bonus added in your Wallet",
         "defaultTitle": "Report"
     },

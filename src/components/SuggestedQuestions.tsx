@@ -1,9 +1,10 @@
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { moderateScale, scale, verticalScale } from '../utils/scale';
 import { colors } from '../constants/colors';
-import { fonts, suggestedQuestions } from '../constants/fonts';
+import { fonts } from '../constants/fonts';
 import { useChatStore } from '../store/useChatStore';
+import { useProfileStore } from '../store/useProfileStore';
 
 export interface Question {
   id: string;
@@ -24,14 +25,12 @@ const SuggestedQuestion: React.FC<SuggestedQuestionProps> = ({
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { getQuestions } = useChatStore();
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
+  const { selectedUser } = useProfileStore();
+  const lastFetchKeyRef = useRef<string | null>(null);
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async (userId: string) => {
     setLoading(true);
-    getQuestions().then((res: any) => {
-      console.log('Questions data : ', res);
+    getQuestions(userId).then((res: any) => {
       if (res.success && res.data) {
         setQuestions(res.data?.map((object: any) => ({ text: object.question, category: object.category })));
       }
@@ -39,49 +38,60 @@ const SuggestedQuestion: React.FC<SuggestedQuestionProps> = ({
     }).catch(() => {
       setLoading(false);
     });
-  };
+  }, [getQuestions]);
 
-  if (loading && !horizontal) {
-    return (
-      <View style={styles.loaderWrapper}>
-        <ActivityIndicator size="small" color={colors.white} />
-      </View>
-    );
-  }
+  useEffect(() => {
+    const userId = selectedUser?._id?.$oid ?? '';
+    if (lastFetchKeyRef.current === userId) return;
+    lastFetchKeyRef.current = userId;
+    fetchQuestions(userId);
+  }, [selectedUser?._id?.$oid, fetchQuestions]);
 
-  if (horizontal) {
-    return (
-      <ScrollView horizontal contentContainerStyle={styles.horizontalWrapper}>
-        {questions.map(question => (
-          <TouchableOpacity key={question.id} style={styles.horizontalcontainer} onPress={() => onQuestionPress(question)} activeOpacity={0.7}>
-            {/* <Text style={styles.icon}>{question.icon}</Text> */}
-            <Text style={styles.text}>{question.text}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    );
-  }
+  const horizontalList = useMemo(() => (
+    <ScrollView horizontal contentContainerStyle={styles.horizontalWrapper}>
+      {questions.map((question, idx) => (
+        <TouchableOpacity key={question.id ?? idx} style={styles.horizontalcontainer} onPress={() => onQuestionPress(question)} activeOpacity={0.7}>
+          <Text style={styles.text}>{question.text}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  ), [questions, onQuestionPress]);
 
-  return (
+  const verticalList = useMemo(() => (
     <ScrollView contentContainerStyle={styles.questionsWrapper}>
       <View style={styles.questionsWrapper}>
-        {questions.map(question => (
+        {questions.map((question, idx) => (
           <TouchableOpacity
-            key={question.id}
+            key={question.id ?? idx}
             style={styles.container}
             onPress={() => onQuestionPress(question)}
             activeOpacity={0.7}
           >
-            {/* <Text style={styles.icon}>{question.icon}</Text> */}
             <Text style={styles.text}>{question.text}</Text>
           </TouchableOpacity>
         ))}
       </View>
     </ScrollView>
-  );
+  ), [questions, onQuestionPress]);
+
+  const loader = useMemo(() => (
+    <View style={styles.loaderWrapper}>
+      <ActivityIndicator size="small" color={colors.white} />
+    </View>
+  ), []);
+
+  if (loading && !horizontal) {
+    return loader;
+  }
+
+  if (horizontal) {
+    return horizontalList;
+  }
+
+  return verticalList;
 };
 
-export default SuggestedQuestion;
+export default React.memo(SuggestedQuestion);
 
 const styles = StyleSheet.create({
   loaderWrapper: {
@@ -111,7 +121,6 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(10),
     paddingHorizontal: scale(16),
     gap: scale(8),
-    // backgroundColor: colors.black,
   },
   horizontalcontainer: {
     flexDirection: 'row',

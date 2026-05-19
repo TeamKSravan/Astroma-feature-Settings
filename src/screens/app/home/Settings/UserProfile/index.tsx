@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
 import BaseView from '../../../../../utils/BaseView';
 import imagepath from '../../../../../constants/imagepath';
@@ -12,39 +12,44 @@ import EditUserProfile from '../../../../../components/modals/EditUserProfile';
 import BackButton from '../../../../../components/BackButton';
 import { useProfileStore } from '../../../../../store/useProfileStore';
 import Loader from '../../../../../components/Loader';
-import { useAuthStore } from '../../../../../store/useAuthStore';
 import { ToastMessage } from '../../../../../components/ToastMessage';
 import ItemUserProfile from '../../../../../components/Home/ItemUserProfile';
 import EmptyList from '../../../../../components/Common/ListEmptyComponent';
-export default function UserProfile({ navigation }: any) {
+
+function UserProfile({ navigation }: any) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedUserData, setSelectedUserData] = useState<any>(null);
     const [data, setData] = useState<Array<any>>([]);
+    const [isLoading, setIsLoading] = useState(false);
     const { getUserDetail, deleteUser, selectedUser, setSelectedUser, setSecondaryUserdata, secondaryUserdata } = useProfileStore();
-    const { isLoading } = useAuthStore();
 
-    useEffect(() => {
-        fetchUserDetail();
-    }, []);
+    const hasFetchedRef = useRef(false);
 
-    const fetchUserDetail = async () => {
+    const fetchUserDetail = useCallback(async () => {
+        setIsLoading(true);
         const result = await getUserDetail();
         if (result.success && result.data) {
             setData(result.data);
         } else {
             setData([]);
         }
-    };
+        setIsLoading(false);
+    }, [getUserDetail]);
 
-    const handleDelete = async (user: any) => {
+    useEffect(() => {
+        if (hasFetchedRef.current) return;
+        hasFetchedRef.current = true;
+        fetchUserDetail();
+    }, [fetchUserDetail]);
+
+    const handleDelete = useCallback(async (user: any) => {
         if (user && user._id && user._id.$oid) {
             const result = await deleteUser(user._id.$oid);
             if (result.success) {
                 if (selectedUser?._id?.$oid == user?._id?.$oid) {
                     setSelectedUser(null);
                 }
-
                 setSecondaryUserdata(secondaryUserdata?.filter((item: any) => item?._id?.$oid !== user?._id?.$oid) ?? []);
                 fetchUserDetail();
                 setShowDeleteModal(false);
@@ -52,54 +57,92 @@ export default function UserProfile({ navigation }: any) {
                 ToastMessage(result.message || i18n.t('userProfile.deletedFailed'));
             }
         }
-    };
+    }, [deleteUser, selectedUser, setSelectedUser, setSecondaryUserdata, secondaryUserdata, fetchUserDetail]);
 
-    const deleteProfile = () => {
+    const deleteProfile = useCallback(() => {
         if (selectedUserData) {
             handleDelete(selectedUserData);
             setShowDeleteModal(false);
         }
-    };
+    }, [selectedUserData, handleDelete]);
 
+    const closeDeleteModal = useCallback(() => setShowDeleteModal(false), []);
+    const closeEditModal = useCallback(() => setShowEditModal(false), []);
+    const keyExtractor = useCallback((item: any) => item._id?.$oid, []);
 
+    const renderItem = useCallback(({ item }: { item: any }) => (
+        <ItemUserProfile
+            user={item}
+            onEdit={() => {
+                setShowEditModal(true);
+                setSelectedUserData(item);
+            }}
+            onDelete={() => {
+                setShowDeleteModal(true);
+                setSelectedUserData(item);
+            }}
+        />
+    ), []);
 
-    const ListEmpty = () => <EmptyList addUser={() => {
-        navigation.navigate('OnboardingScreen', { onBoardType: 'combatUser', onGoBack: fetchUserDetail, })
-    }} title={i18n.t('userProfile.emptyListTitle')} description={i18n.t('userProfile.emptyListDescription')} addUserText={i18n.t('userProfile.addUserText')} />
-
-    return (
-        <BaseView backgroundImage={imagepath.walletBg}>
-            <View style={styles.headerContainer}>
-                <BackButton />
-                <View style={styles.headerView}>
-                    <Profile />
-                    <View style={styles.helloView}>
-                        <Text style={styles.nameText}>{i18n.t('userProfile.title')}</Text>
-                    </View>
+    const header = useMemo(() => (
+        <View style={styles.headerContainer}>
+            <BackButton />
+            <View style={styles.headerView}>
+                <Profile />
+                <View style={styles.helloView}>
+                    <Text style={styles.nameText}>{i18n.t('userProfile.title')}</Text>
                 </View>
             </View>
-            {!isLoading && <FlatList data={data}
+        </View>
+    ), []);
+
+    const listEmptyComponent = useMemo(() => (
+        <EmptyList
+            addUser={() => navigation.navigate('OnboardingScreen', { onBoardType: 'combatUser', onGoBack: fetchUserDetail })}
+            title={i18n.t('userProfile.emptyListTitle')}
+            description={i18n.t('userProfile.emptyListDescription')}
+            addUserText={i18n.t('userProfile.addUserText')}
+        />
+    ), [navigation, fetchUserDetail]);
+
+    const userList = useMemo(() => (
+        !isLoading ? (
+            <FlatList
+                data={data}
                 bounces={false}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.container}
-                keyExtractor={(item) => item._id?.$oid}
-                renderItem={({ item }) =>
-                    <ItemUserProfile user={item} onEdit={() => {
-                        setShowEditModal(true)
-                        setSelectedUserData(item);
-                    }} onDelete={() => {
-                        setShowDeleteModal(true)
-                        setSelectedUserData(item);
-                    }}
-                />}
-                ListEmptyComponent={ListEmpty}
-            />}
-            <DeleteModal closeModal={() => setShowDeleteModal(false)} visible={showDeleteModal} handleVerify={deleteProfile} />
-            <EditUserProfile userdata={selectedUserData} closeModal={() => setShowEditModal(false)} visible={showEditModal} reload={fetchUserDetail} />
-            {isLoading && <Loader />}
+                keyExtractor={keyExtractor}
+                renderItem={renderItem}
+                ListEmptyComponent={listEmptyComponent}
+            />
+        ) : null
+    ), [isLoading, data, keyExtractor, renderItem, listEmptyComponent]);
+
+    const deleteModal = useMemo(() => (
+        <DeleteModal closeModal={closeDeleteModal} visible={showDeleteModal} handleVerify={deleteProfile} />
+    ), [showDeleteModal, closeDeleteModal, deleteProfile]);
+
+    const editModal = useMemo(() => (
+        <EditUserProfile userdata={selectedUserData} closeModal={closeEditModal} visible={showEditModal} reload={fetchUserDetail} />
+    ), [selectedUserData, showEditModal, closeEditModal, fetchUserDetail]);
+
+    const loader = useMemo(() => (
+        isLoading ? <Loader /> : null
+    ), [isLoading]);
+
+    return (
+        <BaseView backgroundImage={imagepath.walletBg}>
+            {header}
+            {userList}
+            {deleteModal}
+            {editModal}
+            {loader}
         </BaseView>
     );
 }
+
+export default React.memo(UserProfile);
 
 const styles = StyleSheet.create({
     container: {

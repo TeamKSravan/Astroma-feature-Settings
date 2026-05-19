@@ -316,8 +316,17 @@ Based on your birth chart, here's what the stars reveal:
 
 export const options = [
   // { id: 1, label: 'Free Trial', cost: 0, coin: 50, productID: null },
-  { id: 2, label: '1 Question', cost: 1, coin: 1, productID: Platform.OS === 'android' ? 'com.astroma.single.1' : 'com.astroma.single.1' },
-  { id: 3, label: '10 Questions', cost: 5, coin: 10, productID: Platform.OS === 'android' ? 'com.astroma.pack.10' : 'com.astroma.pack.10' },
+  { id: '2', label: '1 Coin Pack', cost: 1, coin: 1, specialOffer: false, subscription: false, productID: Platform.OS === 'android' ? 'com.astroma.single.1' : 'com.astroma.single.1' },
+  { id: '3', label: '10 Coin Pack', cost: 5, coin: 10, specialOffer: false, subscription: false, productID: Platform.OS === 'android' ? 'com.astroma.pack.10' : 'com.astroma.pack.10' },
+  // { id: 2, label: '1 Question', cost: 1, coin: 1, specialOffer: false, subscription: false, productID: Platform.OS === 'android' ? 'com.astroma.single.1' : 'com.astroma.single.1' },
+  // { id: 3, label: '10 Questions', cost: 5, coin: 10, specialOffer: false, subscription: false, productID: Platform.OS === 'android' ? 'com.astroma.pack.10' : 'com.astroma.pack.10' },
 ];
-
+/* 
+    id: string;
+    label: string;
+    specialOffer: boolean;
+    subscription: boolean;
+    cost: number;
+    coin: number;
+*/
 export const GOOGLE_API_KEY = 'AIzaSyB0FjlKAR4bnyS4M2Vs_BC-Rh-5ZW9bBGU';

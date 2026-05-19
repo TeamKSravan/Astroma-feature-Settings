@@ -34,6 +34,7 @@ interface EnterPlaceStepProps {
   locationType: string;
   onLocationTypeSelect: (type: string) => void;
   isActive: boolean;
+  error: any;
 }
 
 export default function EnterPlaceStep({
@@ -46,8 +47,12 @@ export default function EnterPlaceStep({
   onLocationSelect,
   locationType,
   onLocationTypeSelect,
+  error={}
 }: EnterPlaceStepProps) {
+  const [errors, setErrors] = useState(error);
   const hasAnimated = useRef(false);
+  const scrollViewRef = useRef(null);
+  const currentOffset = useRef(0);
   const rashiOpacity = useRef(new Animated.Value(0)).current;
   const rashiScale = useRef(new Animated.Value(0.7)).current;
   const isSelectingRef = useRef<boolean>(false);
@@ -69,6 +74,16 @@ export default function EnterPlaceStep({
   const inputRef = useRef<TextInput>(null);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
+
+  useEffect(() => {
+    setErrors(error);
+    if(error && errors.place !== error.place){
+      (scrollViewRef.current as any)?.scrollTo({
+        y: currentOffset.current + 20,
+        animated: true,
+      });
+    }
+  }, [error]);
 
   const getLocation = (): Promise<{ lat: string; lng: string }> => {
     return new Promise((resolve, reject) => {
@@ -278,6 +293,7 @@ export default function EnterPlaceStep({
 
   const handleInputChange = (text: string) => {
     // Filter special characters except comma and hyphen
+    setErrors({});
     let filteredText = text.replace(/[^a-zA-Z0-9\s,\-]/g, '');
 
     // Remove leading commas and hyphens (first character must be alphabet or number)
@@ -384,12 +400,26 @@ export default function EnterPlaceStep({
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+    if (showDropdown && value.length >= 2) {
+      (scrollViewRef.current as any)?.scrollToEnd({
+        animated: true,
+      });
+    }
+  }, [showDropdown && value.length >= 2]);
+
   return (
     <ScrollView
+      ref={scrollViewRef}
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled={true}
+      onScroll={(e) => {
+        currentOffset.current =
+          e.nativeEvent
+           .contentOffset.y;
+      }}
       scrollEnabled={true}
     >
       <View style={styles.contentView}>
@@ -504,9 +534,11 @@ export default function EnterPlaceStep({
             ref={inputRef}
             placeholder={i18n.t('place.city')}
             value={value}
+            inputStyle={{ borderColor: errors?.place ? colors.red2 : colors.primary, borderWidth: errors?.place ? 1 : 0 }}
             onChangeText={handleInputChange}
             blurOnSubmit={false}
             returnKeyType="done"
+            error={errors?.place}
           />
 
           {locationType === 'manual' && (

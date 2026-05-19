@@ -13,6 +13,7 @@ import { AstrologyApiKey } from '../../constants/Keys';
 import useValidation from '../../hooks/useValidation';
 import CustomDateInput from '../CustomDateInput';
 import moment from 'moment';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { capitalizeFirstLetter } from '../../utils/methods';
 
 type EditUserProfileProps = {
@@ -82,16 +83,19 @@ const ProfileInput = ({
 }
 
 export default function EditUserProfile(props: EditUserProfileProps) {
+  const { isConnected, isInternetReachable } = useNetInfo()
   const [fullName, setFullName] = useState(props.userdata?.name || '');
   const [errors, setErrors] = useState({});
   const [gender, setGender] = useState(props.userdata?.gender || '');
   const [dateOfBirth, setDateOfBirth] = useState(props.userdata?.date_of_birth || '');
   const [placeOfBirth, setPlaceOfBirth] = useState(props.userdata?.place_of_birth || '');
+  const [latitude, setLatitude] = useState(props.userdata?.lat || '');
+  const [longitude, setLongitude] = useState(props.userdata?.long || '');
   const [timeOfBirth, setTimeOfBirth] = useState(props.userdata?.time_of_birth || '');
   const { closeModal, visible } = props;
   const [predictions, setPredictions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
+  const [coordinates, setCoordinates] = useState({ lat: '', lng: '' });
   const { validate } = useValidation();
   const inputRef = useRef<TextInput>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -106,12 +110,22 @@ export default function EditUserProfile(props: EditUserProfileProps) {
     setDateOfBirth(props.userdata?.date_of_birth ? moment(props.userdata?.date_of_birth).format('DDMMYYYY') : '');
     setPlaceOfBirth(props.userdata?.place_of_birth || '');
     setTimeOfBirth(props.userdata?.time_of_birth || '');
+    setLatitude(props.userdata?.lat || '');
+    setLongitude(props.userdata?.long || '');
+    setCoordinates({
+      lat: props.userdata?.lat || '',
+      lng: props.userdata?.long || '',
+    });
     console.log('userdata : ', props.userdata);
 
   }, [props.userdata]);
 
 
   const saveChanges = () => {
+    if (!isConnected || !isInternetReachable) {
+      return Promise.reject(new Error(i18n.t('common.connectionError')));
+    }
+
 
     let validationError = validate('name', fullName);
     console.log('name validationError : ', validationError);
@@ -157,6 +171,8 @@ export default function EditUserProfile(props: EditUserProfileProps) {
       name: capitalizeFirstLetter(fullName),
       date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
       place_of_birth: placeOfBirth,
+      lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
+      long: coordinates.lng === '' ? '78.0081' : coordinates.lng,
       time_of_birth: timeOfBirth,
       ...(gender ? { gender } : {}),
     };
@@ -298,6 +314,64 @@ export default function EditUserProfile(props: EditUserProfileProps) {
     }
   };
 
+  /** Sanitize latitude input: allow digits, one minus, one dot, and optionally at end space + N or S (user types letter manually). Returns full string for display; use latToNumeric() for API. */
+  const sanitizeLatInput = (text: string): string => {
+    const trimmed = text.trim();
+    const letterMatch = trimmed.match(/\s*[NS]$/i);
+    const letterPart = letterMatch ? letterMatch[0] : '';
+    let numStr = trimmed.slice(0, trimmed.length - letterPart.length).replace(/[^\d.-]/g, '');
+    if (numStr.startsWith('-')) numStr = '-' + numStr.slice(1).replace(/-/g, '');
+    else numStr = numStr.replace(/-/g, '');
+    const parts = numStr.split('.');
+    numStr = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('').replace(/\./g, '') : '');
+    return numStr + letterPart;
+  };
+
+  /** Convert stored latitude string (e.g. "28.5 N" or "33.8688 S") to numeric string for API. */
+  const latToNumeric = (lat: string | null): string => {
+    if (lat === null || lat === '') return '';
+    const upper = lat.trim().toUpperCase();
+    const isS = upper.endsWith('S');
+    const isN = upper.endsWith('N');
+    const numStr = lat.replace(/[^\d.-]/g, '');
+    const n = parseFloat(numStr);
+    if (Number.isNaN(n)) return '';
+    let val = n;
+    if (isS) val = -Math.abs(n);
+    else if (isN) val = Math.abs(n);
+    val = Math.max(-90, Math.min(90, val));
+    return String(val);
+  };
+
+  /** Sanitize longitude input: allow digits, one minus, one dot, and optionally at end space + E or W (user types letter manually). */
+  const sanitizeLngInput = (text: string): string => {
+    const trimmed = text.trim();
+    const letterMatch = trimmed.match(/\s*[EW]$/i);
+    const letterPart = letterMatch ? letterMatch[0] : '';
+    let numStr = trimmed.slice(0, trimmed.length - letterPart.length).replace(/[^\d.-]/g, '');
+    if (numStr.startsWith('-')) numStr = '-' + numStr.slice(1).replace(/-/g, '');
+    else numStr = numStr.replace(/-/g, '');
+    const parts = numStr.split('.');
+    numStr = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('').replace(/\./g, '') : '');
+    return numStr + letterPart;
+  };
+
+  /** Convert stored longitude string (e.g. "78.0081 E" or "122.4194 W") to numeric string for API. */
+  const lngToNumeric = (lng: string | null): string => {
+    if (lng === null || lng === '') return '';
+    const upper = lng.trim().toUpperCase();
+    const isW = upper.endsWith('W');
+    const isE = upper.endsWith('E');
+    const numStr = lng.replace(/[^\d.-]/g, '');
+    const n = parseFloat(numStr);
+    if (Number.isNaN(n)) return '';
+    let val = n;
+    if (isW) val = -Math.abs(n);
+    else if (isE) val = Math.abs(n);
+    val = Math.max(-180, Math.min(180, val));
+    return String(val);
+  };
+
   return (
     <Modal
       animationIn="fadeIn"
@@ -346,6 +420,30 @@ export default function EditUserProfile(props: EditUserProfileProps) {
               )}
             </View>
           )}
+          <View style={styles.manualInputWrapper}>
+              <CustomTextInput
+                placeholder={i18n.t('place.enterLatitude')}
+                value={coordinates.lat ?? ''}
+                keyboardType="default"
+                onChangeText={(text) => {
+                  const sanitized = sanitizeLatInput(text);
+                  const next = { ...coordinates, lat: sanitized };
+                  setCoordinates(next);   
+                  setLatitude(sanitized);
+                }}
+              />
+              <CustomTextInput
+                placeholder={i18n.t('place.enterLongitude')}
+                value={coordinates.lng ?? ''}
+                keyboardType="default"
+                onChangeText={(text) => {
+                  const sanitized = sanitizeLngInput(text);
+                  const next = { ...coordinates, lng: sanitized };
+                  setCoordinates(next);
+                  setLongitude(sanitized);
+                }}
+              />
+            </View>
           <ProfileInput dropdown={true} data={[{ label: i18n.t('gender.male'), value: 'male' }, { label: i18n.t('gender.female'), value: 'female' }, { label: i18n.t('gender.other'), value: 'other' }]} label={i18n.t('profile.gender')} placeholder={i18n.t('profile.gender')} value={gender} onChangeText={setGender} error={errors?.gender} />
         </ScrollView>
         <CustomButton
@@ -502,5 +600,8 @@ const styles = StyleSheet.create({
     height: 140, // FIXED HEIGHT - KEY TO PREVENT KEYBOARD DISMISS
     overflow: 'hidden',
   },
-
+  manualInputWrapper: {
+    gap: 10,
+    marginTop: 20,
+  },
 });

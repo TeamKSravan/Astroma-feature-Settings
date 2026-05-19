@@ -20,6 +20,7 @@
 
   dispatch_once(&nativeComponentsToken, ^{
     thirdPartyComponents = @{
+		@"RNGoogleSignInButton": NSClassFromString(@"RNGoogleSignInButtonComponentView"), // @react-native-google-signin/google-signin
 		@"LottieAnimationView": NSClassFromString(@"LottieAnimationViewComponentView"), // lottie-react-native
 		@"RNDatePicker": NSClassFromString(@"RNDatePicker"), // react-native-date-picker
 		@"KeyboardControllerView": NSClassFromString(@"KeyboardControllerView"), // react-native-keyboard-controller

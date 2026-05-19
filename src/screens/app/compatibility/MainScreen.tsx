@@ -19,6 +19,7 @@ import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { Routes } from '../../../navigation/RouteNames';
 
 const { width } = Dimensions.get('window');
 
@@ -79,7 +80,7 @@ export default function MainScreen(props: any) {
             <Text style={styles.leftText}>{i18n.t('compat.compat')}</Text>
           </View>}
         // title={i18n.t('compat.compat')}
-        onWalletPress={() => props.navigation.navigate('Wallet', { showBack: true })}
+        onWalletPress={() => props.navigation.navigate(Routes.TransactionHistory)}
         RightComponent={<View />}
       />
       <TabView

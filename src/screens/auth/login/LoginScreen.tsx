@@ -17,6 +17,7 @@ import { colors } from '../../../constants/colors';
 import { DigitSubscriberNumber, fonts } from '../../../constants/fonts';
 import CustomTextInput from '../../../components/CustomTextInput';
 import CustomButton from '../../../components/CustomButton';
+import SocialSigninButton from '../../../components/SocialSigninButton';
 import CountryCodePicker from '../../../components/CountryCodePicker';
 import { ToastMessage } from '../../../components/ToastMessage';
 import useValidation from '../../../hooks/useValidation';
@@ -25,6 +26,16 @@ import Loader from '../../../components/Loader';
 import BaseView from '../../../utils/BaseView';
 import { useWalletStore } from '../../../store/useWalletStore';
 import { requestUserPermission } from '../../../services/NotificationServices';
+import { GoogleSignin, } from '@react-native-google-signin/google-signin';
+import { GoogleAuthProvider, AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { GoogleWebClientId } from '../../../constants/Keys';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
+import { OnBoardType } from '../onboarding/OnboardingScreen';
+
+GoogleSignin.configure({
+  webClientId: GoogleWebClientId,
+});
+
 export default function LoginScreen(props: any) {
   const [phoneNumber, setPhoneNumber] = useState(__DEV__ ? '8980698248' : '');
   const [disableButton, setDisableButton] = useState(false);
@@ -39,7 +50,7 @@ export default function LoginScreen(props: any) {
     region: 'Asia',
     subregion: 'Southern Asia',
   } as Country);
-  const { sendOTP, isLoading, CheckOnBoarding } = useAuthStore();
+  const { sendOTP, isLoading, CheckOnBoarding, SocialLogin } = useAuthStore();
   const { getPlanDetails, } = useWalletStore();
   const { validate } = useValidation();
 
@@ -77,6 +88,70 @@ export default function LoginScreen(props: any) {
       ).start();
     });
   };
+
+  const handleGoogleLogin = async () => {
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    const signInResult = await GoogleSignin.signIn();
+    console.log('signInResult =>', signInResult);
+    var idToken = signInResult.data?.idToken;
+    console.log('idToken =>', idToken);
+    if (!idToken) {
+      // if you are using older versions of google-signin, try old style result
+      idToken = signInResult?.idToken;
+    }
+    if (!idToken) {
+      throw new Error('No ID token found');
+    }
+    const googleCredential = GoogleAuthProvider.credential(idToken);
+    const firebaseUserCredential = await getAuth().signInWithCredential(googleCredential);
+    console.log('firebaseUserCredential =>', firebaseUserCredential);
+    const firebaseIdToken = await firebaseUserCredential.user.getIdToken()
+    console.log('firebaseIdToken =>', firebaseIdToken);
+    const body = {
+      "id_token": firebaseIdToken,
+      "provider": "google"
+    };
+    console.log('body =>', body);
+    const result = await SocialLogin(body);
+    if (result.success) {
+      props.navigation.navigate('OnboardingScreen', { onBoardType: OnBoardType.socialLogin });
+    } else {
+      ToastMessage(result.message || i18n.t('login.loginFailed'));
+    }
+  };
+
+  async function handleAppleLogin() {
+    // Start the sign-in request
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      // As per the FAQ of react-native-apple-authentication, the name should come first in the following array.
+      // See: https://github.com/invertase/react-native-apple-authentication#faqs
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    });
+
+    // Ensure Apple returned a user identityToken
+    if (!appleAuthRequestResponse.identityToken) {
+      throw new Error('Apple Sign-In failed - no identify token returned');
+    }
+
+    // Create a Firebase credential from the response
+    const { identityToken, nonce } = appleAuthRequestResponse;
+    const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+    console.log('appleCredential =>', appleCredential);
+    const firebaseUserCredential = await signInWithCredential(getAuth(), appleCredential);
+    const firebaseIdToken = await firebaseUserCredential.user.getIdToken();
+    const body = {
+      "id_token": firebaseIdToken,
+      "provider": "apple"
+    };
+    console.log('body =>', body);
+    const result = await SocialLogin(body);
+    if (result.success) {
+      props.navigation.navigate('OnboardingScreen', { onBoardType: OnBoardType.socialLogin });
+    } else {
+      ToastMessage(result.message || i18n.t('login.loginFailed'));
+    }
+  }
 
 
   const createElementStyle = (animValue: Animated.Value) => {
@@ -124,6 +199,12 @@ export default function LoginScreen(props: any) {
       setError({
         phone: i18n.t('login.enterPhone'),
       });
+      if(error && error?.phone !== i18n.t('login.enterPhone')){
+        (scrollViewRef.current as any)?.scrollTo({
+          y: currentOffset.current + 20,
+            animated: true,
+          });
+        }
       return;
 
     }
@@ -170,6 +251,7 @@ export default function LoginScreen(props: any) {
     }
   };
   const scrollViewRef = useRef<ScrollView>(null);
+  const currentOffset = useRef(0);
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
       <KeyboardAvoidingView
@@ -177,7 +259,15 @@ export default function LoginScreen(props: any) {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 50}
       >
-        <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          ref={scrollViewRef}
+          showsVerticalScrollIndicator={false}
+          onScroll={(e) => {
+            currentOffset.current =
+              e.nativeEvent
+                .contentOffset.y;
+          }}
+        >
           <View style={[styles.img, { width: '100%' }]}>
             <Animated.View style={[styles.smallImg, { top: 110, left: 55 }, createElementStyle(sparkle1)]}>
               <Image source={imagepath.CSparkle} style={{ width: 8, height: 8 }} />
@@ -208,7 +298,10 @@ export default function LoginScreen(props: any) {
             <CustomTextInput
               placeholder={i18n.t('login.enterPhone')}
               value={phoneNumber}
-              onChangeText={(txt) => setPhoneNumber(txt.replace(/[^0-9]/g, ''))}
+              onChangeText={(txt) => {
+                setPhoneNumber(txt.replace(/[^0-9]/g, ''));
+                setError({});
+              }}
               keyboardType="phone-pad"
               maxLength={15}
               leftComponent={
@@ -225,8 +318,25 @@ export default function LoginScreen(props: any) {
           title={i18n.t('login.loginn')}
           style={styles.buttonStyle}
           onPress={handleLogin}
-          disabled={phoneNumber.length == 0 || disableButton}
+          // disabled={phoneNumber.length == 0 || disableButton}
         />
+        <View style={styles.orView}>
+          <View style={styles.orLine} />
+          <Text style={styles.orText}>{i18n.t('login.or')}</Text>
+          <View style={styles.orLine} />
+        </View>
+        <SocialSigninButton
+          title={i18n.t('login.googleLogin')}
+          style={styles.buttonStyle}
+          icon={<Image source={imagepath.google} style={{ width: 25, height: 25 }} />}
+          onPress={handleGoogleLogin}
+        />
+        {Platform.OS === 'ios' && <SocialSigninButton
+          title={i18n.t('login.appleLogin')}
+          style={styles.socialLoginButtonStyle}
+          icon={<Image source={imagepath.apple} style={{ width: 25, height: 25 }} />}
+          onPress={handleAppleLogin}
+        />}
       </KeyboardAvoidingView>
       {isLoading && <Loader />}
     </BaseView>
@@ -248,6 +358,25 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(30),
     marginBottom: verticalScale(10),
   },
+  orView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: verticalScale(15),
+    marginHorizontal: scale(20),
+    gap: scale(10),
+  },
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.primary,
+  },
+  orText: {
+    color: colors.white,
+    fontFamily: fonts.regular,
+    fontSize: moderateScale(12),
+    textAlign: 'center',
+  },
   emailText: {
     color: colors.white,
     fontFamily: fonts.regular,
@@ -257,6 +386,10 @@ const styles = StyleSheet.create({
   buttonStyle: {
     marginHorizontal: scale(16),
     marginTop: verticalScale(20),
+  },
+  socialLoginButtonStyle: {
+    marginHorizontal: scale(16),
+    marginTop: verticalScale(10),
   },
   container: {
     flex: 1,

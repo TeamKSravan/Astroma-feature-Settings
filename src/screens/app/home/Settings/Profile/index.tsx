@@ -45,6 +45,7 @@ import CustomDateInput from '../../../../../components/CustomDateInput';
 import { AstrologyApiKey } from '../../../../../constants/Keys';
 import moment from 'moment';
 import { capitalizeFirstLetter } from '../../../../../utils/methods';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 const ProfileInput = ({
   label,
@@ -149,6 +150,8 @@ export default function Profile({ navigation }: any) {
   const [gender, setGender] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [placeOfBirth, setPlaceOfBirth] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [timeOfBirth, setTimeOfBirth] = useState('');
   const [isPhoneVerified, setIsPhoneVerified] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -159,8 +162,8 @@ export default function Profile({ navigation }: any) {
   const [otp, setOtp] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
-  const [coordinates, setCoordinates] = useState({ lat: null, lng: null });
-
+  const [coordinates, setCoordinates] = useState({ lat: '', lng: '' });
+  const { isConnected, isInternetReachable } = useNetInfo()
   const inputRef = useRef<TextInput>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSelectingRef = useRef<boolean>(false);
@@ -190,6 +193,12 @@ export default function Profile({ navigation }: any) {
     // CustomDateInput expects digits in DDMMYYYY format (it will display as DD/MM/YYYY)
     setDateOfBirth(userDetails?.dateOfBirth ? moment(userDetails.dateOfBirth).format('DDMMYYYY') : '');
     setPlaceOfBirth(userDetails?.place || '');
+    setLatitude(userDetails?.lat || '');
+    setLongitude(userDetails?.long || '');
+    setCoordinates({
+      lat: userDetails?.lat || '',
+      lng: userDetails?.long || '',
+    });
     // Format timeOfBirth as HH:mm using moment
     setTimeOfBirth(userDetails?.timeOfBirth ? moment(userDetails.timeOfBirth, ['HH:mm:ss', 'HH:mm', 'h:mm A']).format('HH:mm') : '');
     setGender(userDetails?.gender || '');
@@ -263,18 +272,25 @@ export default function Profile({ navigation }: any) {
   };
 
   const deleteUserAccount = () => {
+    if (!isConnected || !isInternetReachable) {
+      ToastMessage(i18n.t('common.connectionError'));
+      return;
+    }
     console.log('deleteUserAccount');
     deleteAccount().then((result) => {
       console.log('deleteUserAccount', result);
       if (result.success) {
         ToastMessage(result.message);
         logout();
-      } else {
-        ToastMessage(result.message || i18n.t('profile.deleteFailed'));
       }
     });
   }
   const saveChanges = () => {
+    if (!isConnected || !isInternetReachable) {
+      ToastMessage(i18n.t('common.connectionError'));
+      return;
+    }
+
     if (disableButton) {
       return;
     }
@@ -540,6 +556,64 @@ export default function Profile({ navigation }: any) {
     }
   };
 
+  /** Sanitize latitude input: allow digits, one minus, one dot, and optionally at end space + N or S (user types letter manually). Returns full string for display; use latToNumeric() for API. */
+  const sanitizeLatInput = (text: string): string => {
+    const trimmed = text.trim();
+    const letterMatch = trimmed.match(/\s*[NS]$/i);
+    const letterPart = letterMatch ? letterMatch[0] : '';
+    let numStr = trimmed.slice(0, trimmed.length - letterPart.length).replace(/[^\d.-]/g, '');
+    if (numStr.startsWith('-')) numStr = '-' + numStr.slice(1).replace(/-/g, '');
+    else numStr = numStr.replace(/-/g, '');
+    const parts = numStr.split('.');
+    numStr = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('').replace(/\./g, '') : '');
+    return numStr + letterPart;
+  };
+
+  /** Convert stored latitude string (e.g. "28.5 N" or "33.8688 S") to numeric string for API. */
+  const latToNumeric = (lat: string | null): string => {
+    if (lat === null || lat === '') return '';
+    const upper = lat.trim().toUpperCase();
+    const isS = upper.endsWith('S');
+    const isN = upper.endsWith('N');
+    const numStr = lat.replace(/[^\d.-]/g, '');
+    const n = parseFloat(numStr);
+    if (Number.isNaN(n)) return '';
+    let val = n;
+    if (isS) val = -Math.abs(n);
+    else if (isN) val = Math.abs(n);
+    val = Math.max(-90, Math.min(90, val));
+    return String(val);
+  };
+
+  /** Sanitize longitude input: allow digits, one minus, one dot, and optionally at end space + E or W (user types letter manually). */
+  const sanitizeLngInput = (text: string): string => {
+    const trimmed = text.trim();
+    const letterMatch = trimmed.match(/\s*[EW]$/i);
+    const letterPart = letterMatch ? letterMatch[0] : '';
+    let numStr = trimmed.slice(0, trimmed.length - letterPart.length).replace(/[^\d.-]/g, '');
+    if (numStr.startsWith('-')) numStr = '-' + numStr.slice(1).replace(/-/g, '');
+    else numStr = numStr.replace(/-/g, '');
+    const parts = numStr.split('.');
+    numStr = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('').replace(/\./g, '') : '');
+    return numStr + letterPart;
+  };
+
+  /** Convert stored longitude string (e.g. "78.0081 E" or "122.4194 W") to numeric string for API. */
+  const lngToNumeric = (lng: string | null): string => {
+    if (lng === null || lng === '') return '';
+    const upper = lng.trim().toUpperCase();
+    const isW = upper.endsWith('W');
+    const isE = upper.endsWith('E');
+    const numStr = lng.replace(/[^\d.-]/g, '');
+    const n = parseFloat(numStr);
+    if (Number.isNaN(n)) return '';
+    let val = n;
+    if (isW) val = -Math.abs(n);
+    else if (isE) val = Math.abs(n);
+    val = Math.max(-180, Math.min(180, val));
+    return String(val);
+  };
+
   return (
     <BaseView backgroundImage={imagepath.reportBg}>
       <View style={styles.headerView}>
@@ -624,6 +698,32 @@ export default function Profile({ navigation }: any) {
                 )}
               </View>
             )}
+            <View style={styles.manualInputWrapper}>
+              <CustomTextInput
+                placeholder={i18n.t('place.enterLatitude')}
+                value={coordinates.lat ?? ''}
+                keyboardType="default"
+                editable={isEditable}
+                onChangeText={(text) => {
+                  const sanitized = sanitizeLatInput(text);
+                  const next = { ...coordinates, lat: sanitized };
+                  setCoordinates(next);   
+                  setLatitude(sanitized);
+                }}
+              />
+              <CustomTextInput
+                placeholder={i18n.t('place.enterLongitude')}
+                value={coordinates.lng ?? ''}
+                keyboardType="default"
+                editable={isEditable}
+                onChangeText={(text) => {
+                  const sanitized = sanitizeLngInput(text);
+                  const next = { ...coordinates, lng: sanitized };
+                  setCoordinates(next);
+                  setLongitude(sanitized);
+                }}
+              />
+            </View>
             <ProfileInput label={i18n.t('profile.timeOfBirth')} placeholder={i18n.t('profile.timeOfBirth')} value={timeOfBirth} onChangeText={setTimeOfBirth} editable={isEditable} error={errors?.time} />
             <ProfileInput dropdown={true} data={[{ label: i18n.t('gender.male'), value: 'male' }, { label: i18n.t('gender.female'), value: 'female' }, { label: i18n.t('gender.other'), value: 'other' }]} label={i18n.t('profile.gender')} placeholder={i18n.t('profile.gender')} value={gender} onChangeText={setGender} editable={isEditable} error={errors?.gender} />
             {!isEditable && <TouchableOpacity style={styles.deleteAccountButton} activeOpacity={0.8} onPress={() => setShowDeleteModal(true)}>
@@ -831,12 +931,14 @@ const styles = StyleSheet.create({
   // FIXED HEIGHT DROPDOWN - NO LAYOUT SHIFTS
   dropdownFixed: {
     backgroundColor: '#000',
-    marginTop: 8,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#444',
     height: 140, // FIXED HEIGHT - KEY TO PREVENT KEYBOARD DISMISS
     overflow: 'hidden',
+  },
+  manualInputWrapper: {
+    gap: 10,
   },
 
 });

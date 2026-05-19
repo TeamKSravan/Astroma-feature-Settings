@@ -41,10 +41,17 @@ export const useWalletStore = create<WalletState>()(
           if (!silent) {
             useAuthStore.getState().setLoading(false);
           }
-          if (response?.result) {
-            set({ availableCoins: response.result });
+          const next =
+            response && typeof response === 'object' && 'result' in response
+              ? (response as { result?: number }).result
+              : undefined;
+          if (next !== undefined && next !== null) {
+            const prev = get().availableCoins;
+            if (next !== prev) {
+              set({ availableCoins: next });
+            }
           }
-          return { success: true, data: response?.result };
+          return { success: true, data: next };
         } catch (error: any) {
           const errorMessage =
             error.response?.data?.detail || 'Failed to get wallet details';

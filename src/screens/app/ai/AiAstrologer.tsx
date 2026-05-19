@@ -20,6 +20,20 @@ import { purchaseProduct } from '../../../services/iapService';
 import OrderSummaryModal from '../../../components/modals/OrderSummary';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useWalletStore } from '../../../store/useWalletStore';
+import PlanComponent from '../wallet/PlanComponent';
+
+function getLocalizedPlanFeatureLines(planId: string): string[] {
+  const localeKey = (i18n.locale || 'en').replace(/-.*/, '');
+  const fromLocale = (i18n.translations as Record<string, { wallet?: { planFeatureSets?: Record<string, string[]> } }>)?.[localeKey]
+    ?.wallet?.planFeatureSets?.[planId];
+  if (Array.isArray(fromLocale) && fromLocale.length) {
+    return fromLocale;
+  }
+  const fromEn = (i18n.translations as Record<string, { wallet?: { planFeatureSets?: Record<string, string[]> } }>)?.en?.wallet
+    ?.planFeatureSets?.[planId];
+  return Array.isArray(fromEn) ? fromEn : [];
+}
+
 
 export default function AiAstrologer(props: any) {
   const { availableCoins } = useWalletStore();
@@ -168,8 +182,8 @@ export default function AiAstrologer(props: any) {
             {/* <TwinStars /> */}
           </View>
           <Text style={styles.getText}>{i18n.t('ai.get')}</Text>
-          <View style={styles.optionsContainer}>
-            {options.map(option => (
+          {/* <View style={styles.optionsContainer}> */}
+            {/* {options.map(option => (
               <TouchableOpacity
                 key={option.id}
                 style={[
@@ -182,9 +196,23 @@ export default function AiAstrologer(props: any) {
                 <Text style={styles.optionLabel}>{option.label}</Text>
                 <Text style={styles.optionCoins}>{option.coin} {option.coin == 1 ? 'Coin' : 'Coins'}</Text>
               </TouchableOpacity>
-            ))}
-          </View>
+            ))} */}
+          {/* </View> */}
           <OrderSummaryModal packageData={selectedOption} closeModal={() => { setShowOrderSummaryModal(false) }} visible={showOrderSummaryModal} paynow={handleAddCoins} />
+          <View style={styles.plansSection}>
+            {options?.map((option) => (
+                <PlanComponent
+                  key={option.id}
+                  option={option}
+                  forOneTime={true}
+                  featureLines={getLocalizedPlanFeatureLines(option.id)}
+                  selectedPackage={selectedOption}
+                  onPress={() => { setSelectedOption(option) }}
+                  onCancel={() => setSelectedOption(null)}
+                  onContinue={() => { setShowOrderSummaryModal(true); }}
+                />
+              ))}
+            </View>
         </View>
       </ScrollView>
     </BaseView>
@@ -197,7 +225,7 @@ const styles = StyleSheet.create({
   },
   img: {
     width: '100%',
-    height: '100%',
+    height: 300,
     alignSelf: 'center',
     marginTop: verticalScale(5),
     paddingHorizontal: scale(20),
@@ -230,6 +258,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(16),
     marginTop: verticalScale(24),
     gap: verticalScale(12),
+  },
+  plansSection: {
+    marginTop: verticalScale(36),
+    paddingHorizontal: scale(4),
+    gap: verticalScale(10),
   },
   optionButton: {
     backgroundColor: colors.dusty,

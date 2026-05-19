@@ -16,6 +16,7 @@ import { useProfileStore } from '../../../store/useProfileStore';
 import BackButton from '../../../components/BackButton';
 import LanguageModal from '../../../components/modals/LanguageModal';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { OnBoardType } from '../onboarding/OnboardingScreen';
 const TIMER_DURATION = 120; // 2 minutes in seconds
 
 const formatTime = (seconds: number): string => {
@@ -137,7 +138,7 @@ export default function OtpScreen(props: any) {
         setSecondaryUserdata([]);
         setTimeout(() => {
           if (!result.isOnboarded) {
-            props.navigation.replace('OnboardingScreen', { onBoardType: 'newUser' });
+            props.navigation.replace('OnboardingScreen', { onBoardType: OnBoardType.newUser });
             setIsGetBonus(true);
           } else {
             setIsGetBonus(false);

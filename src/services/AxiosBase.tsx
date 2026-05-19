@@ -4,6 +4,18 @@ import { ToastMessage } from '../components/ToastMessage';
 import NetInfo from '@react-native-community/netinfo';
 import i18n from '../translation/i18n';
 
+let lastConnectionToastAt = 0;
+const CONNECTION_TOAST_COOLDOWN_MS = 2000;
+
+const showConnectionErrorToast = () => {
+  const now = Date.now();
+  if (now - lastConnectionToastAt < CONNECTION_TOAST_COOLDOWN_MS) {
+    return;
+  }
+  lastConnectionToastAt = now;
+  ToastMessage(i18n.t('common.connectionError'));
+};
+
 const AxiosBase = axios.create({
   baseURL: 'https://api.astroma.ai/',
   headers: {
@@ -16,9 +28,10 @@ AxiosBase.interceptors.request.use(
   async config => {
     const state = await NetInfo.fetch();
 
-    if (!state.isInternetReachable) {
-      ToastMessage(i18n.t('common.connectionError'));
-      return Promise.reject(new Error('No Internet'));
+    // Consider both explicit no-connectivity and unknown reachability as offline-safe.
+    if (!state.isConnected || state.isInternetReachable === false) {
+      showConnectionErrorToast();
+      return Promise.reject(new Error(i18n.t('common.connectionError')));
     }
     // Get token directly from Zustand store
     const token = useAuthStore.getState().token;
@@ -39,6 +52,15 @@ AxiosBase.interceptors.response.use(
 
   async error => {
     console.log('API Error Response:', error.response);
+
+    const state = await NetInfo.fetch();
+    const isOffline = !state.isConnected || state.isInternetReachable === false;
+    const isNetworkError = !error.response && (error.code === 'ERR_NETWORK' || error.message === 'Network Error');
+
+    if (isOffline || isNetworkError) {
+      showConnectionErrorToast();
+      return Promise.reject(new Error(i18n.t('common.connectionError')));
+    }
 
     // const isNetworkError =
     //   !error.response &&

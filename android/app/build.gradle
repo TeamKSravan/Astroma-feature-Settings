@@ -85,7 +85,7 @@ android {
         applicationId "com.astroma"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
+        versionCode 12
         versionName "1.0"
         missingDimensionStrategy 'store', 'play'
     }
@@ -97,7 +97,7 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file("Untitled")
+            storeFile file("Untitled.jks")
             storePassword "123456"
             keyAlias "Astroma"
             keyPassword "123456"

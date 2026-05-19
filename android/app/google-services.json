@@ -12,7 +12,28 @@
           "package_name": "com.astroma"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1054958548231-fhvc2ake18hegkuoeecikaqhags411rq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.astroma",
+            "certificate_hash": "7590497bf8f397772b4882a9bc5121d6e0f40406"
+          }
+        },
+        {
+          "client_id": "1054958548231-k28k50geehnib9opqme1mi0p43vt5vuu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.astroma",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1054958548231-ecsl40q7uoe3krutgrruoa2g3pu396uv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAU6ykHj4Id8Kc1MZdwrF1W3ex0UqEUpmo"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054958548231-ecsl40q7uoe3krutgrruoa2g3pu396uv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1054958548231-7p50pgtglodplkoed4kartsthlf5qhca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.astroma"
+              }
+            }
+          ]
         }
       }
     }

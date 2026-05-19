@@ -478,6 +478,7 @@ export default function Compare(props: any) {
 const styles = StyleSheet.create({
   mainView: {
     flex: 1,
+    marginBottom: Platform.OS === 'ios' ? verticalScale(25) : 0,
   },
   img: {
     marginTop: verticalScale(20),
@@ -532,6 +533,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     marginBottom: verticalScale(30),
+    zIndex: 120,
   },
   sparklelevel1: {
     width: 10,

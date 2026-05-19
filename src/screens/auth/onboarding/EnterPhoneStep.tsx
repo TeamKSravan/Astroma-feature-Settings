@@ -5,23 +5,29 @@ import { verticalScale } from '../../../utils/scale';
 import CustomTextInput from '../../../components/CustomTextInput';
 import imagepath from '../../../constants/imagepath';
 import { capitalizeFirstLetter } from '../../../utils/methods';
-import { colors } from '../../../constants/colors';
+import CountryCodePicker from '../../../components/CountryCodePicker';
+import { Country } from 'react-native-country-picker-modal';
 
-interface EnterNameStepProps {
+interface EnterPhoneStepProps {
   value: string;
   onChangeText: (text: string) => void;
-  error: any;
 }
 
-export default function EnterNameStep({
+export default function EnterPhoneStep({
   value,
   onChangeText,
-  error={}
 
-}: EnterNameStepProps) {
-  const [errors, setErrors] = useState(error);
-  const scrollViewRef = useRef(null);
-  const currentOffset = useRef(0);
+}: EnterPhoneStepProps) {
+  const [errors, setErrors] = useState({});
+  const [selectedCountry, setSelectedCountry] = useState<Country>({
+    callingCode: ['91'],
+    cca2: 'IN',
+    currency: 'INR',
+    flag: ':flag-in:',
+    name: 'India',
+    region: 'Asia',
+    subregion: 'Southern Asia',
+  } as Country);
   // Main image animation - start from smaller and transparent
   const rashiOpacity = useRef(new Animated.Value(0)).current;
   const rashiScale = useRef(new Animated.Value(0.7)).current; // Start smaller for more visible growth
@@ -41,15 +47,6 @@ export default function EnterNameStep({
   const extraElement2 = useRef(new Animated.Value(0)).current; // left bottom area - sparkle
   const extraElement3 = useRef(new Animated.Value(0)).current; // left bottom area - star
 
-  useEffect(() => {
-    setErrors(error);
-    if(error && errors.name !== error.name){
-      (scrollViewRef.current as any)?.scrollTo({
-        y: currentOffset.current + 20,
-          animated: true,
-        });
-      }
-    }, [error]);
   useEffect(() => {
     // Beautiful, slow fade-in and growth for Rashi image
     Animated.parallel([
@@ -133,7 +130,14 @@ export default function EnterNameStep({
     };
   };
 
-  const onNameChange = (text: string) => {
+  const handleCountrySelect = (country: Country) => {
+    setSelectedCountry(country);
+    console.log('Selected country:', country);
+    console.log('Calling code:', country.callingCode[0]);
+    console.log('Country code:', country.cca2);
+  };
+
+  const onPhoneChange = (text: string) => {
     let capitalizeText = capitalizeFirstLetter(text);
     if(capitalizeText.length > 50) {
       onChangeText(capitalizeText.slice(0, 50));
@@ -147,15 +151,9 @@ export default function EnterNameStep({
   return (
     <ScrollView
       // style={styles.container}
-      ref={scrollViewRef}
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
-      onScroll={(e) => {
-        currentOffset.current =
-          e.nativeEvent
-           .contentOffset.y;
-      }}
       bounces={false}
     >
       <View style={styles.contentView}>
@@ -344,14 +342,29 @@ export default function EnterNameStep({
           </Animated.View>
         </View>
       </View>
-
       <CustomTextInput
-        placeholder={i18n.t('name.name')}
+              placeholder={i18n.t('login.enterPhone')}
+              value={value}
+              onChangeText={(txt) => onPhoneChange(txt.replace(/[^0-9]/g, ''))}
+              keyboardType="phone-pad"
+              maxLength={15}
+              leftComponent={
+                <CountryCodePicker
+                  onSelect={handleCountrySelect}
+                  countryCode={selectedCountry?.cca2 || 'IN'}
+                />
+              }
+              inputStyle={{ marginTop: verticalScale(40) }}
+              error={errors?.phone || ''}
+            />
+      {/* <CustomTextInput
+        placeholder={i18n.t('phone.phone')}
         value={value}
-        onChangeText={onNameChange}
-        inputStyle={{ marginTop: verticalScale(40), borderColor: errors?.name ? colors.red2 : colors.primary, borderWidth: errors?.name ? 1 : 0 }}
-        error={errors?.name}
-      />
+        onChangeText={onPhoneChange}
+        keyboardType="phone-pad"
+        inputStyle={{ marginTop: verticalScale(40) }}
+        error={errors?.phone}
+      /> */}
     </ScrollView>
   );
 }

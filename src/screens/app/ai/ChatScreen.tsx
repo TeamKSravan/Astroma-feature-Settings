@@ -10,7 +10,7 @@ import {
   BackHandler,
   Keyboard,
 } from 'react-native';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import imagepath from '../../../constants/imagepath';
 import { HamburgerMenu, SmallStar, TwinStars } from '../../../constants/svgpath';
 import { UserIcon } from '../../../components/UserList';
@@ -34,6 +34,7 @@ import { useWalletStore } from '../../../store/useWalletStore';
 import EmptyCredits from '../../../components/EmptyCredits';
 import ChatSidePanel from '../../../components/ChatSidePanel';
 import BackButton from '../../../components/BackButton';
+import { Routes } from '../../../navigation/RouteNames';
 
 interface Message {
   id: string;
@@ -44,7 +45,21 @@ interface Message {
   category: string;
 }
 
-export default function ChatScreen(props: any) {
+const LOWER_COUNT = 1;
+const KAV_OFFSET_IOS = 20;
+const KAV_OFFSET_ANDROID = 50;
+const BACK_BUTTON_STYLE = {
+  position: 'relative' as const,
+  left: scale(0),
+  width: scale(24),
+  height: scale(24),
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+  backgroundColor: colors.modalbg,
+  borderRadius: scale(5),
+};
+
+function ChatScreen(props: any) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isdisablesendbutton, setIsDisableSendButton] = useState(false);
   const [isTypewriterComplete, setIsTypewriterComplete] = useState(false);
@@ -53,10 +68,7 @@ export default function ChatScreen(props: any) {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const scrollButtonAnim = useRef(new Animated.Value(0)).current;
-  const smallStar1 = useRef(new Animated.Value(0)).current;
-  const smallStar2 = useRef(new Animated.Value(0)).current;
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [exitChatModalVisible, setExitChatModalVisible] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
@@ -65,14 +77,80 @@ export default function ChatScreen(props: any) {
   const { chatType, reportId, report, chatHistoryId, chatHistoryEmpty } = props.route.params || { chatType: null, reportId: null, report: null, chatHistoryId: null, chatHistoryEmpty: false };
   const { selectedUser } = useProfileStore();
   const { getWalletDetails, availableCoins, setAvailableCoins } = useWalletStore();
-  const lowerCount = 1;
-  const openModal = () => {
-    setFilterModalVisible(true);
-  };
+
+  const sparkleAnims = useRef([
+    new Animated.Value(0),
+    new Animated.Value(0),
+  ]).current;
+
+  // useEffect(() => {
+
+  //   const show =
+  //     Keyboard.addListener(
+  //       'keyboardDidShow',
+  //       () => {
+  
+  //         navigation
+  //           .getParent()
+  //           ?.setOptions({
+  //             tabBarStyle: {
+  //               display: 'none',
+  //             },
+  //           });
+  
+  //       }
+  //     );
+  
+  //   const hide =
+  //     Keyboard.addListener(
+  //       'keyboardDidHide',
+  //       () => {
+  
+  //         navigation
+  //           .getParent()
+  //           ?.setOptions({
+  //             tabBarStyle: {
+  //               height: 60,
+  //             },
+  //           });
+  
+  //       }
+  //     );
+  
+  //   return () => {
+  //     show.remove();
+  //     hide.remove();
+  //   };
+  
+  // }, []);
+
+  const sparkleStyles = useMemo(() =>
+    sparkleAnims.map(anim => ({
+      opacity: anim.interpolate({ inputRange: [0, 0.75, 1, 1.25], outputRange: [0, 0.4, 1, 0.5] }),
+      transform: [{ scale: anim.interpolate({ inputRange: [0, 0.75, 1, 1.25], outputRange: [0, 0.7, 1, 1.2] }) }],
+    })),
+    [sparkleAnims],
+  );
+
+  useEffect(() => {
+    sparkleAnims.forEach((anim, i) => {
+      Animated.sequence([
+        Animated.delay(i * 300),
+        Animated.timing(anim, { toValue: 1, duration: 1500, useNativeDriver: true }),
+      ]).start(() => {
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(anim, { toValue: 1.25, duration: 3000, useNativeDriver: true }),
+            Animated.timing(anim, { toValue: 0.75, duration: 3000, useNativeDriver: true }),
+          ]),
+        ).start();
+      });
+    });
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      if (availableCoins < lowerCount) {
+      if (availableCoins < LOWER_COUNT) {
         navigation.navigate('AiAstrologer');
       }
     }, [])
@@ -107,7 +185,6 @@ export default function ChatScreen(props: any) {
     }
   }, [chatHistoryEmpty]);
 
-  // Clear chat when selected user (profile) changes
   const selectedUserId = (selectedUser as any)?._id?.$oid ?? null;
   const isFirstMountRef = useRef(true);
   useEffect(() => {
@@ -117,48 +194,6 @@ export default function ChatScreen(props: any) {
     }
     resetChat();
   }, [selectedUserId]);
-
-
-  const createSparkleAnimation = (animValue: Animated.Value, delay: number) => {
-    Animated.sequence([
-      Animated.delay(delay),
-      Animated.timing(animValue, {
-        toValue: 1,
-        duration: 1500,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(animValue, {
-            toValue: 1.25,
-            duration: 3000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(animValue, {
-            toValue: 0.75,
-            duration: 3000,
-            useNativeDriver: true,
-          }),
-        ]),
-      ).start();
-    });
-  };
-  const createElementStyle = (animValue: Animated.Value) => {
-    const opacity = animValue.interpolate({
-      inputRange: [0, 0.75, 1, 1.25],
-      outputRange: [0, 0.4, 1, 0.5],
-    });
-    const scale = animValue.interpolate({
-      inputRange: [0, 0.75, 1, 1.25],
-      outputRange: [0, 0.7, 1, 1.2],
-    });
-    return { opacity, transform: [{ scale }] };
-  };
-  useEffect(() => {
-    createSparkleAnimation(smallStar1, 0);
-    createSparkleAnimation(smallStar2, 300);
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -175,9 +210,8 @@ export default function ChatScreen(props: any) {
     }, [sidePanelOpen])
   );
 
-  const fetchChatHistory = async (chatHistoryId: string) => {
-    const result = await getChatMessageHistory(chatHistoryId, (selectedUser as any)?._id?.$oid ?? '');
-    console.log('result from fetchChatHistory: ', result.data);
+  const fetchChatHistory = useCallback(async (historyId: string) => {
+    const result = await getChatMessageHistory(historyId, (selectedUser as any)?._id?.$oid ?? '');
     if (result.success && result.data) {
       const mappedMessages = result.data?.map((item: any) => ({
         id: item?._id?.$oid,
@@ -199,14 +233,14 @@ export default function ChatScreen(props: any) {
       setMessages([]);
       setIsLoading(false);
     }
-  }
+  }, [getChatMessageHistory, selectedUser]);
 
   useEffect(() => {
     if (chatType === 'viewReport') {
-      setMessages(report?.map((item: any, index: number) => ({ 
-        id: item?._id, 
-        text: item?.message, 
-        isUser: item?.role == 'user' ? true : false, 
+      setMessages(report?.map((item: any) => ({
+        id: item?._id,
+        text: item?.message,
+        isUser: item?.role == 'user' ? true : false,
         timestamp: item?.created_at ? new Date(item.created_at) : new Date(),
         item: {
           conversation_id: {
@@ -220,7 +254,6 @@ export default function ChatScreen(props: any) {
       setIsDisableSendButton(false);
     }
     if (chatType === 'report') {
-      console.log('useEffect report : ', report);
       setMessages(report);
     }
   }, [chatType, report]);
@@ -236,7 +269,6 @@ export default function ChatScreen(props: any) {
 
   useEffect(() => {
     if (messages.length > 0 && messages[messages.length - 1].isUser) {
-      // Debounce scroll to avoid too frequent updates
       const timer = setTimeout(() => {
         smoothScrollToBottom(250);
       }, 200);
@@ -248,9 +280,30 @@ export default function ChatScreen(props: any) {
     setMessages([]);
     setInputText('');
     setIsLoading(false);
-  }, [setMessages, setInputText, messages, setIsLoading]);
+  }, []);
 
-  const handleSendMessage = async (text?: string, category?: string) => {
+  const smoothScrollToBottom = useCallback((delay: number = 200) => {
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    scrollTimeoutRef.current = setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: true });
+    }, delay);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    smoothScrollToBottom(100);
+    setShowScrollButton(false);
+  }, [smoothScrollToBottom]);
+
+  const handleScroll = useCallback((event: any) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const isCloseToBottom =
+      contentSize.height - layoutMeasurement.height - contentOffset.y < 100;
+    setShowScrollButton(!isCloseToBottom);
+  }, []);
+
+  const handleSendMessage = useCallback(async (text?: string, category?: string) => {
     const messageText = text || inputText.trim();
     setInputText('');
     if (!messageText || isLoading) return;
@@ -276,8 +329,8 @@ export default function ChatScreen(props: any) {
       };
       if (chatType === 'viewReport') {
         const response = await generateQuery(reportId, data);
-        console.log('report chat response : ', response);
         if (response.success) {
+          console.log('viewReport response : ', response);
           const botMessage: Message = {
             id: (Date.now() + 1).toString(),
             text: response.data,
@@ -325,16 +378,11 @@ export default function ChatScreen(props: any) {
       setIsTypewriterComplete(false);
       await getWalletDetails({ silent: true });
     } catch (error: any) {
-      console.error('Error sending message:', error);
-
       let errorText = i18n.t('chat.requestFailed');
 
       if (error?.response) {
         const status = error.response.status;
         const errorData = error.response.data;
-
-        console.error('Error Response:', errorData);
-        console.error('Status Code:', status);
 
         if (status === 401) {
           errorText = i18n.t('chat.authFailed');
@@ -346,14 +394,11 @@ export default function ChatScreen(props: any) {
           errorText = errorData?.message || i18n.t('chat.errorWithStatus', { status });
         }
       } else if (error?.request) {
-        console.error('No response received:', error.request);
         errorText = i18n.t('chat.networkError');
       } else {
-        console.error('Request setup error:', error.message);
         errorText = i18n.t('chat.sendFailed');
       }
 
-      // Add error message to chat
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: errorText,
@@ -370,60 +415,14 @@ export default function ChatScreen(props: any) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [inputText, isLoading, messages, chatType, reportId, generateQuery, selectedUser, setAvailableCoins, getWalletDetails]);
 
-  const handleSuggestedQuestionPress = (question: Question) => {
+  const handleSuggestedQuestionPress = useCallback((question: Question) => {
     handleSendMessage(question?.text, question?.category);
-  };
-
-  const smoothScrollToBottom = (delay: number = 200) => {
-    // Clear any existing scroll timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-
-    // Use progressive scrolling for smoother effect
-    scrollTimeoutRef.current = setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, delay);
-  };
-
-  const scrollToBottom = () => {
-    smoothScrollToBottom(100);
-    setShowScrollButton(false);
-  };
-
-  const handleScroll = (event: any) => {
-    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-    const isCloseToBottom =
-      contentSize.height - layoutMeasurement.height - contentOffset.y < 100;
-
-    setShowScrollButton(!isCloseToBottom && messages.length > 0);
-  };
-
-  const renderEmptyState = () => (
-    <View style={[styles.emptyStateContainer, keyboardVisible && styles.emptyStateContainerKeyboardOpen]}>
-      <View style={[styles.titleContainer, keyboardVisible && styles.titleContainerKeyboardOpen]}>
-        <Animated.View style={createElementStyle(smallStar1)}>
-          <SmallStar height={10} width={10} />
-        </Animated.View>
-        <Animated.View style={[styles.star, createElementStyle(smallStar2)]}>
-          <SmallStar height={10} width={10} />
-        </Animated.View>
-
-        <Text style={styles.title}>{i18n.t('ai.ask')}</Text>
-      </View>
-      <Text style={styles.subtitle}>{i18n.t('ai.personal')}</Text>
-
-      <View style={styles.suggestedQuestionsContainer}>
-        <SuggestedQuestion onQuestionPress={handleSuggestedQuestionPress} />
-      </View>
-    </View>
-  );
+  }, [handleSendMessage]);
 
   const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
     const isLastMessage = index === messages.length - 1;
-
     return (
       <ChatMessage
         item={item}
@@ -442,130 +441,178 @@ export default function ChatScreen(props: any) {
         }}
       />
     );
-  },
-    [messages.length, isTypewriterComplete, chatType]
-  );
+  }, [messages.length, isTypewriterComplete, chatType]);
+
+  const keyExtractor = useCallback((item: Message) => item.id, []);
+
+  const onSendPress = useCallback(() => handleSendMessage(), [handleSendMessage]);
+  const openSidePanel = useCallback(() => setSidePanelOpen(true), []);
+  const goBack = useCallback(() => navigation.goBack(), [navigation]);
+  const closeExitModal = useCallback(() => setExitChatModalVisible(false), []);
+  const closeSidePanel = useCallback(() => setSidePanelOpen(false), []);
+  const openExitChat = useCallback(() => setExitChatModalVisible(true), []);
+  const navigateToWallet = useCallback(() => navigation.navigate(Routes.TransactionHistory), [navigation]);
+  const navigateToChatHistory = useCallback(() => (navigation as any).navigate(Routes.ChatHistory), [navigation]);
+
+  const handleExitVerify = useCallback(() => {
+    if (chatHistoryEmpty) {
+      (navigation as any).navigate(Routes.BottomTabNavigator, { screen: Routes.Home });
+    } else {
+      navigation.goBack();
+    }
+  }, [chatHistoryEmpty, navigation]);
+
+  const onSelectChat = useCallback((chatId: string) => fetchChatHistory(chatId), [fetchChatHistory]);
+
+  const baseViewStyle = useMemo(() => ({
+    marginBottom: chatType !== 'viewReport' ? verticalScale(0) : 0,
+  }), [chatType]);
+
+  const titleIconView = useMemo(() => (
+    <View style={{ marginLeft: scale(70) }}><TwinStars /></View>
+  ), []);
+
+  const leftComponent = useMemo(() => (
+    chatType !== 'viewReport'
+      ? <TouchableOpacity onPress={openSidePanel}><HamburgerMenu /></TouchableOpacity>
+      : <TouchableOpacity onPress={goBack}><BackButton style={BACK_BUTTON_STYLE} /></TouchableOpacity>
+  ), [chatType, openSidePanel, goBack]);
+
+  const rightComponent = useMemo(() => (
+    <View style={styles.signContainer}>
+      <UserIcon sign={(selectedUser as any)?.zodiac_sign ?? ''} size={scale(40)} />
+    </View>
+  ), [(selectedUser as any)?.zodiac_sign]);
+
+  const emptyState = useMemo(() => (
+    <View style={[styles.emptyStateContainer, keyboardVisible && styles.emptyStateContainerKeyboardOpen]}>
+      <View style={[styles.titleContainer, keyboardVisible && styles.titleContainerKeyboardOpen]}>
+        <Animated.View style={sparkleStyles[0]}>
+          <SmallStar height={10} width={10} />
+        </Animated.View>
+        <Animated.View style={[styles.star, sparkleStyles[1]]}>
+          <SmallStar height={10} width={10} />
+        </Animated.View>
+        <Text style={styles.title}>{i18n.t('ai.ask')}</Text>
+      </View>
+      <Text style={styles.subtitle}>{i18n.t('ai.personal')}</Text>
+      <View style={styles.suggestedQuestionsContainer}>
+        <SuggestedQuestion onQuestionPress={handleSuggestedQuestionPress} />
+      </View>
+    </View>
+  ), [keyboardVisible, sparkleStyles, handleSuggestedQuestionPress]);
+
+  const scrollButtonView = useMemo(() => {
+    if (!showScrollButton) return null;
+    return (
+      <Animated.View
+        style={[
+          styles.scrollButtonContainer,
+          {
+            opacity: scrollButtonAnim,
+            transform: [
+              { scale: scrollButtonAnim },
+              {
+                translateY: scrollButtonAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [20, 0],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <TouchableOpacity style={styles.scrollButton} onPress={scrollToBottom} activeOpacity={0.8}>
+          <Text style={styles.scrollButtonIcon}>↓</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }, [showScrollButton, scrollButtonAnim, scrollToBottom]);
+
+  const exitModal = useMemo(() => (
+    <ExitChatModal
+      visible={exitChatModalVisible}
+      closeModal={closeExitModal}
+      handleVerify={handleExitVerify}
+    />
+  ), [exitChatModalVisible, closeExitModal, handleExitVerify]);
+
+  const typingIndicator = useMemo(() => (
+    isLoading ? <TypingIndicator message={i18n.t('chat.consultingStars')} /> : null
+  ), [isLoading]);
+
+  const horizontalSuggestions = useMemo(() => (
+    !isdisablesendbutton && messages.length !== 0 && isTypewriterComplete
+      ? <SuggestedQuestion horizontal onQuestionPress={handleSuggestedQuestionPress} />
+      : null
+  ), [isdisablesendbutton, messages.length, isTypewriterComplete, handleSuggestedQuestionPress]);
+
+  const emptyCreditsView = useMemo(() => (
+    availableCoins < LOWER_COUNT ? <EmptyCredits /> : null
+  ), [availableCoins]);
+
+  const sidePanelView = useMemo(() => (
+    <ChatSidePanel
+      visible={sidePanelOpen}
+      onClose={closeSidePanel}
+      onChatHistory={navigateToChatHistory}
+      onFilters={() => {}}
+      onNewChat={resetChat}
+      onExitChat={openExitChat}
+      onSelectChat={onSelectChat}
+    />
+  ), [sidePanelOpen, closeSidePanel, navigateToChatHistory, resetChat, openExitChat, onSelectChat]);
 
   return (
-    <BaseView backgroundImage={imagepath.homeBg} style={{ marginBottom: chatType !== 'viewReport' ? verticalScale(50) : 0 }}>
+    <BaseView backgroundImage={imagepath.homeBg} style={baseViewStyle}>
       <CommonHeader
-        onWalletPress={() => navigation.navigate('Wallet', { showBack: true })}
-        titleIcon={<View style={{ marginLeft: scale(70) }}><TwinStars /></View>}
-        LeftComponent={
-          chatType !== 'viewReport' ?
-            <TouchableOpacity onPress={() => setSidePanelOpen(true)}>
-              <HamburgerMenu />
-            </TouchableOpacity>
-            :
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <BackButton style={{
-                position: 'relative',
-                left: scale(0),
-                width: scale(24),
-                height: scale(24),
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.modalbg,
-                borderRadius: scale(5),
-              }} />
-            </TouchableOpacity>
-        }
-        RightComponent={
-          <View style={styles.signContainer}>
-            <UserIcon sign={(selectedUser as any)?.zodiac_sign ?? ''} size={scale(40)} />
-          </View>
-        }
+        onWalletPress={navigateToWallet}
+        titleIcon={titleIconView}
+        LeftComponent={leftComponent}
+        RightComponent={rightComponent}
         headerStyle={styles.headerView}
         title={i18n.t('ai.ai')}
       />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 50}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? KAV_OFFSET_IOS : KAV_OFFSET_ANDROID}
       >
         {messages.length === 0 ? (
-          renderEmptyState()
+          emptyState
         ) : (
           <>
             <FlatList
               ref={flatListRef}
               data={messages}
-              renderItem={({ item, index }) => renderMessage({ item, index })}
-              keyExtractor={item => item.id}
+              renderItem={renderMessage}
+              keyExtractor={keyExtractor}
               contentContainerStyle={styles.messagesList}
               showsVerticalScrollIndicator={false}
               onScroll={handleScroll}
               scrollEventThrottle={16}
             />
-
-            {showScrollButton && (
-              <Animated.View
-                style={[
-                  styles.scrollButtonContainer,
-                  {
-                    opacity: scrollButtonAnim,
-                    transform: [
-                      {
-                        scale: scrollButtonAnim,
-                      },
-                      {
-                        translateY: scrollButtonAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [20, 0],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              >
-                <TouchableOpacity
-                  style={styles.scrollButton}
-                  onPress={scrollToBottom}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.scrollButtonIcon}>↓</Text>
-                </TouchableOpacity>
-              </Animated.View>
-            )}
+            {scrollButtonView}
           </>
         )}
-        <ExitChatModal
-          visible={exitChatModalVisible}
-          closeModal={() => setExitChatModalVisible(false)}
-          handleVerify={() => {
-            if (chatHistoryEmpty) {
-              (navigation as any).navigate('BottomTabNavigator', { screen: 'Horoscope' });
-            } else {
-              navigation.goBack();
-            }
-          }}
-        />
-
-        {isLoading && <TypingIndicator message={i18n.t('chat.consultingStars')} />}
-        {!isdisablesendbutton && messages.length !== 0 && isTypewriterComplete && <SuggestedQuestion horizontal onQuestionPress={handleSuggestedQuestionPress} />}
-        {availableCoins < lowerCount && <EmptyCredits />}
+        {exitModal}
+        {typingIndicator}
+        {horizontalSuggestions}
+        {emptyCreditsView}
         <GradientTextInput
           placeholder={i18n.t('chat.typeMessage')}
           value={inputText}
           onChangeText={setInputText}
-          disabled={availableCoins < lowerCount}
-          onSendPress={() => handleSendMessage()}
+          disabled={availableCoins < LOWER_COUNT}
+          onSendPress={onSendPress}
         />
       </KeyboardAvoidingView>
-
-      <ChatSidePanel
-        visible={sidePanelOpen}
-        onClose={() => setSidePanelOpen(false)}
-        onChatHistory={() => (navigation as any).navigate('ChatHistory')}
-        onFilters={openModal}
-        onNewChat={resetChat}
-        onExitChat={() => setExitChatModalVisible(true)}
-        onSelectChat={(chatId) => fetchChatHistory(chatId)}
-      />
-
+      {sidePanelView}
     </BaseView>
   );
 }
+
+export default React.memo(ChatScreen);
 
 const styles = StyleSheet.create({
   headerView: {
@@ -573,6 +620,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    marginBottom: verticalScale(50),
   },
   emptyStateContainer: {
     flex: 1,

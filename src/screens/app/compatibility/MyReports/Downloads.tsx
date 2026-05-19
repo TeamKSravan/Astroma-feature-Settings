@@ -2,17 +2,17 @@ import i18n from '../../../../translation/i18n';
 import Loader from '../../../../components/Loader';
 import { fonts } from '../../../../constants/fonts';
 import { colors } from '../../../../constants/colors';
-import { useAuthStore } from '../../../../store/useAuthStore';
 import CCReportItem from '../../../../components/CCReportItem';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useProfileStore } from '../../../../store/useProfileStore';
 import { FlatList, RefreshControl, StyleSheet, Text } from 'react-native';
 import PdfViewerModal from '../../../../components/modals/PdfViewerModal';
 import { moderateScale, scale, verticalScale } from '../../../../utils/scale';
 import { useCompatibilityStore } from '../../../../store/useCompatibilityStore';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function ExploreReports() {
-  const { isLoading } = useAuthStore();
+function Downloads(props: any) {
+  const { index } = props.route.params;
   const { getCompatibilityReportList } = useCompatibilityStore();
   const { selectedUser } = useProfileStore();
   const [reports, setReports] = useState<Array<any>>([]);
@@ -20,62 +20,96 @@ export default function ExploreReports() {
   const [showPdfViewerModal, setShowPdfViewerModal] = useState(false);
   const [pdfData, setPdfData] = useState<any>({});
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    
-    getCompatibilityReportList(false, selectedUser?._id as string).then(response => {
+  const lastFetchKeyRef = useRef<string | null>(null);
+
+  const fetchReports = useCallback((userId: string, silent = false) => {
+    if (!silent) setIsLoading(true);
+    return getCompatibilityReportList(false, userId).then(response => {
       if (response.success) {
         setReports(response.data as any);
         setEmptyMessage('');
       } else {
         setEmptyMessage(i18n.t('report.noCompatibilityReports'));
       }
-    }).finally(() => setRefreshing(false));
+    }).finally(() => {
+      if (!silent) setIsLoading(false);
+    });
   }, [getCompatibilityReportList]);
 
-  useEffect(() => {
-    getCompatibilityReportList(false).then(response => {
-      if (response.success) {
-        setReports(response.data as any);
-      } else {
-        setEmptyMessage(i18n.t('report.noCompatibilityReports'));
-      }
-    });
-  }, []);
-
-  const onPressItem = (item: any, index: number) => {
-    setPdfData(item);
-    setShowPdfViewerModal(true);
-  };
-
-  const renderItem = ({ item, index }: { item: any; index: number }) => (
-    <CCReportItem item={item} index={index} onPress={onPressItem} />
+  useFocusEffect(
+    useCallback(() => {
+      if (index !== 2) return;
+      const fetchKey = `${selectedUser?._id?.$oid ?? ''}_${index}`;
+      if (lastFetchKeyRef.current === fetchKey) return;
+      lastFetchKeyRef.current = fetchKey;
+      fetchReports(selectedUser?._id as string);
+    }, [selectedUser?._id?.$oid, index, fetchReports])
   );
 
-  const typeLabel = pdfData?.compatibility?.type ? `${pdfData.compatibility.type.charAt(0).toUpperCase()}${pdfData.compatibility.type.slice(1)}` : '';
-  const ScreenTitle = `${typeLabel} ${i18n.t('compat.compatibilityReport')}`;
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    lastFetchKeyRef.current = null;
+    fetchReports(selectedUser?._id as string, true).finally(() => setRefreshing(false));
+  }, [fetchReports, selectedUser?._id]);
+
+  const onPressItem = useCallback((item: any) => {
+    setPdfData(item);
+    setShowPdfViewerModal(true);
+  }, []);
+
+  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => (
+    <CCReportItem item={item} index={index} onPress={onPressItem} />
+  ), [onPressItem]);
+
+  const keyExtractor = useCallback((item: any, idx: number) => item?._id?.$oid ?? String(idx), []);
+
+  const closePdfModal = useCallback(() => setShowPdfViewerModal(false), []);
+
+  const screenTitle = useMemo(() => {
+    const typeLabel = pdfData?.compatibility?.type
+      ? `${pdfData.compatibility.type.charAt(0).toUpperCase()}${pdfData.compatibility.type.slice(1)}`
+      : '';
+    return `${typeLabel} ${i18n.t('compat.compatibilityReport')}`;
+  }, [pdfData?.compatibility?.type]);
+
+  const listEmptyComponent = useMemo(() => (
+    <Text style={styles.emptyMessage}>{emptyMessage}</Text>
+  ), [emptyMessage]);
+
+  const loader = useMemo(() => (
+    isLoading ? <Loader /> : null
+  ), [isLoading]);
+
+  const pdfModal = useMemo(() => (
+    <PdfViewerModal
+      closeModal={closePdfModal}
+      visible={showPdfViewerModal}
+      pdfUrl={pdfData?.pdf_report}
+      title={screenTitle}
+    />
+  ), [showPdfViewerModal, pdfData?.pdf_report, closePdfModal, screenTitle]);
+
   return (
     <>
-      {isLoading && <Loader />}
+      {loader}
       <FlatList
         data={reports}
         renderItem={renderItem}
+        keyExtractor={keyExtractor}
         contentContainerStyle={styles.scroll}
-        ListEmptyComponent={<Text style={styles.emptyMessage}>{emptyMessage}</Text>}
+        ListEmptyComponent={listEmptyComponent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
       />
-      <PdfViewerModal
-        closeModal={() => { setShowPdfViewerModal(false) }}
-        visible={showPdfViewerModal}
-        pdfUrl={pdfData?.pdf_report}
-        title={ScreenTitle}
-      />
+      {pdfModal}
     </>
   );
 }
+
+export default React.memo(Downloads);
 
 const styles = StyleSheet.create({
   scroll: {

@@ -10,13 +10,12 @@ import {
   PermissionsAndroid,
   Alert,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Love, ReportDownload, ReportQuestion, ViewReport } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import imagepath from '../../../constants/imagepath';
-import BaseView from '../../../utils/BaseView';
 import { useChatStore } from '../../../store/useChatStore';
 import { useAuthStore } from '../../../store/useAuthStore';
 import LinearGradient from 'react-native-linear-gradient';
@@ -33,7 +32,11 @@ interface DownloadedReportsProps {
   tabIndex?: number;
 }
 
-export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
+const GRADIENT_COLORS: string[] = [colors.neutral950, 'transparent'];
+const GRADIENT_START = { x: 0, y: 0.8 };
+const GRADIENT_END = { x: 0, y: 0 };
+
+function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
 
   const navigation = useNavigation();
   const { isLoading } = useAuthStore();
@@ -44,64 +47,46 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
   const [pdfUrl, setPdfUrl] = useState('');
 
   const { selectedUser } = useProfileStore();
-  console.log('selectedUser', selectedUser);
-  
+
+  const lastFetchKeyRef = useRef<string>('');
+  const userId = selectedUser?._id?.$oid ?? '';
+  const fetchKey = `${userId}_${tabIndex}`;
+
   useFocusEffect(
-    useCallback(() => { 
-      if (tabIndex === 1) {
-        getUserReports(selectedUser?._id?.$oid ?? '').then(response => {
-          if (response.success) {
-            console.log('Reports Response:', response.data);
-            setUserReports(response.data as any);
-            setEmptyMessage('');
-          } else {
-            console.log('Error:', response.message);
-            setEmptyMessage(i18n.t('report.noDownloadedReports'));
-            setUserReports([]);
-          }
-        });
-      }
-    }, [selectedUser?._id?.$oid, tabIndex])
+    useCallback(() => {
+      if (tabIndex !== 1) return;
+      if (lastFetchKeyRef.current === fetchKey) return;
+      getUserReports(userId).then(response => {
+        if (response.success) {
+          setUserReports(response.data as any);
+          setEmptyMessage('');
+          lastFetchKeyRef.current = fetchKey;
+        } else {
+          setEmptyMessage(i18n.t('report.noDownloadedReports'));
+          setUserReports([]);
+        }
+      });
+    }, [fetchKey, tabIndex, userId, getUserReports])
   );
 
-  const handleViewReport = (item: any) => {
-    getViewReport(item?._id?.$oid, selectedUser?._id?.$oid ?? '')
+  const handleViewReport = useCallback((item: any) => {
+    getViewReport(item?._id?.$oid, userId)
       .then(response => {
-        console.log('Response:', response);
         if (response.success) {
-          console.log('Response data:', response.data);
           navigation.navigate('ChatScreen', { chatType: 'viewReport', reportId: item?._id?.$oid, report: response.data });
         }
-      })
-  };
+      });
+  }, [userId, getViewReport, navigation]);
 
-  // const handleGenerateReport = (item: any) => {
-  //   console.log('Item:', item);
-  //   console.log('Item ID:', item?._id?.$oid);
-  //   console.log('Selected User ID:', selectedUser?._id?.$oid);
-  //   getGenerateReport(item?._id?.$oid, false, selectedUser?._id?.$oid ?? '')
-  //     .then(response => {
-  //       console.log('Response:', response);
-  //       if (response.success) {
-  //         console.log('Response data: => ', response.data);
-  //         navigation.navigate('ChatScreen', { chatType: 'report', reportId: item?._id?.$oid, report: response });
-  //       }
-  //     })
-  // };
-
-  const handleDownloadReport = (item: any) => {
-    console.log('Item:', item);
-    getGenerateReport(item?._id?.$oid, true, selectedUser?._id?.$oid ?? '')
+  const handleDownloadReport = useCallback((item: any) => {
+    getGenerateReport(item?._id?.$oid, true, userId)
       .then(response => {
-        console.log('downloaded report Response:', response);
         if (response.success) {
-          console.log('downloaded report Response data:', response.data);
-          // downloadFile(response.data as string || '');
           setPdfUrl(response.data as string || '');
           setShowPdfViewerModal(true);
         }
-      })
-  };
+      });
+  }, [userId, getGenerateReport]);
 
   const requestStoragePermission = async (): Promise<boolean> => {
     if (Platform.OS !== 'android') {
@@ -267,7 +252,10 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       }
     }
   };
-  const renderItem = ({ item, index }: { item: any, index: number }) => (
+  const closePdfModal = useCallback(() => setShowPdfViewerModal(false), []);
+  const keyExtractor = useCallback((item: any) => item?._id?.$oid ?? item?._id, []);
+
+  const renderItem = useCallback(({ item }: { item: any }) => (
     <View style={styles.bgView}>
       <Image source={imagepath.planetBg} style={styles.imbg} />
       <View style={styles.compatView}>
@@ -277,55 +265,70 @@ export default function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       <Text style={styles.relationText}>{item?.sub_title}</Text>
       <View style={styles.purpleView}>
         <Text style={styles.purpleText}>{item?.type}</Text>
-        {/* <View style={styles.line} />
-        <Text style={styles.purpleText}>{item?.sub_title}</Text> */}
       </View>
       <View style={styles.descriptionGradient2}>
         <Text numberOfLines={3} style={styles.contextText}>{item?.description}</Text>
         <LinearGradient
-          colors={[colors.neutral950, 'transparent']}
-          start={{ x: 0, y: 0.8 }}
-          end={{ x: 0, y: 0 }}
+          colors={GRADIENT_COLORS}
+          start={GRADIENT_START}
+          end={GRADIENT_END}
           style={styles.descriptionGradient}
-        >
-        </LinearGradient>
+        />
       </View>
       <View style={styles.redView}>
         <TouchableOpacity style={styles.baseButton} onPress={() => handleViewReport(item)}>
           <ReportQuestion />
         </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.baseButton} onPress={() => handleGenerateReport(item)}>
-          <ViewReport />
-        </TouchableOpacity> */}
         <TouchableOpacity style={styles.baseButton} onPress={() => handleDownloadReport(item)}>
           <ReportDownload />
         </TouchableOpacity>
-        {/* <Text style={styles.purpleText}>
-          Unlock your personalized report by 100 Coins
-        </Text> */}
       </View>
     </View>
-  );
+  ), [handleViewReport, handleDownloadReport]);
+
+  const loader = useMemo(() => (
+    isLoading ? <Loader /> : null
+  ), [isLoading]);
+
+  const listEmptyComponent = useMemo(() => (
+    <Text style={styles.emptyMessage}>{emptyMessage}</Text>
+  ), [emptyMessage]);
+
+  const reportsList = useMemo(() => (
+    <FlatList
+      data={userReports}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      bounces={false}
+      contentContainerStyle={styles.scroll}
+      ListEmptyComponent={listEmptyComponent}
+    />
+  ), [userReports, renderItem, keyExtractor, listEmptyComponent]);
+
+  const pdfModal = useMemo(() => (
+    <PdfViewerModal
+      closeModal={closePdfModal}
+      visible={showPdfViewerModal}
+      pdfUrl={pdfUrl}
+    />
+  ), [showPdfViewerModal, pdfUrl, closePdfModal]);
+
   return (
-    <>
-      {isLoading && <Loader />}
-      <FlatList
-        data={userReports}
-        renderItem={renderItem}
-        bounces={false}
-        contentContainerStyle={styles.scroll}
-        ListEmptyComponent={<Text style={styles.emptyMessage}>{emptyMessage}</Text>}
-      />
-      <PdfViewerModal
-        closeModal={() => { setShowPdfViewerModal(false) }}
-        visible={showPdfViewerModal}
-        pdfUrl={pdfUrl}
-      />
-    </>
+    <View style={styles.container}>
+      {loader}
+      {reportsList}
+      {pdfModal}
+    </View>
   );
 }
 
+export default React.memo(DownoadedReports);
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginBottom: Platform.OS === 'ios' ? verticalScale(25) : 0,
+  },
   bgView: {
     backgroundColor: colors.neutral950,
     height: 170,

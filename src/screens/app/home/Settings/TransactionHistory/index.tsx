@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text, Image, ScrollView, FlatList } from 'react-native';
 import BaseView from '../../../../../utils/BaseView';
 import imagepath from '../../../../../constants/imagepath';
@@ -11,59 +11,59 @@ import BackButton from '../../../../../components/BackButton';
 import MultiSelectMenu from '../../../../../components/MultiSelectMenu';
 import { useProfileStore } from '../../../../../store/useProfileStore';
 import { formatNumberWithCommas } from '../../../../../utils/methods';
-import { useAuthStore } from '../../../../../store/useAuthStore';
 import Loader from '../../../../../components/Loader';
 import moment from 'moment';
 
-export default function TransactionHistory({ navigation }: any) {
+function TransactionHistory({ navigation }: any) {
     const { getTransactionHistory } = useProfileStore();
-    const { isLoading } = useAuthStore();
+    const [isLoading, setIsLoading] = useState(false);
     const [availableCoins, setAvailableCoins] = useState<number>(0);
     const [selectedSortOptions, setSelectedSortOptions] = useState<string[]>([]);
-
     const [transactionList, setTransactionList] = useState<any[]>([]);
 
+    const hasFetchedRef = useRef(false);
+
     useEffect(() => {
-        fetchTransactionHistory();
-    }, []);
+        if (hasFetchedRef.current) return;
+        const fetch = async () => {
+            setIsLoading(true);
+            const result = await getTransactionHistory();
+            if (result.success && result.data) {
+                setAvailableCoins(result?.coins ?? 0);
+                setTransactionList(result?.data?.map((item: any) => ({
+                    title: item?.reason,
+                    date: item?.created_at?.$date,
+                    amount: item?.purchase,
+                    coins: item?.credits_change,
+                    type: item?.purchase !== null ? 'purchase' : 'use',
+                })) ?? []);
+                hasFetchedRef.current = true;
+            } else {
+                setTransactionList([]);
+            }
+            setIsLoading(false);
+        };
+        fetch();
+    }, [getTransactionHistory]);
 
-    const fetchTransactionHistory = async () => {
-        const result = await getTransactionHistory();
-        if (result.success && result.data) {
-            console.log('Transaction history data : ', result);
-            setAvailableCoins(result?.coins ?? 0);
-            setTransactionList(result?.data?.map((item: any) => ({
-                title: item?.reason,
-                date: item?.created_at?.$date,
-                amount: item?.purchase,
-                coins: item?.credits_change,
-                type: item?.purchase !== null ? 'purchase' : 'use',
-            })) ?? []);
-        } else {
-            setTransactionList([]);
-        }
-    }
-
-    const sortOptions = [
+    const sortOptions = useMemo(() => [
         { label: i18n.t('transactionHistory.newestFirst'), value: 'newest' },
         { label: i18n.t('transactionHistory.oldestFirst'), value: 'oldest' },
         { label: i18n.t('transactionHistory.coinsHighToLow'), value: 'coinsHighToLow' },
         { label: i18n.t('transactionHistory.coinsLowToHigh'), value: 'coinsLowToHigh' },
         { label: i18n.t('transactionHistory.purchaseOnly'), value: 'purchaseOnly' },
         { label: i18n.t('transactionHistory.consumedOnly'), value: 'consumedOnly' },
-    ];
+    ], []);
 
     const filteredAndSortedList = useMemo(() => {
         let filtered = [...transactionList];
 
-        // Filter by type
         if (selectedSortOptions.includes('purchaseOnly')) {
             filtered = filtered.filter(item => item.type === 'purchase');
         } else if (selectedSortOptions.includes('consumedOnly')) {
             filtered = filtered.filter(item => item.type === 'use');
         }
 
-        // Sort by date
         if (selectedSortOptions.includes('newest')) {
             filtered.sort((a, b) => {
                 const dateA = new Date(a.date.split('|')[0].trim());
@@ -78,7 +78,6 @@ export default function TransactionHistory({ navigation }: any) {
             });
         }
 
-        // Sort by coins
         if (selectedSortOptions.includes('coinsHighToLow')) {
             filtered.sort((a, b) => parseInt(b.coins) - parseInt(a.coins));
         } else if (selectedSortOptions.includes('coinsLowToHigh')) {
@@ -88,86 +87,123 @@ export default function TransactionHistory({ navigation }: any) {
         return filtered;
     }, [transactionList, selectedSortOptions]);
 
-    const TransactionRenderItem = ({ transaction, type }: { transaction: any, type: 'purchase' | 'use' }) => {
-        const coinsColor = type == 'purchase' || transaction.title?.includes('bonus') || transaction.title?.toLowerCase()?.includes('reward') ? colors.green : colors.red2;
+    const onSelectSort = useCallback((selectedValues: string[]) => {
+        setSelectedSortOptions(selectedValues);
+    }, []);
+
+    const keyExtractor = useCallback((item: any) => item.id, []);
+
+    const renderItem = useCallback(({ item }: { item: any }) => {
+        const coinsColor = item.type === 'purchase' || item.title?.includes('bonus') || item.title?.toLowerCase()?.includes('reward') ? colors.green : colors.red2;
         return (
             <View style={styles.transactionItemContainer}>
                 <View style={styles.transactionItemRow}>
                     <View style={styles.transactionItemLeft}>
-                        <Text style={styles.transactionTitle}>{transaction.title}</Text>
-                        <Text style={styles.transactionDate}>{`${moment(transaction.date).format('DD MMM YYYY')}  |  ${moment(transaction.date).format('hh:mm A')}`}</Text>
+                        <Text style={styles.transactionTitle}>{item.title}</Text>
+                        <Text style={styles.transactionDate}>{`${moment(item.date).format('DD MMM YYYY')}  |  ${moment(item.date).format('hh:mm A')}`}</Text>
                     </View>
-                    <Text style={[styles.transactionAmount, { color: colors.green }]}>{type !== 'purchase' ? ' ' : `$${formatNumberWithCommas(transaction.amount?.split(' ')[0])}`}</Text>
-                    <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.transactionCoins, { color: coinsColor }]}>{type == 'purchase' ? ' ' : ''}{formatNumberWithCommas(transaction.coins)} 
+                    <Text style={[styles.transactionAmount, amountGreenStyle]}>{item.type !== 'purchase' ? ' ' : `$${formatNumberWithCommas(item.amount?.split(' ')[0])}`}</Text>
+                    <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.transactionCoins, { color: coinsColor }]}>{item.type === 'purchase' ? ' ' : ''}{formatNumberWithCommas(item.coins)}
                         <Text style={[styles.transactionCoinsText, { color: coinsColor }]}>{' ' + i18n.t('transactionHistory.coins')}</Text>
                     </Text>
                 </View>
                 <View style={styles.transactionDivider} />
             </View>
-        )
-    }
-    return (
-        <BaseView backgroundImage={imagepath.reportBg}>
-            <View style={styles.headerContainer}>
-                <BackButton />
-                <View style={styles.headerView}>
-                    <Transaction />
-                    <View style={styles.helloView}>
-                        <Text style={styles.nameText}>{i18n.t('transactionHistory.title')}</Text>
-                    </View>
+        );
+    }, []);
+
+    const header = useMemo(() => (
+        <View style={styles.headerContainer}>
+            <BackButton />
+            <View style={styles.headerView}>
+                <Transaction />
+                <View style={styles.helloView}>
+                    <Text style={styles.nameText}>{i18n.t('transactionHistory.title')}</Text>
                 </View>
             </View>
-            {isLoading && <Loader />
-                || <>
-                    <View style={styles.sortButtonContainer}>
-                        <MultiSelectMenu
-                            options={sortOptions}
-                            selectedValues={selectedSortOptions}
-                            onSelect={(selectedValues) => setSelectedSortOptions(selectedValues)}
-                            triggerComponent={
-                                <View style={styles.sortButton}>
-                                    <Text style={styles.sortButtonText}>{i18n.t('transactionHistory.sortBy')}</Text>
-                                    <View style={styles.sortIconContainer}>
-                                        <Sort />
-                                    </View>
-                                </View>
-                            }
-                            menuOptionsContainerStyle={styles.sortMenuContainer}
-                            showClearAll
-                        />
-                    </View>
-                    <View style={styles.availableCoinsHeader}>
-                        <Text style={styles.availableCoinsTitle}>{i18n.t('transactionHistory.availableCoins')}</Text>
-                        <Text adjustsFontSizeToFit={true} numberOfLines={1} ellipsizeMode="tail" style={styles.availableCoinsValue}>{formatNumberWithCommas(availableCoins)}</Text>
-                    </View>
-                    <ScrollView bounces={false} style={styles.container}>
-                        <View>
+        </View>
+    ), []);
 
-                            <View style={styles.tableHeaderRow}>
-                                <Text style={[styles.tableHeaderText, { flex: 1.8 }]}>{i18n.t('transactionHistory.transaction')}</Text>
-                                <Text style={[styles.tableHeaderText, { flex: 1 }]}>{i18n.t('transactionHistory.purchase')}</Text>
-                                <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.tableHeaderText, { flex: 1 }]}>{i18n.t('transactionHistory.coins')}</Text>
-                            </View>
-                            <FlatList
-                                data={filteredAndSortedList}
-                                renderItem={({ item }) => (
-                                    <TransactionRenderItem key={item.id} transaction={item} type={item.type} />
-                                )}
-                                keyExtractor={(item) => item.id}
-                                bounces={false}
-                                showsVerticalScrollIndicator={false}
-                                ListEmptyComponent={<Text style={styles.emptyText}>{i18n.t('transactionHistory.noTransactions')}</Text>}
-                            />
-                            {/* {filteredAndSortedList.map((transaction, index) => (
-                                <TransactionRenderItem key={index} transaction={transaction} type={transaction.type} />
-                            ))} */}
-                        </View>
+    const sortTrigger = useMemo(() => (
+        <View style={styles.sortButton}>
+            <Text style={styles.sortButtonText}>{i18n.t('transactionHistory.sortBy')}</Text>
+            <View style={styles.sortIconContainer}>
+                <Sort />
+            </View>
+        </View>
+    ), []);
 
-                    </ScrollView>
-                </>}
+    const sortSection = useMemo(() => (
+        <View style={styles.sortButtonContainer}>
+            <MultiSelectMenu
+                options={sortOptions}
+                selectedValues={selectedSortOptions}
+                onSelect={onSelectSort}
+                triggerComponent={sortTrigger}
+                menuOptionsContainerStyle={styles.sortMenuContainer}
+                showClearAll
+            />
+        </View>
+    ), [sortOptions, selectedSortOptions, onSelectSort, sortTrigger]);
+
+    const coinsHeader = useMemo(() => (
+        <View style={styles.availableCoinsHeader}>
+            <Text style={styles.availableCoinsTitle}>{i18n.t('transactionHistory.availableCoins')}</Text>
+            <Text adjustsFontSizeToFit={true} numberOfLines={1} ellipsizeMode="tail" style={styles.availableCoinsValue}>{formatNumberWithCommas(availableCoins)}</Text>
+        </View>
+    ), [availableCoins]);
+
+    const tableHeader = useMemo(() => (
+        <View style={styles.tableHeaderRow}>
+            <Text style={[styles.tableHeaderText, tableHeaderFlex1_8]}>{i18n.t('transactionHistory.transaction')}</Text>
+            <Text style={[styles.tableHeaderText, tableHeaderFlex1]}>{i18n.t('transactionHistory.purchase')}</Text>
+            <Text adjustsFontSizeToFit={true} numberOfLines={1} style={[styles.tableHeaderText, tableHeaderFlex1]}>{i18n.t('transactionHistory.coins')}</Text>
+        </View>
+    ), []);
+
+    const listEmptyComponent = useMemo(() => (
+        <Text style={styles.emptyText}>{i18n.t('transactionHistory.noTransactions')}</Text>
+    ), []);
+
+    const transactionsList = useMemo(() => (
+        <FlatList
+            data={filteredAndSortedList}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={listEmptyComponent}
+        />
+    ), [filteredAndSortedList, renderItem, keyExtractor, listEmptyComponent]);
+
+    const content = useMemo(() => (
+        isLoading ? <Loader /> : (
+            <>
+                {sortSection}
+                {coinsHeader}
+                <ScrollView bounces={false} style={styles.container}>
+                    <View>
+                        {tableHeader}
+                        {transactionsList}
+                    </View>
+                </ScrollView>
+            </>
+        )
+    ), [isLoading, sortSection, coinsHeader, tableHeader, transactionsList]);
+
+    return (
+        <BaseView backgroundImage={imagepath.reportBg}>
+            {header}
+            {content}
         </BaseView>
     );
 }
+
+export default React.memo(TransactionHistory);
+
+const amountGreenStyle = { color: colors.green };
+const tableHeaderFlex1_8 = { flex: 1.8 };
+const tableHeaderFlex1 = { flex: 1 };
 
 const styles = StyleSheet.create({
     container: {

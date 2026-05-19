@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -26,6 +26,11 @@ import { ToastMessage } from './ToastMessage';
 const SIDE_PANEL_WIDTH = verticalScale(300);
 const PANEL_BG = '#1E1E1E';
 const SEARCH_BG = '#2A2A2A';
+
+const OPTIONS = [
+  { label: i18n.t('common.delete'), value: 'delete' },
+  { label: i18n.t('common.rename'), value: 'rename' },
+];
 
 export interface ChatHistoryItem {
   title?: string;
@@ -65,34 +70,44 @@ function ChatSidePanel({
   const [loading, setLoading] = useState(false);
   const { getChatHistory, deleteChatHistory, deleteAllChatHistory } = useChatStore();
   const { selectedUser } = useProfileStore();
-  const options = [
-    { label: i18n.t('common.delete'), value: 'delete' },
-    { label: i18n.t('common.rename'), value: 'rename' },
-  ];
+  const lastFetchKeyRef = useRef<string | null>(null);
+  const hasEverLoadedRef = useRef(false);
 
-  const fetchChatHistory = useCallback(async () => {
-    setLoading(true);
+  const fetchChatHistory = useCallback(async (query = '', force = false) => {
+    const userId = (selectedUser as any)?._id?.$oid ?? '';
+    const fetchKey = `${userId}_${query}`;
+    if (!force && lastFetchKeyRef.current === fetchKey) return;
+    lastFetchKeyRef.current = fetchKey;
+
+    if (!hasEverLoadedRef.current) setLoading(true);
     try {
-      const userId = (selectedUser as any)?._id?.$oid ?? '';
-      const result = await getChatHistory(userId, searchQuery);
+      const result = await getChatHistory(userId, query);
       if (result.success && result.data) {
         setChatHistoryList((result.data as unknown as ChatHistoryItem[]) || []);
       } else {
         setChatHistoryList([]);
       }
-    } catch (error) {
+      hasEverLoadedRef.current = true;
+    } catch {
       setChatHistoryList([]);
     } finally {
       setLoading(false);
     }
-  }, [getChatHistory, selectedUser, searchQuery]);
+  }, [getChatHistory, selectedUser]);
 
-  const filteredList = searchQuery.trim()
-    ? chatHistoryList.filter(
-      (item) =>
+  const filteredList = useMemo(() =>
+    searchQuery.trim()
+      ? chatHistoryList.filter((item) =>
         item.title?.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
-    : chatHistoryList;
+      )
+      : chatHistoryList,
+    [chatHistoryList, searchQuery],
+  );
+
+  const displayList = useMemo(() =>
+    filteredList.filter((item) => item._id?.$oid !== 'new'),
+    [filteredList],
+  );
 
   useEffect(() => {
     if (visible) {
@@ -100,32 +115,16 @@ function ChatSidePanel({
       setIsMounted(true);
       setSearchQuery('');
       afterCloseActionRef.current = null;
-      fetchChatHistory();
+      fetchChatHistory('');
       Animated.parallel([
-        Animated.timing(panelAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
+        Animated.timing(panelAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
+        Animated.timing(overlayAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
       ]).start();
     } else if (isOpenRef.current) {
       isOpenRef.current = false;
       Animated.parallel([
-        Animated.timing(panelAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
+        Animated.timing(panelAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+        Animated.timing(overlayAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
       ]).start(() => {
         setIsMounted(false);
         onClose();
@@ -133,19 +132,11 @@ function ChatSidePanel({
     }
   }, [visible]);
 
-  const closePanel = (action?: () => void) => {
+  const closePanel = useCallback((action?: () => void) => {
     afterCloseActionRef.current = action ?? null;
     Animated.parallel([
-      Animated.timing(panelAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(overlayAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
+      Animated.timing(panelAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+      Animated.timing(overlayAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
     ]).start(() => {
       isOpenRef.current = false;
       setIsMounted(false);
@@ -153,20 +144,26 @@ function ChatSidePanel({
       afterCloseActionRef.current?.();
       afterCloseActionRef.current = null;
     });
-  };
+  }, [panelAnim, overlayAnim, onClose]);
 
-  const handleSelectChat = (item: ChatHistoryItem) => {
+  const handleOverlayPress = useCallback(() => closePanel(), [closePanel]);
+
+  const handleSelectChat = useCallback((item: ChatHistoryItem) => {
     const id = item._id?.$oid;
     if (id && id !== 'new') {
       closePanel(() => onSelectChat?.(id));
     }
-  };
+  }, [closePanel, onSelectChat]);
+
+  const handleNewChat = useCallback(() => closePanel(onNewChat), [closePanel, onNewChat]);
 
   const handleDeleteAll = useCallback(async () => {
     const userId = (selectedUser as any)?._id?.$oid ?? '';
     const result = await deleteAllChatHistory(userId);
     if (result.success) {
       setChatHistoryList([]);
+      lastFetchKeyRef.current = null;
+      hasEverLoadedRef.current = false;
       onNewChat?.();
       ToastMessage(i18n.t('chatHistory.deletedSuccess'));
     }
@@ -178,6 +175,7 @@ function ChatSidePanel({
     const result = await deleteChatHistory(id);
     if (result.success) {
       setChatHistoryList((prev) => prev.filter((item) => item._id?.$oid !== id));
+      lastFetchKeyRef.current = null;
       setShowDeleteModal(false);
       setSelectedUserData(null);
       ToastMessage(i18n.t('chatHistory.deletedSuccess'));
@@ -199,49 +197,139 @@ function ChatSidePanel({
     setShowDeleteModal(false);
   }, [selectedUserData, handleDelete]);
 
+  const closeDeleteModal = useCallback(() => {
+    setShowDeleteModal(false);
+    setSelectedUserData(null);
+  }, []);
+
+  const closeDeleteAllModal = useCallback(() => {
+    setShowDeleteAllModal(false);
+    setSelectedUserData(null);
+  }, []);
+
+  const closeEditModal = useCallback(() => {
+    setShowEditModal(false);
+    setSelectedUserData(null);
+  }, []);
+
+  const openDeleteAllModal = useCallback(() => setShowDeleteAllModal(true), []);
+
+  const keyExtractor = useCallback((item: ChatHistoryItem) => item._id?.$oid ?? String(Math.random()), []);
+
+  const renderItem = useCallback(({ item }: { item: ChatHistoryItem }) => (
+    <View style={styles.chatItem}>
+      <TouchableOpacity
+        style={styles.chatItemTouch}
+        onPress={() => handleSelectChat(item)}
+        activeOpacity={0.7}
+      >
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.chatItemText}>
+          {item.title}
+        </Text>
+      </TouchableOpacity>
+      <View style={styles.actionButtonsContainer}>
+        <OptionMenu
+          options={OPTIONS}
+          triggerComponent={<More />}
+          onSelect={(value) => {
+            setSelectedUserData(item);
+            handleOptionSelect(value);
+          }}
+        />
+      </View>
+    </View>
+  ), [handleSelectChat, handleOptionSelect]);
+
+  const listEmptyComponent = useMemo(() => (
+    <Text style={styles.emptyText}>
+      {i18n.t('chatHistory.noHistory')}
+    </Text>
+  ), []);
+
+  const loaderView = useMemo(() => (
+    <View style={styles.loaderWrapper}>
+      <ActivityIndicator size="small" color={colors.primary} />
+    </View>
+  ), []);
+
+  const overlayStyle = useMemo(() => [
+    styles.overlay,
+    {
+      opacity: overlayAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 0.5],
+      }),
+    },
+  ], [overlayAnim]);
+
+  const panelStyle = useMemo(() => [
+    styles.panel,
+    {
+      width: SIDE_PANEL_WIDTH,
+      transform: [{
+        translateX: panelAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-SIDE_PANEL_WIDTH, 0],
+        }),
+      }],
+    },
+  ], [panelAnim]);
+
+  const deleteModal = useMemo(() => (
+    <DeleteModal
+      closeModal={closeDeleteModal}
+      visible={showDeleteModal}
+      handleVerify={handleDeleteConfirm}
+      title={i18n.t('chatHistory.deleteTitle')}
+      description={i18n.t('chatHistory.deleteDescription')}
+    />
+  ), [showDeleteModal, closeDeleteModal, handleDeleteConfirm]);
+
+  const deleteAllModal = useMemo(() => (
+    <DeleteModal
+      closeModal={closeDeleteAllModal}
+      visible={showDeleteAllModal}
+      handleVerify={handleDeleteAll}
+      title={i18n.t('chatHistory.deleteAllTitle')}
+      description={i18n.t('chatHistory.deleteAllDescription')}
+    />
+  ), [showDeleteAllModal, closeDeleteAllModal, handleDeleteAll]);
+
+  const reloadAfterEdit = useCallback(() => {
+    lastFetchKeyRef.current = null;
+    fetchChatHistory(searchQuery);
+  }, [fetchChatHistory, searchQuery]);
+
+  const editModal = useMemo(() => (
+    <EditConversation
+      title={selectedUserData?.title ?? ''}
+      id={selectedUserData?._id?.$oid ?? ''}
+      closeModal={closeEditModal}
+      visible={showEditModal}
+      reload={reloadAfterEdit}
+    />
+  ), [selectedUserData, showEditModal, closeEditModal, reloadAfterEdit]);
+
+  const clearHistoryButton = useMemo(() => (
+    filteredList.length > 0 ? (
+      <TouchableOpacity onPress={openDeleteAllModal}>
+        <Text style={styles.sectionSubText}>
+          {i18n.t('chatHistory.clearHistory')}
+        </Text>
+      </TouchableOpacity>
+    ) : null
+  ), [filteredList.length, openDeleteAllModal]);
+
   if (!visible && !isMounted) {
     return null;
   }
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={() => closePanel()}>
-        <Animated.View
-          style={[
-            styles.overlay,
-            {
-              opacity: overlayAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 0.5],
-              }),
-            },
-          ]}
-        />
+      <TouchableWithoutFeedback onPress={handleOverlayPress}>
+        <Animated.View style={overlayStyle} />
       </TouchableWithoutFeedback>
-      <Animated.View
-        style={[
-          styles.panel,
-          {
-            width: SIDE_PANEL_WIDTH,
-            transform: [
-              {
-                translateX: panelAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-SIDE_PANEL_WIDTH, 0],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        {/* <View style={styles.header}>
-          <Text style={styles.title}>{i18n.t('ai.ai')}</Text>
-          <TouchableOpacity onPress={() => closePanel()} style={styles.closeBtn}>
-            <Text style={styles.closeText}>✕</Text>
-          </TouchableOpacity>
-        </View> */}
-
-        {/* Search bar */}
+      <Animated.View style={panelStyle}>
         <View style={styles.searchWrap}>
           <SearchIcon width={scale(20)} height={scale(20)} />
           <TextInput
@@ -253,10 +341,9 @@ function ChatSidePanel({
           />
         </View>
 
-        {/* New Chat row */}
         <TouchableOpacity
           style={styles.newChatRow}
-          onPress={() => closePanel(onNewChat)}
+          onPress={handleNewChat}
           activeOpacity={0.7}
         >
           <View style={styles.iconWrap}>
@@ -268,7 +355,6 @@ function ChatSidePanel({
           <NewChatIcon width={scale(25)} height={scale(25)} />
         </TouchableOpacity>
 
-        {/* Chat History section header */}
         <View style={styles.sectionHeader}>
           <View style={styles.iconWrap}>
             <History width={scale(25)} height={scale(25)} />
@@ -276,90 +362,24 @@ function ChatSidePanel({
           <Text style={styles.sectionHeaderText}>
             {i18n.t('chatHistory.title')}
           </Text>
-          {filteredList.length > 0 && <TouchableOpacity onPress={() => setShowDeleteAllModal(true)}>
-            <Text style={styles.sectionSubText}>
-              {i18n.t('chatHistory.clearHistory')}
-            </Text>
-          </TouchableOpacity>}
+          {clearHistoryButton}
         </View>
 
-        {/* Chat history list */}
-        {loading ? (
-          <View style={styles.loaderWrapper}>
-            <ActivityIndicator size="small" color={colors.primary} />
-          </View>
-        ) : (
+        {loading ? loaderView : (
           <FlatList
-            data={filteredList.filter((item) => item._id?.$oid !== 'new')}
-            keyExtractor={(item) => item._id?.$oid ?? String(Math.random())}
-            renderItem={({ item }) => (
-              <View style={styles.chatItem}>
-                <TouchableOpacity
-                  style={styles.chatItemTouch}
-                  onPress={() => handleSelectChat(item)}
-                  activeOpacity={0.7}
-                >
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={styles.chatItemText}
-                  >
-                    {item.title}
-                  </Text>
-                </TouchableOpacity>
-                <View style={styles.actionButtonsContainer}>
-                  <OptionMenu
-                    options={options}
-                    triggerComponent={<More />}
-                    onSelect={(value) => {
-                      setSelectedUserData(item);
-                      handleOptionSelect(value);
-                    }}
-                  />
-                </View>
-              </View>
-            )}
+            data={displayList}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
             style={styles.list}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>
-                {i18n.t('chatHistory.noHistory')}
-              </Text>
-            }
+            ListEmptyComponent={listEmptyComponent}
           />
         )}
 
-        <DeleteModal
-          closeModal={() => {
-            setShowDeleteModal(false);
-            setSelectedUserData(null);
-          }}
-          visible={showDeleteModal}
-          handleVerify={handleDeleteConfirm}
-          title={i18n.t('chatHistory.deleteTitle')}
-          description={i18n.t('chatHistory.deleteDescription')}
-        />
-        <DeleteModal
-          closeModal={() => {
-            setShowDeleteAllModal(false);
-            setSelectedUserData(null);
-          }}
-          visible={showDeleteAllModal}
-          handleVerify={handleDeleteAll}
-          title={i18n.t('chatHistory.deleteAllTitle')}
-          description={i18n.t('chatHistory.deleteAllDescription')}
-        />
-        <EditConversation
-          title={selectedUserData?.title ?? ''}
-          id={selectedUserData?._id?.$oid ?? ''}
-          closeModal={() => {
-            setShowEditModal(false);
-            setSelectedUserData(null);
-          }}
-          visible={showEditModal}
-          reload={fetchChatHistory}
-        />
+        {deleteModal}
+        {deleteAllModal}
+        {editModal}
       </Animated.View>
     </>
   );

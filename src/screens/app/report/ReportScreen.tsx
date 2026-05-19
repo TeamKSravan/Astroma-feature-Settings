@@ -17,6 +17,7 @@ import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import ExploreReports from './ExploreReports';
 import DownloadedReports from './DownloadedReports';
+import { Routes } from '../../../navigation/RouteNames';
 
 const { width } = Dimensions.get('window');
 
@@ -75,7 +76,7 @@ export default function ReportScreen(props: any) {
             <ReportIcon />
             <Text style={styles.leftText}>{i18n.t('compat.personalise')}</Text>
           </View>}
-        onWalletPress={() => props.navigation.navigate('Wallet', { showBack: true })}
+        onWalletPress={() => props.navigation.navigate(Routes.TransactionHistory)}
         RightComponent={<View />}
       />
 

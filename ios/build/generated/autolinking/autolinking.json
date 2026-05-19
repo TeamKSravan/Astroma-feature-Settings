@@ -3,6 +3,30 @@
   "reactNativePath": "/Users/sravi/Documents/project/Astroma/node_modules/react-native",
   "reactNativeVersion": "0.82",
   "dependencies": {
+    "@invertase/react-native-apple-authentication": {
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/@invertase/react-native-apple-authentication",
+      "name": "@invertase/react-native-apple-authentication",
+      "platforms": {
+        "ios": {
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/@invertase/react-native-apple-authentication/RNAppleAuthentication.podspec",
+          "version": "2.5.1",
+          "configurations": [],
+          "scriptPhases": []
+        },
+        "android": {
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/@invertase/react-native-apple-authentication/android",
+          "packageImportPath": "import com.RNAppleAuthentication.AppleAuthenticationAndroidPackage;",
+          "packageInstance": "new AppleAuthenticationAndroidPackage()",
+          "buildTypes": [],
+          "componentDescriptors": [],
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@invertase/react-native-apple-authentication/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cxxModuleCMakeListsModuleName": null,
+          "cxxModuleCMakeListsPath": null,
+          "cxxModuleHeaderName": null,
+          "isPureCxxDependency": false
+        }
+      }
+    },
     "@react-native-async-storage/async-storage": {
       "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-async-storage/async-storage",
       "name": "@react-native-async-storage/async-storage",
@@ -124,6 +148,30 @@
         }
       }
     },
+    "@react-native-firebase/auth": {
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-firebase/auth",
+      "name": "@react-native-firebase/auth",
+      "platforms": {
+        "ios": {
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-firebase/auth/RNFBAuth.podspec",
+          "version": "24.0.0",
+          "configurations": [],
+          "scriptPhases": []
+        },
+        "android": {
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-firebase/auth/android",
+          "packageImportPath": "import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;",
+          "packageInstance": "new ReactNativeFirebaseAuthPackage()",
+          "buildTypes": [],
+          "componentDescriptors": [],
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-firebase/auth/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cxxModuleCMakeListsModuleName": null,
+          "cxxModuleCMakeListsPath": null,
+          "cxxModuleHeaderName": null,
+          "isPureCxxDependency": false
+        }
+      }
+    },
     "@react-native-firebase/messaging": {
       "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-firebase/messaging",
       "name": "@react-native-firebase/messaging",
@@ -141,6 +189,33 @@
           "buildTypes": [],
           "componentDescriptors": [],
           "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-firebase/messaging/android/build/generated/source/codegen/jni/CMakeLists.txt",
+          "cxxModuleCMakeListsModuleName": null,
+          "cxxModuleCMakeListsPath": null,
+          "cxxModuleHeaderName": null,
+          "isPureCxxDependency": false
+        }
+      }
+    },
+    "@react-native-google-signin/google-signin": {
+      "root": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-google-signin/google-signin",
+      "name": "@react-native-google-signin/google-signin",
+      "platforms": {
+        "ios": {
+          "podspecPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-google-signin/google-signin/RNGoogleSignin.podspec",
+          "version": "16.1.2",
+          "configurations": [],
+          "scriptPhases": []
+        },
+        "android": {
+          "sourceDir": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-google-signin/google-signin/android",
+          "packageImportPath": "import com.reactnativegooglesignin.RNGoogleSigninPackage;",
+          "packageInstance": "new RNGoogleSigninPackage()",
+          "buildTypes": [],
+          "libraryName": "RNGoogleSignInCGen",
+          "componentDescriptors": [
+            "RNGoogleSigninButtonComponentDescriptor"
+          ],
+          "cmakeListsPath": "/Users/sravi/Documents/project/Astroma/node_modules/@react-native-google-signin/google-signin/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,

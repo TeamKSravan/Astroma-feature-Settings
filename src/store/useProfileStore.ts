@@ -50,16 +50,29 @@ interface ProfileState {
     getPrimaryUserDetail: () => Promise<{ success: boolean; data: any; message?: string }>;
     getTransactionHistory: () => Promise<{ success: boolean; data?: any; coins?: number }>;
     editPrimaryUserDetail: (data: UserDetails) => Promise<{ success: boolean; data?: any; message?: string }>;
-    getUserDetail: (byID?: string) => Promise<{ success: boolean; data: any; message?: string }>;
+    getUserDetail: (byID?: string, options?: { silent?: boolean }) => Promise<{ success: boolean; data: any; message?: string }>;
     addUserDetail: (data: UserBaseData) => Promise<{ success: boolean; data?: any; message?: string }>;
     editUserDetail: (data: UserDetails) => Promise<{ success: boolean; data?: any; message?: string }>;
     isPhoneNumberExists: (data: IsPhoneNumberExistsData) => Promise<{ success: boolean; is_phone_number_exists?: boolean; message?: string }>;
     deleteUser: (byID: string) => Promise<{ success: boolean; data?: any; message?: string }>;
 }
 
+function secondaryProfilesEqual(prev: unknown, next: unknown): boolean {
+    if (prev === next) return true;
+    if (prev == null && next == null) return true;
+    if (prev == null || next == null) return false;
+    if (!Array.isArray(prev) || !Array.isArray(next)) return false;
+    if (prev.length !== next.length) return false;
+    try {
+        return JSON.stringify(prev) === JSON.stringify(next);
+    } catch {
+        return false;
+    }
+}
+
 export const useProfileStore = create<ProfileState>()(
     persist(
-        set => ({
+        (set, get) => ({
             isLoading: false,
             error: null,
             userdata: null,
@@ -121,20 +134,29 @@ export const useProfileStore = create<ProfileState>()(
                     };
                 }
             },
-            getUserDetail: async (byID?: string) => {
-                const { setLoading } = useAuthStore.getState();
-                setLoading(true);
+            getUserDetail: async (byID?: string, options?: { silent?: boolean }) => {
+                const silent = options?.silent === true;
+                if (!silent) {
+                    useAuthStore.getState().setLoading(true);
+                }
                 try {
                     const response = (await AxiosBase.get(byID ? `/user/profile/${byID}` : `/user/profile/`)) as ApiBody;
                     const userData = response?.result ?? null;
                     console.log('Response from getUserProfile', userData);
-                    set({ secondaryUserdata: userData });
-                    setLoading(false);
+                    const prev = get().secondaryUserdata ?? null;
+                    if (!secondaryProfilesEqual(prev, userData)) {
+                        set({ secondaryUserdata: userData });
+                    }
+                    if (!silent) {
+                        useAuthStore.getState().setLoading(false);
+                    }
                     return { success: true, data: userData };
                 } catch (error: any) {
                     const errorMessage =
                         error.response?.data?.detail || 'Failed to get user profile';
-                    setLoading(false);
+                    if (!silent) {
+                        useAuthStore.getState().setLoading(false);
+                    }
                     return {
                         success: false,
                         message: errorMessage,
@@ -146,18 +168,18 @@ export const useProfileStore = create<ProfileState>()(
                 const { setLoading } = useAuthStore.getState();
                 setLoading(true);
                 try {
-                    const payload = {
-                        name: data.name.trim(),
-                        date_of_birth: moment(data.dob).format('YYYY-MM-DD'),
-                        time_of_birth: moment(data.time).format('HH:mm:ss'),
-                        place_of_birth: data.place || '',
-                        lat: data.lat || '',
-                        long: data.long || '',
-                        gender: data.gender || '',
-                        timezone: data.timezone || '',
-                    };
-                    console.log('addUserDetail payload => ', payload);
-                    const response = await AxiosBase.post(`/user/profile/`, payload);
+                    // const payload = {
+                    //     name: data.name.trim(),
+                    //     date_of_birth: moment(data.dob).format('YYYY-MM-DD'),
+                    //     time_of_birth: moment(data.time).format('HH:mm:ss'),
+                    //     place_of_birth: data.place || '',
+                    //     lat: data.lat || '',
+                    //     long: data.long || '',
+                    //     gender: data.gender || '',
+                    //     timezone: data.timezone || '',
+                    // };
+                    console.log('addUserDetail payload => ', data);
+                    const response = await AxiosBase.post(`/user/profile/`, data);
                     console.log('Response from addUserProfile', response);
                     const apiBody = (response as any)?.data ?? response;
                     const createdUser = apiBody?.result;

@@ -34,7 +34,7 @@ export default function CCReportItem({ item, index, onPress }: CCReportItemProps
                 <Text numberOfLines={4} style={styles.contextText}>{item?.compatibility?.prompt}</Text>
                 <LinearGradient
                     colors={[colors.neutral950, 'transparent']}
-                    start={{ x: 0, y: 1 }}
+                    start={{ x: 0, y: 0.7 }}
                     end={{ x: 0, y: 0 }}
                     style={styles.descriptionGradient}
                 />
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     bgView: {
       backgroundColor: colors.neutral950,
       maxHeight: 170,
-      padding: scale(20),
+      padding: scale(15),
       marginBottom: verticalScale(14),
       borderRadius: scale(14),
       borderWidth: 0.2,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     },
     descriptionGradient: {
       position: 'absolute',
-      height: scale(50),
+      height: scale(55),
       width: '100%',
     },
     descriptionGradient2: {

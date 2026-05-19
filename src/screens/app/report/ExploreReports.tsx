@@ -6,13 +6,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ReportLock } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
 import imagepath from '../../../constants/imagepath';
-import BaseView from '../../../utils/BaseView';
 import { useChatStore } from '../../../store/useChatStore';
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from '../../../translation/i18n';
@@ -28,67 +27,72 @@ import DownloadSuccess from '../../../components/modals/DownloadSuccess';
 import { useFocusEffect } from '@react-navigation/native';
 
 
-export default function ExploreReports() {
-  const lowerLimit = 10;
+const LOWER_LIMIT = 10;
+const GRADIENT_COLORS: string[] = [colors.neutral950, 'transparent'];
+const GRADIENT_START = { x: 0, y: 0.8 };
+const GRADIENT_END = { x: 0, y: 0 };
+
+function ExploreReports(props: any) {
   const { isLoading } = useAuthStore();
   const { selectedUser } = useProfileStore();
-  const { getWalletDetails, availableCoins, setAvailableCoins } = useWalletStore();
-  const { getRemainingReports, AddUserReports, getUserReports } = useChatStore();
+  const { availableCoins, setAvailableCoins } = useWalletStore();
+  const { getRemainingReports, AddUserReports } = useChatStore();
   const [reports, setReports] = useState<Array<any>>([]);
-  const [emptyMessage, setEmptyMessage] = useState<string>('');
   const [selectedReport, setSelectedReport] = useState<any>(null);
-  const [selectedPackage, setSelectedPackage] = useState({ id: 1, label: i18n.t('wallet.coins10'), specialOffer: false, subscription: false, cost: 3 },);
+  const [selectedPackage, setSelectedPackage] = useState<any>(null);
   const [showOrderSummaryModal, setShowOrderSummaryModal] = useState(false);
   const [showDownloadSuccessModal, setShowDownloadSuccessModal] = useState(false);
 
+  const lastFetchKeyRef = useRef<string>('');
+  const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userId = selectedUser?._id?.$oid ?? '';
 
-  useFocusEffect(
-    useCallback(() => { 
-      fetchReports();
-    }, [selectedUser?._id?.$oid])
-  );
-
-  const fetchReports = () => {
-    getRemainingReports(selectedUser?._id?.$oid ?? '').then(response => {
+  const fetchReports = useCallback((userIdParam: string) => {
+    getRemainingReports(userIdParam).then(response => {
       if (response.success) {
-        console.log('Reports Response:', response.data);
         setReports(response.data as any);
-      } else {
-        console.log('Error:', response.message);
-        setEmptyMessage(response.message as string);
+        lastFetchKeyRef.current = userIdParam;
       }
     });
-  }
+  }, [getRemainingReports]);
 
-  const onPressItem = (item: any, index: number) => {
-    if (availableCoins >= lowerLimit) {
-      ManageSectPackage(item, index);
+  useFocusEffect(
+    useCallback(() => {
+      if (lastFetchKeyRef.current === userId) return;
+      fetchReports(userId);
+    }, [userId, fetchReports])
+  );
+
+  const onPressItem = useCallback((item: any) => {
+    if (availableCoins >= LOWER_LIMIT) {
+      setShowOrderSummaryModal(true);
+      setSelectedReport(item);
+      setSelectedPackage({
+        id: item?._id?.$oid,
+        label: item?.name,
+        specialOffer: false,
+        subscription: false,
+        cost: 10,
+      });
     } else {
       ToastMessage(i18n.t('toast.notEnoughCoins'));
     }
-  };
+  }, [availableCoins]);
 
-  const ManageSectPackage = (item: any, index: number) => {
-    console.log('Item pressed:', item, 'Index:', index);
-    setShowOrderSummaryModal(true);
-    setSelectedReport(item);
-    setSelectedPackage({ id: item?._id?.$oid, label: item?.name, specialOffer: false, subscription: false, cost: 10 });
-  }
-
-  const handleAddCoins = () => {
-    AddUserReports(selectedReport?._id, selectedUser?._id?.$oid ?? '')
+  const handleAddCoins = useCallback(() => {
+    AddUserReports(selectedReport?._id, userId)
       .then(async (response) => {
-        console.log('AddUserReports Response:', response);
         if (response.success) {
           setSelectedReport(null);
-          fetchReports();
+          lastFetchKeyRef.current = '';
+          fetchReports(userId);
           setAvailableCoins(response?.coins ?? 0);
           setShowDownloadSuccessModal(true);
 
-          setTimeout(() => {
+          if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current);
+          downloadTimerRef.current = setTimeout(() => {
             setShowDownloadSuccessModal(false);
           }, 3000);
-          // ToastMessage("Report downloaded successfully");
         } else {
           ToastMessage(i18n.t('toast.failedToDownloadReport'));
         }
@@ -96,10 +100,14 @@ export default function ExploreReports() {
       .catch(error => {
         console.log('Error:', error);
       });
-  };
+  }, [selectedReport, userId, AddUserReports, setAvailableCoins, fetchReports]);
 
-  const renderItem = ({ item, index }: { item: any; index: number }) => (
-    <TouchableOpacity style={styles.bgView} onPress={() => onPressItem(item, index)}>
+  const closeOrderSummary = useCallback(() => setShowOrderSummaryModal(false), []);
+  const closeDownloadSuccess = useCallback(() => setShowDownloadSuccessModal(false), []);
+  const keyExtractor = useCallback((item: any) => item?._id?.$oid ?? item?._id, []);
+
+  const renderItem = useCallback(({ item }: { item: any }) => (
+    <TouchableOpacity style={styles.bgView} onPress={() => onPressItem(item)}>
       <Image source={imagepath.planetBg} style={styles.imbg} />
       <View style={styles.compatView}>
         <CategorySign sign={item?.type} width={20} height={20} type={Type.color} />
@@ -111,54 +119,83 @@ export default function ExploreReports() {
         <Text style={styles.purpleText}>{item?.type}</Text>
       </View>
       <View style={styles.descriptionGradient2}>
-        <Text numberOfLines={3} style={styles.contextText}>{item?.description} lk;asndn a d;laksdj ;adj;a kdjas;lkd jas;lkd ja;sdj;asdj a;spka;lskdj ;apkdja;spdj a;lopskdj ;alksjd;aolksjd;alksjnjdakl;sn al;ksjndlk;jasn dlkajsnd lkas ndlaksn;lknka ds;las ;dakjd ;ada;klsdjas;ld kjas;djas;dkjas;l dkjasd;kjasd ;laksj;laskdja;s ka;kdj</Text>
+        <Text numberOfLines={3} style={styles.contextText}>{item?.description}</Text>
         <LinearGradient
-          colors={[colors.neutral950, 'transparent']}
-          start={{ x: 0, y: 0.8 }}
-          end={{ x: 0, y: 0 }}
+          colors={GRADIENT_COLORS}
+          start={GRADIENT_START}
+          end={GRADIENT_END}
           style={styles.descriptionGradient}
-        >
-        </LinearGradient>
+        />
       </View>
       <View style={styles.redView}>
-        <Text style={styles.purpleText}>
-          10 Coins
-        </Text>
+        <Text style={styles.purpleText}>10 Coins</Text>
       </View>
     </TouchableOpacity>
-  );
-  return (
-    <BaseView backgroundImage={imagepath.reportBg}>
-      <DownloadSuccess
-        title={`Report Successfully Downloaded`}
-        cost={10}
-        closeModal={() => { setShowDownloadSuccessModal(false) }}
-        visible={showDownloadSuccessModal}
-      />
-      {isLoading && <Loader />}
+  ), [onPressItem]);
+
+  const downloadSuccessModal = useMemo(() => (
+    <DownloadSuccess
+      title="Report Successfully Downloaded"
+      cost={10}
+      closeModal={closeDownloadSuccess}
+      visible={showDownloadSuccessModal}
+    />
+  ), [showDownloadSuccessModal, closeDownloadSuccess]);
+
+  const listEmptyComponent = useMemo(() => (
+    <Text style={styles.emptyMessage}>{i18n.t('report.allReportsUnlocked')}</Text>
+  ), []);
+
+  const reportsList = useMemo(() => (
+    isLoading ? <Loader /> : (
       <FlatList
         data={reports}
         renderItem={renderItem}
+        keyExtractor={keyExtractor}
         bounces={false}
         contentContainerStyle={styles.scroll}
-        ListEmptyComponent={<Text style={styles.emptyMessage}>{emptyMessage}</Text>}
+        ListEmptyComponent={listEmptyComponent}
       />
-      {availableCoins < lowerLimit &&
-        <View style={styles.emptyCreditsContainer}>
-          <EmptyCredits />
-        </View>}
+    )
+  ), [isLoading, reports, renderItem, keyExtractor, listEmptyComponent]);
+
+  const emptyCredits = useMemo(() => (
+    availableCoins < LOWER_LIMIT ? (
+      <View style={styles.emptyCreditsContainer}>
+        <EmptyCredits />
+      </View>
+    ) : null
+  ), [availableCoins]);
+
+  const orderSummaryModal = useMemo(() => (
+    showOrderSummaryModal ? (
       <CoinSummaryModal
-        closeModal={() => { setShowOrderSummaryModal(false) }}
+        closeModal={closeOrderSummary}
         visible={showOrderSummaryModal}
         paynow={handleAddCoins}
         title={selectedPackage?.label}
         cost={10}
       />
-    </BaseView>
+    ) : null
+  ), [showOrderSummaryModal, closeOrderSummary, handleAddCoins, selectedPackage?.label]);
+
+  return (
+    <View style={styles.container}>
+      {downloadSuccessModal}
+      {reportsList}
+      {emptyCredits}
+      {orderSummaryModal}
+    </View>
   );
 }
 
+export default React.memo(ExploreReports);
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginBottom: Platform.OS === 'ios' ? verticalScale(25) : 0,
+  },
   bgView: {
     backgroundColor: colors.neutral950,
     maxHeight: 170,

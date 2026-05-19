@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Coin } from '../constants/svgpath';
 import { colors } from '../constants/colors';
 import { moderateScale, scale, verticalScale } from '../utils/scale';
@@ -7,16 +7,13 @@ import { fonts } from '../constants/fonts';
 import { useWalletStore } from '../store/useWalletStore';
 import { formatNumberWithCommas } from '../utils/methods';
 
-export default function CoinComponent() {
-  const { availableCoins, getWalletDetails } = useWalletStore();
+function CoinComponent() {
+  const availableCoins = useWalletStore(state => state.availableCoins);
 
   useEffect(() => {
-    getAppWalletDetails();
+    void useWalletStore.getState().getWalletDetails({ silent: true });
   }, []);
 
-  const getAppWalletDetails = async () => {
-    await getWalletDetails();
-  }
   return (
     <View style={styles.pinkView}>
       <Coin />
@@ -24,6 +21,8 @@ export default function CoinComponent() {
     </View>
   );
 }
+
+export default memo(CoinComponent);
 
 const styles = StyleSheet.create({
   pinkView: {

@@ -54,6 +54,10 @@ interface VerifyOTPData {
   otp: string;
 }
 
+interface SocialLoginData {
+  id_token: string;
+  provider: string;
+}
 interface AuthState {
   token: string | null;
   isGetBonus: boolean;
@@ -75,7 +79,7 @@ interface AuthState {
   updateUserDetails: (details: Partial<UserDetails>) => void;
   CheckOnBoarding: (country_code: string, phone: string) => Promise<{ success: boolean; message?: string; isOnboarded?: boolean }>;
   completeOnboarding: (
-    data: SignupData,
+    data: any,
   ) => Promise<{ success: boolean; message?: string }>;
   sendOTP: (data: sendOTPData) => Promise<{ success: boolean; message?: string }>;
   login: (
@@ -86,6 +90,7 @@ interface AuthState {
   toVerifyPhoneNumber: (data: sendOTPData) => Promise<{ success: boolean; message?: string }>;
   verifyOTP: (data: VerifyOTPData) => Promise<{ success: boolean; message?: string }>;
   deleteAccount: () => Promise<{ success: boolean; message?: string }>;
+  SocialLogin: (data: SocialLoginData) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
 }
 
@@ -143,19 +148,19 @@ export const useAuthStore = create<AuthState>()(
       completeOnboarding: async (data: SignupData) => {
         set({ isLoading: true, error: null });
         try {
-          const payload = {
-            name: data.name.trim(),
-            date_of_birth: moment(data.dob).format('YYYY-MM-DD'),
-            time_of_birth: moment(data.time).format('HH:mm:ss'),
-            place_of_birth: data.place || '',
-            lat: data.lat || '',
-            long: data.long || '',
-            gender: data.gender || '',
-            timezone: data.timezone || '',
-          };
-          console.log('Onboarding payload', payload);
+          // const payload = {
+          //   name: data.name.trim(),
+          //   date_of_birth: moment(data.dob).format('YYYY-MM-DD'),
+          //   time_of_birth: moment(data.time).format('HH:mm:ss'),
+          //   place_of_birth: data.place || '',
+          //   lat: data.lat || '',
+          //   long: data.long || '',
+          //   gender: data.gender || '',
+          //   timezone: data.timezone || '',
+          // };
+          console.log('Onboarding payload', data);
 
-          const response = await AxiosBase.post('/auth/onboard', payload);
+          const response = await AxiosBase.post('/auth/onboard', data);
           console.log('Response from onboarding', response);
           set(state => ({
             userDetails: {
@@ -277,7 +282,46 @@ export const useAuthStore = create<AuthState>()(
           };
         }
       },
-
+      SocialLogin: async (data: SocialLoginData) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await AxiosBase.post('/auth/social-login', data);
+          console.log('Response from SocialLogin', response);
+          const { token, user } = response;
+          console.log('user =>', user);
+          set({
+            token,
+            userDetails: {
+              id: user._id,
+              _id: { $oid: user._id },
+              is_onboarded: user?.is_onboarded,
+              name: user?.name,
+              phone: user.phone,
+              country_code: user?.country_code,
+              dateOfBirth: user?.date_of_birth,
+              timeOfBirth: user?.time_of_birth,
+              place: user?.place,
+              lat: user?.lat,
+              long: user?.long,
+              gender: user?.gender,
+              isOnboarded: user?.is_onboarded,
+              timezone: user?.timezone,
+              isPushNotificationEnabled: user?.is_push_notifications_enabled,
+              zodiac_sign: user?.zodiac_sign,
+            },
+            isAuthenticated: user?.is_enabled ?? false,
+            isLoading: false,
+          });
+          return { 
+            success: true,
+            isOnboarded: true,
+          };
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.detail || 'Failed to login with social';
+          set({ isLoading: false, error: errorMessage });
+          return { success: false, message: errorMessage };
+        }
+      },
       getLoginUserDetails: async () => {
         set({ isLoading: true, error: null });
         try {

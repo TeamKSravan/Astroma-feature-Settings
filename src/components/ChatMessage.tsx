@@ -130,9 +130,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             <Text style={styles.userMessage2}>{capitalizeFirstLetter(item?.item?.category)}</Text>
           </View>}
         </View>
-      ) : (
+      ) : (//<Markdown style={markdownStyles}>{message}</Markdown>   <Text style={[styles.message, styles.userMessage]}>{message}</Text>
         <View style={styles.botMessageContainer}>
-          {!typewriterOff ? <Text style={[styles.message, styles.userMessage]}>{message}</Text> : (      
+          {!typewriterOff ? <Markdown style={markdownStyles as any}>{message}</Markdown> : (      
             <Typewriter
               text={message}
               speed={1}
@@ -188,9 +188,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               key={disliked ? 'disliked' : 'not-disliked'}
             />
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.moreButton}>
-            <VerticalMore width={scale(15)} height={scale(15)}  />
-          </TouchableOpacity> */}
         </View>
       )}
 

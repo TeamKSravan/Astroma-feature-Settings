@@ -7,6 +7,7 @@ import { moderateScale, scale, verticalScale } from '../../utils/scale';
 import { CoinSumTitle, ModalClose } from '../../constants/svgpath';
 import { useWalletStore } from '../../store/useWalletStore';
 import i18n from '../../translation/i18n';
+import { formatNumberWithCommas } from '../../utils/methods';
 
 type CoinSummaryProps = {
   title: string;
@@ -54,11 +55,11 @@ export default function CoinSummary(props: CoinSummaryProps) {
           <View style={styles.planSummaryContainer}>
             <View style={styles.totalRow}>
               <Text style={styles.billLabel}>{i18n.t('coinSummary.availableCoins')}</Text>
-              <Text style={styles.billValue}>{availableCoins}</Text>
+              <Text style={styles.billValue}>{formatNumberWithCommas(availableCoins)}</Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.billLabel}>{i18n.t('coinSummary.remainingCoins')}</Text>
-              <Text style={styles.billValue}>{availableCoins - cost}</Text>
+              <Text style={styles.billValue}>{formatNumberWithCommas(availableCoins - cost)}</Text>
             </View>
           </View>
         </View>

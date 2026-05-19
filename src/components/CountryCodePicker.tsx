@@ -46,7 +46,6 @@ const CountryCodePicker: React.FC<CountryCodePickerProps> = ({
     onSelect(country);
     setVisible(false);
   };
-
   return (
     <TouchableOpacity
       activeOpacity={editable ? 0.8 : 1}
@@ -56,6 +55,7 @@ const CountryCodePicker: React.FC<CountryCodePickerProps> = ({
       <View style={styles.triggerContent} pointerEvents={editable ? 'auto' : 'none'}>
         <CountryPicker
           countryCode={countryCode}
+          excludeCountries={['AQ', 'BV', 'TF', 'HM', 'IO', 'UM', 'VA', 'AX']}
           withFilter
           withFlag
           withCallingCode

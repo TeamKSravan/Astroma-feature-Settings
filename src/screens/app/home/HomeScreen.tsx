@@ -1,5 +1,5 @@
 import { Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
 import i18n from '../../../translation/i18n';
@@ -22,160 +22,190 @@ import NotificationBell from '../../../components/NotificationBell';
 import { capitalizeFirstLetter } from '../../../utils/methods';
 import { useFocusEffect } from '@react-navigation/native';
 import { getFCMToken, requestUserPermission } from '../../../services/NotificationServices';
+import { Routes } from '../../../navigation/RouteNames';
 
-export default function HomeScreen(props: any) {
-  const { isGetBonus, setIsGetBonus, userDetails, currentLanguage } = useAuthStore();
+const scrollContentStyle = { paddingBottom: verticalScale(60) };
+const ZODIAC_SIZE = scale(100);
+
+function HomeScreen(props: any) {
+  const { isGetBonus, setIsGetBonus, userDetails, currentLanguage } = useAuthStore(); 
   const { getDashboardData, saveFCMToken } = useHomeStore.getState();
   const [overview, setOverview] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [predictions, setPredictions] = useState(null);
+  const [predictions, setPredictions] = useState<any>(null);
   const [zodicSign, setZodicSign] = useState<string>('');
-  const [signs, setSigns] = useState([
-    { label: i18n.t('home.sunSign'), value: 'Gemini' },
-    { label: i18n.t('home.moonSign'), value: 'Leo' },
-    { label: i18n.t('home.luckyNumber'), value: '0' },
-    { label: i18n.t('home.luckyColor'), value: 'white' },
-    { label: i18n.t('home.luckyTime'), value: '00:00' },
-  ]);
   const [showReceiveBonusModal, setShowReceiveBonusModal] = useState(false);
   const [overviewExpanded, setOverviewExpanded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const { getUserDetail, selectedUser, secondaryUserdata } = useProfileStore();
-  const { getPlanDetails, myLastSubscription, setCurrentSubscription } = useWalletStore();
+  const { getUserDetail, selectedUser } = useProfileStore();
+  const { myLastSubscription, setCurrentSubscription } = useWalletStore();
 
+  const lastFetchKeyRef = useRef<string>('');
+  const userId = selectedUser?._id?.$oid ?? '';
+  const fetchKey = `${userId}_${currentLanguage}`;
+
+  const signs = useMemo(() => [
+    { label: i18n.t('home.sunSign'), value: predictions?.sun_sign ?? 'Gemini' },
+    { label: i18n.t('home.luckyNumber'), value: predictions?.lucky_number ?? '0' },
+    { label: i18n.t('home.moonSign'), value: predictions?.moon_sign ?? 'Leo' },
+    { label: i18n.t('home.luckyColor'), value: predictions?.lucky_color ?? 'white' },
+    { label: i18n.t('home.luckyTime'), value: predictions?.lucky_time ?? '00:00' },
+  ], [predictions, currentLanguage]);
+
+  const applyDashboardResult = useCallback((result: any) => {
+    if (result?.success) {
+      setOverview(result.overview);
+      setPredictions(result.predictions);
+      setZodicSign(result.predictions?.zodiac_sign);
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      console.log('selectedUser?._id?.$oid : ', selectedUser?._id?.$oid);
-      fetchDashboardData();
-    }, [selectedUser?._id?.$oid, secondaryUserdata, currentLanguage])
+      if (lastFetchKeyRef.current === fetchKey) return;
+      let cancelled = false;
+      const doFetch = async () => {
+        setIsLoading(true);
+        const result = await getDashboardData(userId, { silent: true });
+        if (cancelled) return;
+        applyDashboardResult(result);
+        if (result?.success) {
+          lastFetchKeyRef.current = fetchKey;
+        }
+        setIsLoading(false);
+      };
+      doFetch();
+      return () => { cancelled = true; };
+    }, [fetchKey, userId, getDashboardData, applyDashboardResult])
   );
+
   useEffect(() => {
+    const initScreen = async () => {
+      const [, subscriptionResult] = await Promise.all([
+        getUserDetail(undefined, { silent: true }),
+        myLastSubscription(),
+      ]);
+      if (subscriptionResult?.success) {
+        setCurrentSubscription(subscriptionResult.data);
+      }
+    };
+    initScreen();
+
     const checkPermission = async () => {
       const hasPermission = await requestUserPermission();
       if (hasPermission) {
         const token = await getFCMToken();
         saveFCMToken(token, Platform.OS === 'ios' ? 'ios' : 'android');
       }
-    }
+    };
     checkPermission();
   }, []);
 
   useEffect(() => {
-    fetchUserDetail();
-    getPlanDetails();
-  }, []);
-
-  const fetchUserDetail = async () => {
-    const result = await getUserDetail();
-  };
-
-  useEffect(() => {
-    fetchMyLastSubscription();
-  }, [myLastSubscription]);
-
-
-  const fetchMyLastSubscription = async () => {
-    const result = await myLastSubscription();
-    if (result.success) {
-      console.log('My last subscription : ', result.data);
-      setCurrentSubscription(result.data);
-    }
-  }
-
-  useEffect(() => {
-    if (isGetBonus) {
-      setTimeout(() => {
-        setShowReceiveBonusModal(true);
-      }, 500);
-      setTimeout(() => {
-        setShowReceiveBonusModal(false);
-      }, 3000);
-    }
+    if (!isGetBonus) return;
+    const showTimer = setTimeout(() => setShowReceiveBonusModal(true), 500);
+    const hideTimer = setTimeout(() => setShowReceiveBonusModal(false), 3000);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
   }, [isGetBonus]);
 
-  const fetchDashboardData = async () => {
-    setIsLoading(true);
-    const result = await getDashboardData(selectedUser?._id?.$oid ?? '');
-    console.log('selectedUser?._id?.$oid : ', selectedUser?._id?.$oid);
-    console.log('Dashboard data : ', result);
-    if (result.success) {
-      setOverview(result.overview);
-      setPredictions(result.predictions);
-      setSigns([
-        { label: i18n.t('home.sunSign'), value: result?.predictions?.sun_sign },
-        { label: i18n.t('home.luckyNumber'), value: result?.predictions?.lucky_number },
-        { label: i18n.t('home.moonSign'), value: result?.predictions?.moon_sign },
-        { label: i18n.t('home.luckyColor'), value: result?.predictions?.lucky_color },
-        { label: i18n.t('home.luckyTime'), value: result?.predictions?.lucky_time },
-      ]);
-      setZodicSign(result?.predictions?.zodiac_sign);
-      setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
-  };
-
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchUserDetail();
-    await fetchMyLastSubscription();
-    const result = await getDashboardData(selectedUser?._id?.$oid ?? '');
-    if (result.success) {
-      setOverview(result.overview);
-      setPredictions(result.predictions);
-      setSigns([
-        { label: i18n.t('home.sunSign'), value: result?.predictions?.sun_sign },
-        { label: i18n.t('home.luckyNumber'), value: result?.predictions?.lucky_number },
-        { label: i18n.t('home.moonSign'), value: result?.predictions?.moon_sign },
-        { label: i18n.t('home.luckyColor'), value: result?.predictions?.lucky_color },
-        { label: i18n.t('home.luckyTime'), value: result?.predictions?.lucky_time },
-      ]);
-      setZodicSign(result?.predictions?.zodiac_sign);
+    try {
+      const dashboardResult = await getDashboardData(userId, { silent: true });
+      applyDashboardResult(dashboardResult);
+      if (dashboardResult?.success) {
+        lastFetchKeyRef.current = fetchKey;
+      }
+    } finally {
+      setRefreshing(false);
     }
-    setRefreshing(false);
-  };
+    void Promise.all([getUserDetail(undefined, { silent: true }), myLastSubscription()]).then(([, subscriptionResult]) => {
+      if (subscriptionResult?.success) {
+        setCurrentSubscription(subscriptionResult.data);
+      }
+    });
+  }, [userId, fetchKey, getUserDetail, myLastSubscription, getDashboardData, setCurrentSubscription, applyDashboardResult]);
 
-  const truncateText = (text, limit = 12) => {
+  const truncateText = useCallback((text: string | undefined, limit = 12) => {
     if (!text) return '';
     return text.length > limit ? text.slice(0, limit) + '...' : text;
-  };
+  }, []);
+
+  const navigateToWallet = useCallback(() => {
+    props.navigation.navigate(Routes.TransactionHistory);
+  }, [props.navigation]);
+
+  const navigateToNotification = useCallback(() => {
+    props.navigation.navigate(Routes.Notification);
+  }, [props.navigation]);
+
+  const navigateToSettings = useCallback(() => {
+    props.navigation.navigate(Routes.SettingScreen);
+  }, [props.navigation]);
+
+  const navigateToAi = useCallback(() => {
+    props.navigation.navigate(Routes.BottomTabNavigator, { screen: Routes.AiAstrologer });
+  }, [props.navigation]);
+
+  const toggleOverview = useCallback(() => {
+    setOverviewExpanded(prev => !prev);
+  }, []);
+
+  const closeBonusModal = useCallback(() => {
+    setShowReceiveBonusModal(false);
+    setIsGetBonus(false);
+  }, [setIsGetBonus]);
+
+  const displayName = useMemo(() =>
+    truncateText(
+      selectedUser?.name?.split(' ')[0] ?? userDetails?.name?.split(' ')[0],
+      12,
+    ),
+    [selectedUser?.name, userDetails?.name, truncateText],
+  );
+
+  const formattedDate = useMemo(() => {
+    const dob = selectedUser?.date_of_birth ?? userDetails?.dateOfBirth;
+    const tob = selectedUser?.time_of_birth ?? userDetails?.timeOfBirth;
+    return `${moment(dob).format('MMM DD, YYYY')} - ${moment(tob, ['HH:mm', 'HHmm', 'h:mm A']).format('hh:mm A')}`;
+  }, [selectedUser?.date_of_birth, selectedUser?.time_of_birth, userDetails?.dateOfBirth, userDetails?.timeOfBirth]);
+
+  const fullName = useMemo(
+    () => capitalizeFirstLetter(selectedUser?.name ?? userDetails?.name ?? ''),
+    [selectedUser?.name, userDetails?.name],
+  );
+
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
       <View style={styles.headerView}>
         <View style={styles.helloView}>
-          {/* <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.nameText, {maxWidth: '65%'}]}>{i18n.t('home.hello')} {selectedUser?.name?.split(" ")[0] ?? userDetails?.name?.split(" ")[0]}</Text> */}
           <Text numberOfLines={1} style={styles.nameText}>
-            {i18n.t('home.hello')}{' '}
-            {truncateText(
-              selectedUser?.name?.split(' ')[0] ??
-              userDetails?.name?.split(' ')[0],
-              12
-            ) + ''}
+            {i18n.t('home.hello')} {displayName}
           </Text>
-          <Text style={styles.dateText}>{moment(selectedUser?.date_of_birth ?? userDetails?.dateOfBirth).format('MMM DD, YYYY')} - {moment(selectedUser?.time_of_birth ?? userDetails?.timeOfBirth, ["HH:mm", "HHmm", "h:mm A"]).format('hh:mm A')}</Text>
-          {/* <Text style={styles.dateText}>Sept 22, 1996- 09:45 AM</Text> */}
+          <Text style={styles.dateText}>{formattedDate}</Text>
         </View>
         <View style={styles.coinView}>
-          <TouchableOpacity onPress={() => props.navigation.navigate('Wallet', { showBack: true })}>
+          <TouchableOpacity onPress={navigateToWallet}>
             <CoinComponent />
           </TouchableOpacity>
-          <NotificationBell notificationCount={0} onPress={() => { props.navigation.navigate('Notification') }} />
-          <TouchableOpacity onPress={() => props.navigation.navigate('SettingScreen')}>
+          <NotificationBell notificationCount={0} onPress={navigateToNotification} />
+          <TouchableOpacity onPress={navigateToSettings}>
             <Setting />
           </TouchableOpacity>
         </View>
       </View>
-      {showReceiveBonusModal && <ReceiveBonusModal closeModal={() => {
-        setShowReceiveBonusModal(false)
-        setIsGetBonus(false);
-      }} visible={showReceiveBonusModal} />}
+      {showReceiveBonusModal && (
+        <ReceiveBonusModal closeModal={closeBonusModal} visible={showReceiveBonusModal} />
+      )}
       <View style={styles.mainView}>
         <ScrollView
           bounces={false}
-          contentContainerStyle={{ paddingBottom: verticalScale(60) }}
+          contentContainerStyle={scrollContentStyle}
           refreshControl={
-            <RefreshControl refreshing={false} onRefresh={onRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
           <View style={styles.profileView}>
@@ -184,11 +214,10 @@ export default function HomeScreen(props: any) {
           </View>
           <View style={styles.circularView}>
             <View style={styles.yellowView}>
-              <ZodicSign sign={zodicSign} width={scale(100)} height={scale(100)} />
+              <ZodicSign sign={zodicSign} width={ZODIAC_SIZE} height={ZODIAC_SIZE} />
             </View>
             <View style={styles.nameView}>
-              <Text style={styles.fullnameText}>{capitalizeFirstLetter(selectedUser?.name ?? userDetails?.name ?? '')}</Text>
-              {/* <Text style={styles.zodiacText}>Pisces - Married</Text> */}
+              <Text style={styles.fullnameText}>{fullName}</Text>
               <View style={styles.optionsView}>
                 {signs.map((sign, index) => (
                   <View key={index} style={styles.titleContainer}>
@@ -213,7 +242,7 @@ export default function HomeScreen(props: any) {
           </Text>
           {overview ? (
             <TouchableOpacity
-              onPress={() => setOverviewExpanded(!overviewExpanded)}
+              onPress={toggleOverview}
               style={styles.moreLessButton}
             >
               <Text style={styles.moreLessText}>
@@ -226,20 +255,14 @@ export default function HomeScreen(props: any) {
         <CustomButton
           style={styles.chatWithAiButton}
           title={i18n.t('home.chatWithAi')}
-          onPress={() =>
-            props.navigation.navigate('BottomTabNavigator', {
-              screen: 'AI Astrologer',
-            })
-          }
+          onPress={navigateToAi}
         />
       </View>
-      {/* <ReceiveBonusModal closeModal={() => {
-        setShowReceiveBonusModal(false)
-        setIsGetBonus(false);
-      }} visible={showReceiveBonusModal} /> */}
     </BaseView>
   );
 }
+
+export default React.memo(HomeScreen);
 
 const styles = StyleSheet.create({
   mainView: {

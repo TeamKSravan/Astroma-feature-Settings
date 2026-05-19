@@ -46,4 +46,6 @@ export default {
 
 
   NotificationBG: require('../assets/images/notification.png'),
+  google: require('../assets/images/google.png'),
+  apple: require('../assets/images/apple.png'),
 };
