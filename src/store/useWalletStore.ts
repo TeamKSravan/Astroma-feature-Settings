@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AxiosBase from '../services/AxiosBase';
 import { useAuthStore } from './useAuthStore';
+import { Platform } from 'react-native';
 
 interface WalletState {
   coins: number;
@@ -73,8 +74,9 @@ export const useWalletStore = create<WalletState>()(
             specialOffer: item.is_special_offer,
             subscription: item.type === 'subscription',
             cost: item.price,
-            coin: item.credits,
-            productID: item.apple_product_id,
+            coin: item.credits,                 //"monthly_200"        //com.astroma.monthly.200
+            productID: Platform.OS == 'ios' ?  item.apple_product_id : item.android_product_id ,
+            // productID: item.apple_product_id ,
           }))
           set({ plans: plans });
           return { success: true, data: plans };

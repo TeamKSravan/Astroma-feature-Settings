@@ -141,3 +141,10 @@ export { default as NewChatIcon } from '../assets/svgs/newchaticon.svg';
 export { default as Reset } from '../assets/svgs/refresh.svg';
 export { default as DownloadSuccessIcon } from '../assets/svgs/downloadsuccess.svg';
 export { default as UserAddIcon } from '../assets/svgs/user_add.svg';
+
+export { default as Family_Compatibility } from '../assets/svgs/family_compatibility.svg';
+export { default as Business_Compatibility } from '../assets/svgs/business_compatibility.svg';
+export { default as Friendship_Compatibility } from '../assets/svgs/friendship_compatibility.svg';
+export { default as Overall_Compare } from '../assets/svgs/overall_compare.svg';
+export { default as Personality_Alignment_Compare } from '../assets/svgs/personality_alignment_compare.svg';
+export { default as Self_Growth_Compare } from '../assets/svgs/self_growth_compare.svg';

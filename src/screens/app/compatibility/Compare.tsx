@@ -219,6 +219,7 @@ export default function Compare(props: any) {
   useEffect(() => {
     setIsDisabledGenerateReport(false);
     console.log('selectedUser : ', selectedUser);
+    console.log('compareType : ', compareType);
   }, [selectedUser, compareType]);
 
 

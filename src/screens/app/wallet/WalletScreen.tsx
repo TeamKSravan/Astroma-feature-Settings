@@ -109,6 +109,7 @@ function WalletScreen(props: any) {
 
   const handleAddCoins = useCallback(() => {
     const productId = selectedPackage?.productID;
+    console.log('productId', productId);
     if (typeof productId !== 'string' || !productId.trim()) return;
     if (Platform.OS === 'android') {
       if (!selectedPackage?.subscription) {

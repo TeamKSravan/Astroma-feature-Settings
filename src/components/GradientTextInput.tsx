@@ -11,7 +11,7 @@ import { colors } from '../constants/colors';
 import { fonts } from '../constants/fonts';
 
 import { Send } from '../constants/svgpath';
-import { moderateScale, scale, verticalScale } from '../utils/scale';
+import { getMaxContentWidth, isTablet, moderateScale, scale, verticalScale } from '../utils/scale';
 
 interface GradientTextInputProps extends TextInputProps {
   containerStyle?: object;
@@ -34,15 +34,24 @@ const GradientTextInput: React.FC<GradientTextInputProps> = ({
   placeholder,
   ...rest
 }) => {
-  console.log('disabled', disabled);
+  const tablet = isTablet();
   return (
     <LinearGradient
       colors={gradientColors}
       start={{ x: 3, y: 1 }}
       end={{ x: 0, y: 1 }}
-      style={[styles.gradientContainer, containerStyle]}
+      style={[
+        styles.gradientContainer,
+        tablet && {
+          alignSelf: 'center',
+          width: '100%',
+          maxWidth: getMaxContentWidth(),
+          marginHorizontal: scale(24),
+        },
+        containerStyle,
+      ]}
     >
-      <View style={styles.inputWrapper}>
+      <View style={[styles.inputWrapper, tablet && { height: 54 }]}>
         <TextInput
           placeholderTextColor={colors.white}
           style={[styles.input, inputStyle]}

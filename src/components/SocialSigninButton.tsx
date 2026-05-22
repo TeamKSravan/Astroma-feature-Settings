@@ -52,7 +52,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: moderateScale(16),
+    borderRadius: moderateScale(50),
     shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
@@ -63,18 +63,17 @@ const styles = StyleSheet.create({
     elevation: Platform.OS === 'ios' ? 8 : 0,
   },
   gradient: {
-    borderRadius: moderateScale(16),
+    borderRadius: moderateScale(50),
     padding: scale(2),
   },
   innerButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: '#FFFFFF17',
     borderWidth: 0.5,
-    borderColor: colors.primary,
-    borderRadius: moderateScale(16),
-    paddingVertical: verticalScale(16),
+    borderRadius: moderateScale(50),
+    paddingVertical: verticalScale(14),
     paddingHorizontal: scale(32),
     marginBottom: 3,
   },

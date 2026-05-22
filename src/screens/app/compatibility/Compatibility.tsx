@@ -193,6 +193,7 @@ export default function Compatibility(props: any) {
   useEffect(() => {
     setIsDisabledGenerateReport(false);
     console.log('selectedUser : ', selectedUser);
+    console.log('compatibilityType : ', compatibilityType);
   }, [selectedUser, compatibilityType]);
 
   const handleUserSelect = (value: string) => {

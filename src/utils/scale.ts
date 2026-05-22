@@ -1,4 +1,4 @@
-import { Dimensions, PixelRatio } from 'react-native';
+import { Dimensions, PixelRatio, Platform } from 'react-native';
 
 let { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -35,3 +35,16 @@ export const verticalScale = (size: number) =>
   (height / guidelineBaseHeight) * size;
 export const moderateScale = (size: number, factor: number = 0.5) =>
   size + (scale(size) - size) * factor;
+
+/** True on iPad or other tablets (shortest side >= 600pt). */
+export const isTablet = (): boolean => {
+  const { width: w, height: h } = Dimensions.get('window');
+  const shortestSide = Math.min(w, h);
+  return (Platform.OS === 'ios' && Platform.isPad) || shortestSide >= 600;
+};
+
+/** Max content width for centered layouts on tablets. */
+export const getMaxContentWidth = (): number => {
+  const { width: w } = Dimensions.get('window');
+  return Math.min(w - scale(48), 560);
+};

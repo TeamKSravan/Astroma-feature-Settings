@@ -15,7 +15,8 @@ import imagepath from '../../../constants/imagepath';
 import { HamburgerMenu, SmallStar, TwinStars } from '../../../constants/svgpath';
 import { UserIcon } from '../../../components/UserList';
 import i18n from '../../../translation/i18n';
-import { moderateScale, scale, verticalScale } from '../../../utils/scale';
+import { isTablet, moderateScale, scale, verticalScale } from '../../../utils/scale';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
 import CommonHeader from '../../../components/CommonHeader';
@@ -48,6 +49,8 @@ interface Message {
 const LOWER_COUNT = 1;
 const KAV_OFFSET_IOS = 20;
 const KAV_OFFSET_ANDROID = 50;
+const TAB_BAR_HEIGHT_IOS = 80;
+const TAB_BAR_HEIGHT_ANDROID = 65;
 const BACK_BUTTON_STYLE = {
   position: 'relative' as const,
   left: scale(0),
@@ -77,52 +80,19 @@ function ChatScreen(props: any) {
   const { chatType, reportId, report, chatHistoryId, chatHistoryEmpty } = props.route.params || { chatType: null, reportId: null, report: null, chatHistoryId: null, chatHistoryEmpty: false };
   const { selectedUser } = useProfileStore();
   const { getWalletDetails, availableCoins, setAvailableCoins } = useWalletStore();
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = Platform.OS === 'ios'
+    ? verticalScale(TAB_BAR_HEIGHT_IOS)
+    : verticalScale(TAB_BAR_HEIGHT_ANDROID) + insets.bottom;
+  const inputBottomInset = tabBarHeight;
+  const keyboardVerticalOffset = Platform.OS === 'ios'
+    ? (isTablet() ? inputBottomInset : KAV_OFFSET_IOS)
+    : KAV_OFFSET_ANDROID;
 
   const sparkleAnims = useRef([
     new Animated.Value(0),
     new Animated.Value(0),
   ]).current;
-
-  // useEffect(() => {
-
-  //   const show =
-  //     Keyboard.addListener(
-  //       'keyboardDidShow',
-  //       () => {
-  
-  //         navigation
-  //           .getParent()
-  //           ?.setOptions({
-  //             tabBarStyle: {
-  //               display: 'none',
-  //             },
-  //           });
-  
-  //       }
-  //     );
-  
-  //   const hide =
-  //     Keyboard.addListener(
-  //       'keyboardDidHide',
-  //       () => {
-  
-  //         navigation
-  //           .getParent()
-  //           ?.setOptions({
-  //             tabBarStyle: {
-  //               height: 60,
-  //             },
-  //           });
-  
-  //       }
-  //     );
-  
-  //   return () => {
-  //     show.remove();
-  //     hide.remove();
-  //   };
-  
-  // }, []);
 
   const sparkleStyles = useMemo(() =>
     sparkleAnims.map(anim => ({
@@ -465,8 +435,12 @@ function ChatScreen(props: any) {
   const onSelectChat = useCallback((chatId: string) => fetchChatHistory(chatId), [fetchChatHistory]);
 
   const baseViewStyle = useMemo(() => ({
-    marginBottom: chatType !== 'viewReport' ? verticalScale(0) : 0,
+    marginBottom: chatType !== 'viewReport' ? 0 : 0,
   }), [chatType]);
+
+  const containerStyle = useMemo(() => ({
+    marginBottom: chatType !== 'viewReport' ? inputBottomInset : 0,
+  }), [chatType, inputBottomInset]);
 
   const titleIconView = useMemo(() => (
     <View style={{ marginLeft: scale(70) }}><TwinStars /></View>
@@ -502,12 +476,15 @@ function ChatScreen(props: any) {
     </View>
   ), [keyboardVisible, sparkleStyles, handleSuggestedQuestionPress]);
 
+  const scrollButtonBottom = inputBottomInset + (isTablet() ? 64 : verticalScale(70));
+
   const scrollButtonView = useMemo(() => {
     if (!showScrollButton) return null;
     return (
       <Animated.View
         style={[
           styles.scrollButtonContainer,
+          { bottom: scrollButtonBottom },
           {
             opacity: scrollButtonAnim,
             transform: [
@@ -574,9 +551,9 @@ function ChatScreen(props: any) {
         title={i18n.t('ai.ai')}
       />
       <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container, containerStyle]}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? KAV_OFFSET_IOS : KAV_OFFSET_ANDROID}
+        keyboardVerticalOffset={keyboardVerticalOffset}
       >
         {messages.length === 0 ? (
           emptyState
@@ -620,7 +597,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginBottom: verticalScale(50),
   },
   emptyStateContainer: {
     flex: 1,
@@ -668,7 +644,6 @@ const styles = StyleSheet.create({
   },
   scrollButtonContainer: {
     position: 'absolute',
-    bottom: verticalScale(100),
     right: scale(20),
     zIndex: 1000,
   },

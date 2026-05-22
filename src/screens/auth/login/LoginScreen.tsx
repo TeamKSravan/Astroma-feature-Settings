@@ -38,6 +38,7 @@ GoogleSignin.configure({
 
 export default function LoginScreen(props: any) {
   const [phoneNumber, setPhoneNumber] = useState(__DEV__ ? '8980698248' : '');
+  const [email, setEmail] = useState(__DEV__ ? 'srabananandar@gmail.com' : '');
   const [disableButton, setDisableButton] = useState(false);
   const [error, setError] = useState({});
   // :point_down: Set India (+91) as the default selected country
@@ -199,12 +200,12 @@ export default function LoginScreen(props: any) {
       setError({
         phone: i18n.t('login.enterPhone'),
       });
-      if(error && error?.phone !== i18n.t('login.enterPhone')){
+      if (error && error?.phone !== i18n.t('login.enterPhone')) {
         (scrollViewRef.current as any)?.scrollTo({
           y: currentOffset.current + 20,
-            animated: true,
-          });
-        }
+          animated: true,
+        });
+      }
       return;
 
     }
@@ -252,6 +253,15 @@ export default function LoginScreen(props: any) {
   };
   const scrollViewRef = useRef<ScrollView>(null);
   const currentOffset = useRef(0);
+
+  const isPhone = (value) => {
+    return /^(\+91[-\s]?)?[1-9]\d{0,15}$/.test(value);
+  };
+
+  const isEmail = (value) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
   return (
     <BaseView backgroundImage={imagepath.homeBg}>
       <KeyboardAvoidingView
@@ -295,6 +305,35 @@ export default function LoginScreen(props: any) {
           <View style={styles.mainView}>
             <Text style={styles.loginText}>{i18n.t('login.login')}</Text>
             <Text style={styles.emailText}>{i18n.t('login.phone')}</Text>
+            {/* <Text style={styles.emailText}>{i18n.t('login.phone2')}</Text> */}
+            {/* <CustomTextInput
+              placeholder={i18n.t('login.enterPhone2')}
+              value={phoneNumber || email}
+              onChangeText={(txt) => {
+                const cleaned = txt.trim();
+
+                if (isPhone(cleaned)) {
+                  setPhoneNumber(cleaned.replace(/[^0-9+]/g, ''));
+                  setEmail('');
+                } else {
+                  setEmail(cleaned.toLowerCase());
+                  setPhoneNumber('');
+                8
+
+                setError({});
+              }}
+              keyboardType="default"   // important (not phone-pad)
+              maxLength={50}
+              leftComponent={
+                phoneNumber ? (
+                  <CountryCodePicker
+                    onSelect={handleCountrySelect}
+                    countryCode={selectedCountry?.cca2 || 'IN'}
+                  />
+                ) : null
+              }
+              error={error?.phone || ''}
+            /> */}
             <CustomTextInput
               placeholder={i18n.t('login.enterPhone')}
               value={phoneNumber}
@@ -313,30 +352,31 @@ export default function LoginScreen(props: any) {
               error={error?.phone || ''}
             />
           </View>
+          <View style={styles.orView}>
+            <View style={styles.orLine} />
+            <Text style={styles.orText}>{i18n.t('login.or')}</Text>
+            <View style={styles.orLine} />
+          </View>
+          <SocialSigninButton
+            title={i18n.t('login.googleLogin')}
+            style={styles.buttonStyle}
+            icon={<Image source={imagepath.google} style={{ width: 20, height: 20 }} />}
+            onPress={handleGoogleLogin}
+          />
+          {Platform.OS === 'ios' && <SocialSigninButton
+            title={i18n.t('login.appleLogin')}
+            style={styles.socialLoginButtonStyle}
+            icon={<Image source={imagepath.apple} style={{ width: 20, height: 20 }} />}
+            onPress={handleAppleLogin}
+          />}
         </ScrollView>
         <CustomButton
           title={i18n.t('login.loginn')}
           style={styles.buttonStyle}
           onPress={handleLogin}
-          // disabled={phoneNumber.length == 0 || disableButton}
+        // disabled={phoneNumber.length == 0 || disableButton}
         />
-        <View style={styles.orView}>
-          <View style={styles.orLine} />
-          <Text style={styles.orText}>{i18n.t('login.or')}</Text>
-          <View style={styles.orLine} />
-        </View>
-        <SocialSigninButton
-          title={i18n.t('login.googleLogin')}
-          style={styles.buttonStyle}
-          icon={<Image source={imagepath.google} style={{ width: 25, height: 25 }} />}
-          onPress={handleGoogleLogin}
-        />
-        {Platform.OS === 'ios' && <SocialSigninButton
-          title={i18n.t('login.appleLogin')}
-          style={styles.socialLoginButtonStyle}
-          icon={<Image source={imagepath.apple} style={{ width: 25, height: 25 }} />}
-          onPress={handleAppleLogin}
-        />}
+
       </KeyboardAvoidingView>
       {isLoading && <Loader />}
     </BaseView>
@@ -362,18 +402,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: verticalScale(15),
+    marginTop: verticalScale(20),
     marginHorizontal: scale(20),
-    gap: scale(10),
+    gap: scale(15),
   },
   orLine: {
     flex: 1,
-    height: 1,
-    backgroundColor: colors.primary,
+    height: 0.6,
+    backgroundColor: '#D0BEBE',
   },
   orText: {
-    color: colors.white,
+    color: '#D0BEBE',
     fontFamily: fonts.regular,
+    fontWeight: '100',
     fontSize: moderateScale(12),
     textAlign: 'center',
   },
