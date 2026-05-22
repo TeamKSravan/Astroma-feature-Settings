@@ -26,7 +26,7 @@ const formatTime = (seconds: number): string => {
 };
 
 export default function OtpScreen(props: any) {
-  const { country_code: country_codeParam, phone: phoneParam, isOnboarded: isOnboardedParam } = props.route?.params || {};
+  const { country_code: country_codeParam, phone: phoneParam, email: emailParam, isOnboarded: isOnboardedParam } = props.route?.params || {};
   const [otp, setOtp] = useState('');
   const [disableButton, setDisableButton] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(isOnboardedParam ? false : true);
@@ -113,8 +113,9 @@ export default function OtpScreen(props: any) {
 
   const phone = phoneParam || '';
   const country_code = country_codeParam || '';
-
+  const email = emailParam || '';
   const handleVerifyOtp = async () => {
+
     setDisableButton(true);
     let validationError = validate('otp', otp);
     if (validationError != '') {
@@ -123,11 +124,14 @@ export default function OtpScreen(props: any) {
     }
 
     try {
-      const data = {
-        phone: phone,
-        country_code: country_code,
-        otp: otp,
-      };
+      const data = phone.trim().length > 0 ? {
+          phone: phone,
+          country_code: country_code,
+          otp: otp,
+        } : {
+          email: email,
+          otp: otp,
+        };
 
       console.log('login', data);
 
@@ -165,15 +169,14 @@ export default function OtpScreen(props: any) {
     if (timer > 0) {
       return;
     }
-    if (!phone) {
-      ToastMessage(i18n.t('toast.phoneNumberNotFound'));
-      return;
-    }
+    const data = phone.trim().length > 0 ? {
+      country_code: country_code,
+      phone: phone,
+    } : {
+      email: email,
+    };
     try {
-      const result = await sendOTP({
-        country_code: country_code,
-        phone: phone,
-      });
+      const result = await sendOTP(data);
 
       if (result.success) {
         ToastMessage(i18n.t('toast.otpSentSuccess'));
@@ -236,8 +239,8 @@ export default function OtpScreen(props: any) {
           <View style={styles.mainView}>
             <Text style={styles.loginText}>{i18n.t('login.auth')}</Text>
             <Text style={styles.emailText}>
-              {i18n.t('login.code')}
-              {phone ? ` sent to ${phone}` : ''}
+              {i18n.t('login.code', { type: phone ? 'mobile number' : email ? 'email' : '' })} 
+              {phone ? ` sent to ${phone}` : email ? ` sent to ${email}` : ''}
             </Text>
             <OTPInputView
               style={styles.otpInput}

@@ -37,11 +37,10 @@ GoogleSignin.configure({
 });
 
 export default function LoginScreen(props: any) {
-  const [phoneNumber, setPhoneNumber] = useState(__DEV__ ? '8980698248' : '');
   const [email, setEmail] = useState(__DEV__ ? 'srabananandar@gmail.com' : '');
+  const [phoneNumber, setPhoneNumber] = useState(__DEV__ ? '8980698248' : '');
   const [disableButton, setDisableButton] = useState(false);
   const [error, setError] = useState({});
-  // :point_down: Set India (+91) as the default selected country
   const [selectedCountry, setSelectedCountry] = useState<Country>({
     callingCode: ['91'],
     cca2: 'IN',
@@ -97,7 +96,6 @@ export default function LoginScreen(props: any) {
     var idToken = signInResult.data?.idToken;
     console.log('idToken =>', idToken);
     if (!idToken) {
-      // if you are using older versions of google-signin, try old style result
       idToken = signInResult?.idToken;
     }
     if (!idToken) {
@@ -115,6 +113,7 @@ export default function LoginScreen(props: any) {
     console.log('body =>', body);
     const result = await SocialLogin(body);
     if (result.success) {
+      await GoogleSignin.signOut();
       props.navigation.navigate('OnboardingScreen', { onBoardType: OnBoardType.socialLogin });
     } else {
       ToastMessage(result.message || i18n.t('login.loginFailed'));
@@ -125,8 +124,6 @@ export default function LoginScreen(props: any) {
     // Start the sign-in request
     const appleAuthRequestResponse = await appleAuth.performRequest({
       requestedOperation: appleAuth.Operation.LOGIN,
-      // As per the FAQ of react-native-apple-authentication, the name should come first in the following array.
-      // See: https://github.com/invertase/react-native-apple-authentication#faqs
       requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
     });
 
@@ -148,6 +145,9 @@ export default function LoginScreen(props: any) {
     console.log('body =>', body);
     const result = await SocialLogin(body);
     if (result.success) {
+      await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGOUT,
+      });
       props.navigation.navigate('OnboardingScreen', { onBoardType: OnBoardType.socialLogin });
     } else {
       ToastMessage(result.message || i18n.t('login.loginFailed'));
@@ -187,47 +187,73 @@ export default function LoginScreen(props: any) {
     console.log('Country code:', country.cca2);
   };
   const handleLogin = async () => {
-    setDisableButton(true);
+    console.log('login pressed!');
     scrollViewRef.current?.scrollToEnd({ animated: true });
-    if (!selectedCountry) {
-      setError({
-        phone: i18n.t('login.selectCountry'),
-      });
-      // ToastMessage(i18n.t('login.selectCountry'));
-      return;
-    }
-    if (phoneNumber.length === 0) {
-      setError({
-        phone: i18n.t('login.enterPhone'),
-      });
-      if (error && error?.phone !== i18n.t('login.enterPhone')) {
-        (scrollViewRef.current as any)?.scrollTo({
-          y: currentOffset.current + 20,
-          animated: true,
+    const viaPhone = phoneNumber.trim().length > 0 ? true : false;
+    if (viaPhone) {
+      if (!selectedCountry) {
+        setError({
+          phone: i18n.t('login.selectCountry'),
         });
+        return;
       }
-      return;
+      if (phoneNumber.length === 0) {
+        setError({
+          phone: i18n.t('login.enterPhone'),
+        });
+        if (error && error?.phone !== i18n.t('login.enterPhone')) {
+          (scrollViewRef.current as any)?.scrollTo({
+            y: currentOffset.current + 20,
+            animated: true,
+          });
+        }
+        return;
+      }
 
+      let validationError = validate('phone', phoneNumber, {
+        countryCode: selectedCountry.cca2,
+        minLength: DigitSubscriberNumber.find(item => item.countryCode === `+${selectedCountry.callingCode[0]}`)?.totalNationalDigits,
+        maxLength: 15,
+      });
+      if (validationError != '') {
+        setError(prev => ({ ...prev, phone: validationError }));
+        return;
+      }
+    } else {
+      if (!email) {
+        setError({
+          email: i18n.t('login.enterEmail'),
+        });
+        if (error && error?.email !== i18n.t('login.enterEmail')) {
+          (scrollViewRef.current as any)?.scrollTo({
+            y: currentOffset.current + 20,
+            animated: true,
+          });
+        }
+        return;
+      }
+
+      let validationError = validate('email', email);
+      if (validationError != '') {
+        setError(prev => ({ ...prev, email: validationError }));
+        return;
+      }
     }
-    let validationError = validate('phone', phoneNumber, {
-      countryCode: selectedCountry.cca2,
-      minLength: DigitSubscriberNumber.find(item => item.countryCode === `+${selectedCountry.callingCode[0]}`)?.totalNationalDigits,
-      maxLength: 15,
-    });
-    if (validationError != '') {
-      setError(prev => ({ ...prev, phone: validationError }));
-      return;
-    }
+
+
 
     try {
 
-      const formdata = {
+      const formdata = viaPhone ? {
         country_code: `+${selectedCountry.callingCode[0]}`,
         phone: phoneNumber,
-      }
+      } : {
+        email: email,
+      };
       console.log('Full phone number:', formdata);
-      const onBoardingResult = await CheckOnBoarding(formdata.country_code, formdata.phone);
+      const onBoardingResult = await CheckOnBoarding(formdata);
       const result = await sendOTP(formdata);
+      console.log('result =>', result);
       if (result.success) {
         setError({})
         ToastMessage(i18n.t('login.otpSent'));
@@ -237,15 +263,17 @@ export default function LoginScreen(props: any) {
           useAuthStore.setState({ isGetBonus: true });
         }
         setTimeout(() => {
-          props.navigation.navigate('OtpScreen', {
+          props.navigation.navigate('OtpScreen', viaPhone ? {
             country_code: `+${selectedCountry.callingCode[0]}`,
             phone: phoneNumber,
+            isOnboarded: onBoardingResult.isOnboarded,
+          } : {
+            email: email,
             isOnboarded: onBoardingResult.isOnboarded,
           });
         }, 500);
       }
     } catch (error: any) {
-      // ToastMessage(error?.message || i18n.t('login.genericError'));
       console.log('Login error:', error);
     } finally {
       setDisableButton(false);
@@ -304,21 +332,22 @@ export default function LoginScreen(props: any) {
           </View>
           <View style={styles.mainView}>
             <Text style={styles.loginText}>{i18n.t('login.login')}</Text>
-            <Text style={styles.emailText}>{i18n.t('login.phone')}</Text>
-            {/* <Text style={styles.emailText}>{i18n.t('login.phone2')}</Text> */}
-            {/* <CustomTextInput
+            <Text style={styles.emailText}>{i18n.t('login.phone2')}</Text>
+            <CustomTextInput
               placeholder={i18n.t('login.enterPhone2')}
-              value={phoneNumber || email}
+              value={phoneNumber.trim().length > 0 ? phoneNumber : email}
               onChangeText={(txt) => {
                 const cleaned = txt.trim();
 
                 if (isPhone(cleaned)) {
                   setPhoneNumber(cleaned.replace(/[^0-9+]/g, ''));
                   setEmail('');
+                  console.log('phoneNumber =>', phoneNumber);
                 } else {
                   setEmail(cleaned.toLowerCase());
                   setPhoneNumber('');
-                8
+                  console.log('email =>', email);
+                }
 
                 setError({});
               }}
@@ -332,24 +361,7 @@ export default function LoginScreen(props: any) {
                   />
                 ) : null
               }
-              error={error?.phone || ''}
-            /> */}
-            <CustomTextInput
-              placeholder={i18n.t('login.enterPhone')}
-              value={phoneNumber}
-              onChangeText={(txt) => {
-                setPhoneNumber(txt.replace(/[^0-9]/g, ''));
-                setError({});
-              }}
-              keyboardType="phone-pad"
-              maxLength={15}
-              leftComponent={
-                <CountryCodePicker
-                  onSelect={handleCountrySelect}
-                  countryCode={selectedCountry?.cca2 || 'IN'}
-                />
-              }
-              error={error?.phone || ''}
+              error={phoneNumber.trim().length > 0 ? error?.phone || '' : error?.email || ''}
             />
           </View>
           <View style={styles.orView}>
@@ -374,7 +386,6 @@ export default function LoginScreen(props: any) {
           title={i18n.t('login.loginn')}
           style={styles.buttonStyle}
           onPress={handleLogin}
-        // disabled={phoneNumber.length == 0 || disableButton}
         />
 
       </KeyboardAvoidingView>

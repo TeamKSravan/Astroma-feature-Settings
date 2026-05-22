@@ -38,12 +38,14 @@ interface SignupData {
 }
 
 interface sendOTPData {
-  country_code: string;
-  phone: string;
+  country_code?: string;
+  email?: string;
+  phone?: string;
 }
 
 interface LoginData {
-  phone: string;
+  phone?: string;
+  email?: string;
   country_code: string;
   otp: string;
 }
@@ -57,6 +59,12 @@ interface VerifyOTPData {
 interface SocialLoginData {
   id_token: string;
   provider: string;
+}
+
+interface CheckOnBoardingData {
+  country_code?: string;
+  phone?: string;
+  email?: string;
 }
 interface AuthState {
   token: string | null;
@@ -77,7 +85,7 @@ interface AuthState {
   setUserDetails: (details: UserDetails) => void;
   clearAuth: () => void;
   updateUserDetails: (details: Partial<UserDetails>) => void;
-  CheckOnBoarding: (country_code: string, phone: string) => Promise<{ success: boolean; message?: string; isOnboarded?: boolean }>;
+  CheckOnBoarding: (data: CheckOnBoardingData) => Promise<{ success: boolean; message?: string; isOnboarded?: boolean }>;
   completeOnboarding: (
     data: any,
   ) => Promise<{ success: boolean; message?: string }>;
@@ -123,12 +131,16 @@ export const useAuthStore = create<AuthState>()(
         set(state => ({
           userDetails: { ...state.userDetails, ...details } as UserDetails,
         })),
-      CheckOnBoarding: async (country_code: string, phone: string) => {
+      CheckOnBoarding: async (data: CheckOnBoardingData) => {
+        const viaPhone = data.phone && data.phone?.trim().length > 0 ? true : false;
+        const payload = viaPhone ? {
+          country_code: data.country_code?.trim(),
+          phone: data.phone?.trim(),
+        } : {
+          email: data.email?.trim(),
+        };
         try {
-          const response = await AxiosBase.post('/user/onboarding-status', {
-            country_code: country_code.trim(),
-            phone: phone.trim(),
-          });
+          const response = await AxiosBase.post('/user/onboarding-status', payload);
           console.log('Response from CheckOnBoarding', response);
           return { success: true, isOnboarded: response?.result };
         } catch (error: any) {
@@ -191,14 +203,20 @@ export const useAuthStore = create<AuthState>()(
       },
 
       sendOTP: async (data: sendOTPData) => {
-        console.log('send otp : ', data);
+
+        const viaPhone = (data.phone?.trim().length ?? 0) > 0;
+
+        var payload = viaPhone ? {
+          country_code: data.country_code?.trim(),
+          phone: data.phone?.trim(),
+        } : {
+          email: data.email?.trim(),
+        };
+        console.log('send otp : ', payload);
 
         set({ isLoading: true, error: null });
         try {
-          const response = await AxiosBase.post('/auth/request-otp', {
-            country_code: data.country_code.trim(),
-            phone: data.phone.trim(),
-          });
+          const response = await AxiosBase.post(viaPhone ? '/auth/request-otp' : '/auth/request-email-otp', payload);
           console.log('Response from sendOTP', response);
           set({ isLoading: false });
           return { success: true };
@@ -236,13 +254,18 @@ export const useAuthStore = create<AuthState>()(
       },
 
       login: async (data: LoginData) => {
+        const viaPhone = (data.phone?.trim().length ?? 0) > 0;
         set({ isLoading: true, error: null });
+        const payload = viaPhone ? {
+          phone: data.phone?.trim(),
+          country_code: data.country_code?.trim(),
+          otp: data.otp,
+        } : {
+          email: data.email?.trim(),
+          otp: data.otp,
+        };
         try {
-          const response = await AxiosBase.post('/auth/login', {
-            phone: data.phone.trim(),
-            country_code: data.country_code.trim(),
-            otp: data.otp,
-          });
+          const response = await AxiosBase.post(viaPhone ? '/auth/login' : '/auth/login-email', payload);
           const { token, user } = response;
           console.log('user =>', user);
           set({
@@ -312,7 +335,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: user?.is_enabled ?? false,
             isLoading: false,
           });
-          return { 
+          return {
             success: true,
             isOnboarded: true,
           };
@@ -394,16 +417,34 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
-        useProfileStore.getState().setSecondaryUserdata([]);
-        useProfileStore.getState().setSelectedUser(null as any);
-        useWalletStore.getState().setAvailableCoins(0);
-        useWalletStore.getState().setCurrentSubscription(null);
-        set({
-          token: null,
-          userDetails: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
+        try {
+          const response = await AxiosBase.post('/auth/logout');
+          console.log('Response from logout', response);
+          useProfileStore.getState().setSecondaryUserdata([]);
+          useProfileStore.getState().setSelectedUser(null as any);
+          useWalletStore.getState().setAvailableCoins(0);
+          useWalletStore.getState().setCurrentSubscription(null);
+          set({
+            token: null,
+            userDetails: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+          return { success: true, message: 'Logged out successfully' };
+        }
+        catch (error: any) {
+          const errorMessage = error.response?.data?.detail || 'Failed to logout';
+          set({
+            token: null,
+            userDetails: null,
+            isAuthenticated: false,
+          });
+          return {
+            success: false,
+            message: errorMessage,
+          };
+        }
+
       },
     }),
     {

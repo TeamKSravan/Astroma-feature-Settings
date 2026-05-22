@@ -26,16 +26,13 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import { useProfileStore } from '../../../store/useProfileStore';
 import Loader from '../../../components/Loader';
 import moment from 'moment-timezone';
-import EnterPhoneStep from './EnterPhoneStep';
-
 export enum OnBoardType {
   newUser = 'newUser',
   socialLogin = 'socialLogin',
   addUser = 'addUser',
   combatUser = 'combatUser',
 }
-const tabs = [
-  { title: 'phone.phone', key: 'phone' },
+const STEPS = [
   { title: 'name.name', key: 'name' },
   { title: 'time.date', key: 'date' },
   { title: 'time.time', key: 'time' },
@@ -43,14 +40,9 @@ const tabs = [
   { title: 'gender.gender', key: 'gender' },
 ];
 export default function OnboardingScreen(props: any) {
-  const { onBoardType = OnBoardType.newUser } = props.route?.params || {};
-  const notSocialLogin = onBoardType !== OnBoardType.socialLogin;
-  const STEPS = tabs.slice(notSocialLogin ? 1 : 0);
-  //onBoardType !== OnBoardType.socialLogin ? tabs.slice(0,1) : tabs;
-  console.log('onBoardType => ', onBoardType);
-  console.log('STEPS => ', STEPS);
-  const [currentPage, setCurrentPage] = useState(notSocialLogin ? 1 : 0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [error, setError] = useState({});
+  const { onBoardType = 'newUser' } = props.route?.params || {};
   const { completeOnboarding, isLoading, setIsGetBonus } = useAuthStore();
   const { addUserDetail, selectedUser, setSelectedUser, } = useProfileStore();
   const { validate } = useValidation();
@@ -71,28 +63,20 @@ export default function OnboardingScreen(props: any) {
   const handleNext = () => {
     // console.log(`formData ${currentPage + 1}: `, formData);
     var validationError = '';
-    validationError = validate('phone', formData.phone);
-    if(!notSocialLogin){
-      if (currentPage === 0 && validationError) {
-        console.log('phone validationError : ', validationError);
-        setError(prev => ({ ...prev, phone: validationError }));
-        return;
-      }
-    }
     validationError = validate('name', formData.name);
-    if (currentPage === (notSocialLogin ? 1 : 2) && validationError) {
+    if (currentPage === 0 && validationError) {
       console.log('name validationError : ', validationError);
       setError(prev => ({ ...prev, name: validationError }));
       return;
     }
     validationError = validate('dob', formData.dob);
-    if (currentPage === (notSocialLogin ? 2 : 3) && validationError) {
+    if (currentPage === 1 && validationError) {
       ToastMessage(validationError);
       return;
     }
 
     validationError = validate('place', formData.place);
-    if (currentPage === (notSocialLogin ? 4 : 5) && validationError) {
+    if (currentPage === 3 && validationError) {
       console.log('validationError => ', validationError);
       setError(prev => ({ ...prev, place: validationError }));
       return;
@@ -100,8 +84,7 @@ export default function OnboardingScreen(props: any) {
 
     // console.log('STEPS.length : ', STEPS.length);
     // console.log('currentPage : ', currentPage);
-    const stepLength = notSocialLogin ? STEPS.length : STEPS.length - 1
-    if (currentPage < stepLength) {
+    if (currentPage < STEPS.length - 1) {
       setCurrentPage(currentPage + 1);
     } else {
       handleSubmit();
@@ -109,11 +92,7 @@ export default function OnboardingScreen(props: any) {
   };
   const handleBack = () => {
     if (currentPage > 0) {
-      if(notSocialLogin && currentPage === 1){
-        props.navigation.goBack();
-      } else {
         setCurrentPage(currentPage - 1);
-      }
     } else {
       props.navigation.goBack();
     }
@@ -140,18 +119,6 @@ export default function OnboardingScreen(props: any) {
       setCurrentPage(1);
       return;
     }
-    // const submitData = {
-    //   name: formData.name,
-    //   dob: formData.dob,
-    //   time: formData.time,
-    //   place: formData.place,
-    //   lat: formData.lat === '' ? '27.1767' : formData.lat,
-    //   long: formData.long === '' ? '78.0081' : formData.long,
-    //   gender: formData.gender,
-    //   timezone: formData.timezone,
-    //   ...(onBoardType == 'SocialLogin' ? { phone: formData.phone , country_code: formData.country_code } : {})
-    // };
-
     const submitData = {
       name: formData.name.trim(),
       date_of_birth: moment(formData.dob).format('YYYY-MM-DD'),
@@ -161,7 +128,6 @@ export default function OnboardingScreen(props: any) {
       long: formData.long || '',
       gender: formData.gender || '',
       timezone: formData.timezone || '',
-      ...(onBoardType == OnBoardType.socialLogin ? { phone: formData.phone , country_code: formData.country_code } : {})
     }
     console.log('submitData => ', submitData);
     const result =
@@ -205,21 +171,13 @@ export default function OnboardingScreen(props: any) {
     switch (currentPage) {
       case 0:
         return (
-          <EnterPhoneStep
-            value={formData.phone}
-            onChangeText={text => setFormData({ ...formData, phone: text })}
-            error={error}
-          />
-        );
-      case 1:
-        return (
           <EnterNameStep
             value={formData.name}
             onChangeText={text => setFormData({ ...formData, name: text })}
             error={error}
           />
         );
-      case 2:
+      case 1:
         return (
           <EnterDOBStep
             value={formData.dob}
@@ -227,19 +185,15 @@ export default function OnboardingScreen(props: any) {
             error={error}
           />
         );
-      case 3:
+      case 2:
         return (
           <EnterTimeStep
             value={formData.time}
             onChangeTime={time => setFormData({ ...formData, time: time })}
-            // onChangeTimezone={(timezone: any) => {
-            //   console.log('onChangeTimezone => ', timezone);
-            //   setFormData({ ...formData, timezone: timezone?.value || '' })
-            // }}
             error={error}
           />
         );
-      case 4:
+      case 3:
         return (
           <EnterPlaceStep
             value={formData.place}
@@ -256,7 +210,7 @@ export default function OnboardingScreen(props: any) {
             error={error}
           />
         );
-      case 5:
+      case 4:
         return (
           <GenderStep
             value={formData.gender}
@@ -278,10 +232,10 @@ export default function OnboardingScreen(props: any) {
         <View style={styles.headerView}>
           <BackArrow onPress={handleBack} />
           <Text style={styles.headerText}>
-            {i18n.t(STEPS[notSocialLogin ? currentPage - 1 : currentPage].title)}
+            {i18n.t(STEPS[currentPage].title)}
           </Text>
         </View>
-        <ProgressBar completedSegments={notSocialLogin ? currentPage : currentPage + 1} totalSegments={STEPS.length} />
+        <ProgressBar completedSegments={currentPage + 1} totalSegments={5} />
         {renderStep()}
         <CustomButton
           title={
