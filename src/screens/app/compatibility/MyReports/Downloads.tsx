@@ -5,11 +5,12 @@ import { colors } from '../../../../constants/colors';
 import CCReportItem from '../../../../components/CCReportItem';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useProfileStore } from '../../../../store/useProfileStore';
-import { FlatList, RefreshControl, StyleSheet, Text } from 'react-native';
+import { FlatList, Image, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import PdfViewerModal from '../../../../components/modals/PdfViewerModal';
 import { moderateScale, scale, verticalScale } from '../../../../utils/scale';
 import { useCompatibilityStore } from '../../../../store/useCompatibilityStore';
 import { useFocusEffect } from '@react-navigation/native';
+import imagepath from '../../../../constants/imagepath';
 
 function Downloads(props: any) {
   const { index } = props.route.params;
@@ -28,9 +29,13 @@ function Downloads(props: any) {
     if (!silent) setIsLoading(true);
     return getCompatibilityReportList(false, userId).then(response => {
       if (response.success) {
-        setReports(response.data as any);
-        setEmptyMessage('');
+        const list = Array.isArray(response.data) ? response.data : [];
+        setReports(list);
+        setEmptyMessage(
+          list.length === 0 ? i18n.t('report.noCompatibilityReports') : '',
+        );
       } else {
+        setReports([]);
         setEmptyMessage(i18n.t('report.noCompatibilityReports'));
       }
     }).finally(() => {
@@ -74,9 +79,19 @@ function Downloads(props: any) {
     return `${typeLabel} ${i18n.t('compat.compatibilityReport')}`;
   }, [pdfData?.compatibility?.type]);
 
-  const listEmptyComponent = useMemo(() => (
-    <Text style={styles.emptyMessage}>{emptyMessage}</Text>
-  ), [emptyMessage]);
+  const listEmptyComponent = useMemo(() => {
+    if (isLoading) {
+      return null;
+    }
+    return (
+      <View style={styles.emptyContainer}>
+        <Image source={imagepath.DocumentIcon} style={styles.documentIcon} />
+        <Text style={styles.emptyMessage}>
+          {emptyMessage || i18n.t('report.noCompatibilityReports')}
+        </Text>
+      </View>
+    );
+  }, [emptyMessage, isLoading]);
 
   const loader = useMemo(() => (
     isLoading ? <Loader /> : null
@@ -98,7 +113,10 @@ function Downloads(props: any) {
         data={reports}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[
+          styles.scroll,
+          reports.length === 0 && styles.scrollEmpty,
+        ]}
         ListEmptyComponent={listEmptyComponent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
@@ -116,11 +134,29 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(60),
     paddingHorizontal: scale(10),
   },
+  scrollEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  emptyContainer: {
+    width: '90%',
+    padding: scale(40),
+    alignSelf: 'center',
+    alignItems: 'center',
+    borderRadius: scale(10),
+    justifyContent: 'center',
+    minHeight: verticalScale(100),
+    backgroundColor: colors.primary,
+  },
+  documentIcon: {
+    width: scale(40),
+    height: scale(40),
+    marginBottom: verticalScale(20),
+  },
   emptyMessage: {
     color: colors.white,
     fontFamily: fonts.semiBold,
     fontSize: moderateScale(16),
     textAlign: 'center',
-    marginTop: verticalScale(20),
   },
 });

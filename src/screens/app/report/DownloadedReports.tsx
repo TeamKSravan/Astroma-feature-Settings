@@ -58,8 +58,11 @@ function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       if (lastFetchKeyRef.current === fetchKey) return;
       getUserReports(userId).then(response => {
         if (response.success) {
-          setUserReports(response.data as any);
-          setEmptyMessage('');
+          const reports = Array.isArray(response.data) ? response.data : [];
+          setUserReports(reports);
+          setEmptyMessage(
+            reports.length === 0 ? i18n.t('report.noDownloadedReports') : '',
+          );
           lastFetchKeyRef.current = fetchKey;
         } else {
           setEmptyMessage(i18n.t('report.noDownloadedReports'));
@@ -290,9 +293,18 @@ function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
     isLoading ? <Loader /> : null
   ), [isLoading]);
 
-  const listEmptyComponent = useMemo(() => (
-    <Text style={styles.emptyMessage}>{emptyMessage}</Text>
-  ), [emptyMessage]);
+  const listEmptyComponent = useMemo(() => {
+    if (isLoading) {
+      return null;
+    }
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyMessage}>
+          {emptyMessage || i18n.t('report.noDownloadedReports')}
+        </Text>
+      </View>
+    );
+  }, [emptyMessage, isLoading]);
 
   const reportsList = useMemo(() => (
     <FlatList
@@ -300,7 +312,10 @@ function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       bounces={false}
-      contentContainerStyle={styles.scroll}
+      contentContainerStyle={[
+        styles.scroll,
+        userReports.length === 0 && styles.scrollEmpty,
+      ]}
       ListEmptyComponent={listEmptyComponent}
     />
   ), [userReports, renderItem, keyExtractor, listEmptyComponent]);
@@ -412,12 +427,22 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(60),
     paddingHorizontal: scale(10),
   },
+  scrollEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: scale(20),
+    minHeight: verticalScale(200),
+  },
   emptyMessage: {
     color: colors.white,
     fontFamily: fonts.semiBold,
     fontSize: moderateScale(16),
     textAlign: 'center',
-    marginTop: verticalScale(20),
   },
   descriptionGradient: {
     position: 'absolute',

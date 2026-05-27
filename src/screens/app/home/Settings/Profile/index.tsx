@@ -348,18 +348,6 @@ export default function Profile({ navigation }: any) {
       setErrors(prev => ({ ...prev, time: '' }));
     }
 
-
-    // console.log('api data  : ', {
-    //   name: capitalizeFirstLetter(fullName),
-    //   phone: phoneNo,
-    //   country_code: `+${selectedCountry?.callingCode?.[0]}` || userDetails?.country_code || '',
-    //   date_of_birth: moment(dateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD'),
-    //   place_of_birth: placeOfBirth,
-    //   lat: coordinates.lat === '' ? '27.1767' : coordinates.lat,
-    //   long: coordinates.lng === '' ? '78.0081' : coordinates.lng,
-    //   time_of_birth: timeOfBirth ? moment(timeOfBirth, 'HH:mm').format('HH:mm') : '',
-    //   ...(gender ? { gender } : {}),
-    // });
     try {
       editPrimaryUserDetail({
         name: capitalizeFirstLetter(fullName),
@@ -639,7 +627,7 @@ export default function Profile({ navigation }: any) {
             gap: verticalScale(15),
           }}>
             <ProfileInput label={i18n.t('profile.fullName')} placeholder={i18n.t('profile.fullName')} value={fullName} onChangeText={onNameChange} editable={isEditable} error={errors?.name} />
-            <ProfileInput
+            {phoneNo && phoneNo.length > 0 && <ProfileInput
               label={i18n.t('profile.phoneNo')}
               forPhone={true}
               placeholder={i18n.t('profile.phoneNo')}
@@ -656,7 +644,7 @@ export default function Profile({ navigation }: any) {
                 </TouchableOpacity>
               }
               error={errors?.phone}
-            />
+            />}
             <ProfileInput
               label={i18n.t('profile.dateOfBirth')}
               placeholder={i18n.t('profile.dateOfBirth')}

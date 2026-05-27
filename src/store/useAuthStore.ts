@@ -160,36 +160,30 @@ export const useAuthStore = create<AuthState>()(
       completeOnboarding: async (data: SignupData) => {
         set({ isLoading: true, error: null });
         try {
-          // const payload = {
-          //   name: data.name.trim(),
-          //   date_of_birth: moment(data.dob).format('YYYY-MM-DD'),
-          //   time_of_birth: moment(data.time).format('HH:mm:ss'),
-          //   place_of_birth: data.place || '',
-          //   lat: data.lat || '',
-          //   long: data.long || '',
-          //   gender: data.gender || '',
-          //   timezone: data.timezone || '',
-          // };
-          console.log('Onboarding payload', data);
-
           const response = await AxiosBase.post('/auth/onboard', data);
           console.log('Response from onboarding', response);
+          const { user, coins } = response;
           set(state => ({
             userDetails: {
               ...state.userDetails,
-              name: data.name,
-              dateOfBirth: moment(data.dob).format('YYYY-MM-DD'),
-              timeOfBirth: moment(data.time).format('HH:mm:ss'),
-              place: data.place,
-              lat: data.lat,
-              long: data.long,
-              gender: data.gender || undefined,
-              timezone: data.timezone || '',
+              name: user?.name,
+              email: user?.email,
+              phone: user?.phone,
+              country_code: user?.country_code,
+              dateOfBirth: moment(user?.date_of_birth).format('YYYY-MM-DD'),
+              timeOfBirth: user?.time_of_birth,
+              place: user?.place_of_birth,
+              lat: user?.lat,
+              long: user?.long,
+              gender: user?.gender || undefined,
+              timezone: user?.timezone || '',
+              zodiac_sign: user?.zodiac_sign || '',
+              push_notifications_enabled: user?.is_push_notifications_enabled || false,
               isOnboarded: true,
             } as UserDetails,
+            coins: coins,
             isLoading: false,
           }));
-
           return { success: true };
         } catch (error: any) {
           const errorMessage =
