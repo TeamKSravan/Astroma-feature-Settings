@@ -21,7 +21,7 @@ import { colors } from '../constants/colors';
 import { fonts } from '../constants/fonts';
 import { useNavigation } from '@react-navigation/native';
 import { useProfileStore } from '../store/useProfileStore';
-import { UserDetails } from '../store/useAuthStore';
+import { useAuthStore, UserDetails } from '../store/useAuthStore';
 import { ToastMessage } from './ToastMessage';
 import { capitalizeFirstLetter } from '../utils/methods';
 
@@ -92,11 +92,6 @@ function UserList({ primaryUser, showAddUser = true, disableUserSelection = fals
     const secondaryUserLimit = useProfileStore(state => state.secondaryUserLimit);
     const navigation = useNavigation();
 
-    const comparePrimaryUser = useMemo(
-        () => primaryUser?.id === selectedUser?.id,
-        [primaryUser?.id, selectedUser?.id],
-    );
-
     const onPressAddUser = useCallback(() => {
         const limit = secondaryUserLimit ?? 10;
         if ((secondaryUserdata?.length ?? 0) <= limit - 1) {
@@ -124,8 +119,8 @@ function UserList({ primaryUser, showAddUser = true, disableUserSelection = fals
                     <View style={styles.signContainer}>
                         <TouchableOpacity
                             activeOpacity={1}
-                            style={comparePrimaryUser ? styles.selectedcircle : styles.circle}
-                            onPress={() => (disableUserSelection ? null : setSelectedUser(primaryUser))}
+                            style={!selectedUser ? styles.selectedcircle : styles.circle}
+                            onPress={() => (disableUserSelection ? null : setSelectedUser(null))}
                         >
                             <UserIcon sign={primaryUser?.zodiac_sign ?? ''} />
                         </TouchableOpacity>

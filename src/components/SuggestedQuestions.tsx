@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, AppState, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { moderateScale, scale, verticalScale } from '../utils/scale';
 import { colors } from '../constants/colors';
@@ -27,25 +27,76 @@ const SuggestedQuestion: React.FC<SuggestedQuestionProps> = ({
   const { getQuestions } = useChatStore();
   const { selectedUser } = useProfileStore();
   const lastFetchKeyRef = useRef<string | null>(null);
+  const pendingFetchUserIdRef = useRef<string | null>(null);
+  const shouldRetryOnResumeRef = useRef(false);
+  const isLoadingRef = useRef(false);
+  const selectedUserId = (selectedUser as any)?._id?.$oid ?? '';
 
-  const fetchQuestions = useCallback(async (userId: string) => {
+  const fetchQuestions = useCallback(async (
+    userId: string,
+    options?: { isRetry?: boolean },
+  ) => {
+    pendingFetchUserIdRef.current = userId;
     setLoading(true);
-    getQuestions(userId).then((res: any) => {
+
+    try {
+      const res: any = await getQuestions(userId);
       if (res.success && res.data) {
-        setQuestions(res.data?.map((object: any) => ({ text: object.question, category: object.category })));
+        setQuestions(res.data?.map((object: any) => ({
+          text: object.question,
+          category: object.category,
+        })));
+        lastFetchKeyRef.current = userId;
+        pendingFetchUserIdRef.current = null;
+        shouldRetryOnResumeRef.current = false;
+      } else {
+        const isCancelled =
+          res.data === 'REQUEST_CANCELLED' ||
+          res.message === 'REQUEST_CANCELLED';
+        if (isCancelled) {
+          shouldRetryOnResumeRef.current = true;
+        }
       }
+    } catch {
+      shouldRetryOnResumeRef.current = true;
+    } finally {
       setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    }
   }, [getQuestions]);
 
   useEffect(() => {
-    const userId = selectedUser?._id?.$oid ?? '';
-    if (lastFetchKeyRef.current === userId) return;
-    lastFetchKeyRef.current = userId;
-    fetchQuestions(userId);
-  }, [selectedUser?._id?.$oid, fetchQuestions]);
+    isLoadingRef.current = loading;
+  }, [loading]);
+
+  useEffect(() => {
+    if (lastFetchKeyRef.current === selectedUserId) return;
+    lastFetchKeyRef.current = selectedUserId;
+    void fetchQuestions(selectedUserId);
+  }, [selectedUserId, fetchQuestions]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        if (isLoadingRef.current && pendingFetchUserIdRef.current) {
+          shouldRetryOnResumeRef.current = true;
+        }
+        return;
+      }
+
+      if (
+        nextState === 'active' &&
+        shouldRetryOnResumeRef.current &&
+        pendingFetchUserIdRef.current
+      ) {
+        shouldRetryOnResumeRef.current = false;
+        void fetchQuestions(pendingFetchUserIdRef.current, { isRetry: true });
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [fetchQuestions]);
 
   const horizontalList = useMemo(() => (
     <ScrollView horizontal contentContainerStyle={styles.horizontalWrapper}>

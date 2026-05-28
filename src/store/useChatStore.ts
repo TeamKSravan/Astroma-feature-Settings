@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AxiosBase from '../services/AxiosBase';
 import { languageMap, useAuthStore } from './useAuthStore';
+import axios from 'axios';
 
 interface UserDetails {
   id?: string;
@@ -78,6 +79,14 @@ export const useChatStore = create<ChatState>()(
           setLoading(false);
           return { success: true, data: response.result };
         } catch (error: any) {
+          const isRequestCancelled =
+            axios.isCancel(error) ||
+            error?.code === 'ERR_CANCELED' ||
+            error?.message === 'canceled';
+          if (isRequestCancelled) {
+            setLoading(false);
+            return { success: false, data: 'REQUEST_CANCELLED' };
+          }
           const errorMessage =
             error.response?.data?.detail || 'Failed to get questions';
           setLoading(false);
@@ -295,6 +304,14 @@ export const useChatStore = create<ChatState>()(
           setLoading(false);
           return { success: true, data: response.result };
         } catch (error: any) {
+          const isRequestCancelled =
+            axios.isCancel(error) ||
+            error?.code === 'ERR_CANCELED' ||
+            error?.message === 'canceled';
+          if (isRequestCancelled) {
+            setLoading(false);
+            return { success: false, message: 'REQUEST_CANCELLED' };
+          }
           const errorMessage =
             error.response?.data?.detail || 'Failed to generate query';
           setLoading(false);
@@ -312,7 +329,7 @@ export const useChatStore = create<ChatState>()(
           return { success: true, data: response?.result };
         } catch (error: any) {
           setLoading(false);
-          return { success: false, message: error.response?.data?.detail || 'Error fetching compatibility' };
+          return { success: false, message: error.response?.data?.detail };
         }
       },
       getViewReport: async (reportID: any, userId?: string) => {

@@ -25,11 +25,12 @@ const productIds =
     ios: [
       'com.astroma.single.1',
       'com.astroma.pack.10',
-      'com.astroma.monthly.100',
-      'com.astroma.monthly.200',
-      'com.astroma.monthly.50',
+      // 'com.astroma.monthly.100',
+      // 'com.astroma.monthly.200',
+      // 'com.astroma.monthly.50',
       'monthly_50',
-      'monthly_100'
+      'monthly_100',
+      'monthly_200'
     ],
     android: [
       'com.astroma.single.1',
@@ -99,7 +100,7 @@ const verifyPurchaseWithBackend = async purchase => {
     console.log('payload', purchaseData);
 
     // 1) Verify purchase with backend
-    const res = await AxiosBase.post('/subscription/', {data: JSON.stringify(purchaseData)});
+    const res = await AxiosBase.post('/subscription/', { data: JSON.stringify(purchaseData) });
 
     if (!res?.success) {
       console.log('Backend verification failed:', res?.message);
@@ -117,7 +118,7 @@ const verifyPurchaseWithBackend = async purchase => {
       console.log('Coins response:', coinsResponse);
 
       if (coinsResponse?.success && typeof coinsResponse?.result === 'number') {
-        useWalletStore.getState().setAvailableCoins(coinsResponse.result ?? 0);
+        useWalletStore.getState().setAvailableCoins(coinsResponse.result ?? 10);
       }
     } catch (coinsError) {
       console.error('Error fetching coins after purchase:', coinsError);
@@ -136,7 +137,7 @@ export const resetModalFlag = () => {
 };
 
 const handlePurchaseUpdate = async (purchase, onSuccess) => {
-  console.log('handlepurchaderun purchase : ', purchase);
+  console.log('Step 10 : handlePurchaseUpdate run purchase : ', purchase);
   try {
     if (purchase.transactionReceipt) {
       const isValid = await verifyPurchaseWithBackend(purchase);
@@ -151,7 +152,7 @@ const handlePurchaseUpdate = async (purchase, onSuccess) => {
         if (Platform.OS === 'ios') {
           await finishTransaction({ purchase });
           useAuthStore.getState().setLoading(false);
-          console.log('iOS transaction finished');
+          console.log('Step 11 : iOS transaction finished');
         } else if (Platform.OS === 'android') {
           if (purchase.purchaseToken) {
             await acknowledgePurchaseAndroid({
@@ -214,9 +215,9 @@ const handlePurchaseUpdateNew = async (purchase, onSuccess) => {
         //     console.log('Android purchase acknowledged');
         //   }
         // }
-        await finishTransaction({ 
-          purchase, 
-          isConsumable: true, 
+        await finishTransaction({
+          purchase,
+          isConsumable: true,
         });
         console.log('iOS transaction finished');
       } catch (ackError) {
@@ -282,21 +283,22 @@ export const checkPendingPurchases = async onSuccess => {
 
 export const setupPurchaseListeners = onPurchaseSuccess => {
   try {
-    console.log('Setting up purchase listeners...');
+    console.log('Step 6 : Setting up purchase listeners...');
 
     purchaseUpdateSubscription = purchaseUpdatedListener(async purchase => {
-      console.log('Purchase update received:', purchase);
+      console.log('Step 7 : Purchase update received:', purchase);
       const res = await useWalletStore.getState().getPurchaseHistory(JSON.stringify(purchase));
-      console.log('Response from getPurchaseHistory : ', res);
+      console.log('Step 8 : Response from getPurchaseHistory : ', res);
       if (res?.success) {
         useWalletStore.getState().setAvailableCoins(res?.coins ?? 0);
       }
+      console.log('Step 9 : handlePurchaseUpdate', purchase);
       await handlePurchaseUpdate(purchase, onPurchaseSuccess);
     });
 
     purchaseErrorSubscription = purchaseErrorListener(error => {
       useAuthStore.getState().setLoading(false);
-      
+
       // Handle user cancellation gracefully (not an error)
       const errorCode = String(error.code || '');
       if (errorCode === ErrorCode.UserCancelled || errorCode === 'user-cancelled' || errorCode === 'E_USER_CANCELLED' || errorCode === 'E_USER_CANCELED') {
@@ -387,7 +389,7 @@ export const purchaseProduct = async productId => {
       if (!product) {
         throw new Error('Product not found');
       }
-      
+
       const purchase = await requestPurchase({ skus: [productId] });
       console.log('Purchase initiated:', purchase);
       return purchase;
@@ -415,50 +417,90 @@ export const purchaseProduct = async productId => {
 };
 
 export const purchaseSubscription = async productId => {
+  console.log('Step 2 : purchaseSubscription', productId);
   try {
     if (!isInitialized) {
       await initializeIAP();
     }
 
-    console.log('Attempting to purchase:', productId);
+    console.log('Attempting subscription purchase:', productId);
 
+    // =========================
+    // ANDROID
+    // =========================
     if (Platform.OS === 'android') {
-      const subscriptions = await getSubscriptions({ skus: [productId] });
+      const subscriptions = await getSubscriptions({
+        skus: [productId],
+      });
+
       const subscription = subscriptions.find(
-        (sub: any) => sub.productId === productId,
+        sub => sub.productId === productId,
       );
 
-      console.log('Subscription details:', subscription);
+      console.log('Android subscription details:', subscription);
 
       if (!subscription) {
         throw new Error('Subscription not found');
       }
-      const offerDetails = (subscription as any).subscriptionOfferDetails;
-      if (offerDetails && offerDetails.length > 0) {
-        const offer = offerDetails[0];
-        const offerToken = typeof offer?.offerToken === 'string' ? offer.offerToken : (offer as any)?.offerTokenAndroid;
-        if (!offerToken) {
-          throw new Error('No subscription offers available for this product');
-        }
-        console.log('Using subscription offer:', offer);
 
-        // v13 API: flat request for Android (skus not required; subscriptionOffers used)
-        const purchase = await requestSubscription({
-          sku: productId,
-          subscriptionOffers: [
-            { sku: productId, offerToken },
-          ],
-        });
+      const offerDetails =
+        subscription?.subscriptionOfferDetails || [];
 
-        console.log('Purchase initiated:', purchase);
-        return purchase;
-      } else {
-        throw new Error('No subscription offers available for this product');
+      if (!offerDetails.length) {
+        throw new Error(
+          'No subscription offers available for this product',
+        );
       }
+
+      const offer = offerDetails[0];
+
+      const offerToken =
+        typeof offer?.offerToken === 'string'
+          ? offer.offerToken
+          : offer?.offerTokenAndroid;
+
+      if (!offerToken) {
+        throw new Error('Offer token missing');
+      }
+
+      console.log('Using Android offer:', offer);
+
+      const purchase = await requestSubscription({
+        sku: productId,
+        subscriptionOffers: [
+          {
+            sku: productId,
+            offerToken,
+          },
+        ],
+      });
+
+      console.log('Android subscription initiated:', purchase);
+
+      return purchase;
     } else {
       // v13 API: flat request for iOS subscription
+      console.log('Step 3 : purchaseSubscription', productId);
+      const availablePurchases = await getAvailablePurchases();
+      console.log('Step 4 : purchaseSubscription', availablePurchases);
+      console.log('Available iOS purchases:', availablePurchases);
+
+      // Find active subscription for same product
+      const alreadyOwned = availablePurchases.find(
+        purchase => purchase.productId === productId,
+      );
+
+      if (alreadyOwned) {
+        Alert.alert(
+          'Subscription Already Active',
+          'This Apple ID already owns this subscription.',
+        );
+
+        return alreadyOwned;
+      }
+      console.log('Step 5 : purchaseSubscription', productId);
       const purchase = await requestSubscription({ sku: productId });
-      console.log('Purchase initiated:', purchase);
+      console.log('iOS subscription initiated:', purchase);
       return purchase;
     }
   } catch (error) {

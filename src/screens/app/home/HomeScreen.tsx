@@ -1,4 +1,4 @@
-import { Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AppState, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
@@ -41,7 +41,7 @@ function HomeScreen(props: any) {
   const { myLastSubscription, setCurrentSubscription } = useWalletStore();
 
   const lastFetchKeyRef = useRef<string>('');
-  const userId = selectedUser?._id?.$oid ?? '';
+  const userId = selectedUser?._id?.$oid ?? userDetails?.id;
   const fetchKey = `${userId}_${currentLanguage}`;
 
   const signs = useMemo(() => [
@@ -60,24 +60,37 @@ function HomeScreen(props: any) {
     }
   }, []);
 
+  const fetchDashboard = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await getDashboardData(userId, { silent: true });
+      applyDashboardResult(result);
+      if (result?.success) {
+        lastFetchKeyRef.current = fetchKey;
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId, fetchKey, getDashboardData, applyDashboardResult]);
+
   useFocusEffect(
     useCallback(() => {
       if (lastFetchKeyRef.current === fetchKey) return;
-      let cancelled = false;
-      const doFetch = async () => {
-        setIsLoading(true);
-        const result = await getDashboardData(userId, { silent: true });
-        if (cancelled) return;
-        applyDashboardResult(result);
-        if (result?.success) {
-          lastFetchKeyRef.current = fetchKey;
-        }
-        setIsLoading(false);
-      };
-      doFetch();
-      return () => { cancelled = true; };
-    }, [fetchKey, userId, getDashboardData, applyDashboardResult])
+      void fetchDashboard();
+    }, [fetchKey, fetchDashboard])
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'active') {
+        void fetchDashboard();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [fetchDashboard]);
 
   useEffect(() => {
     const initScreen = async () => {

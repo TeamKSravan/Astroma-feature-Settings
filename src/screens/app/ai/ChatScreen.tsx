@@ -9,6 +9,7 @@ import {
   Animated,
   BackHandler,
   Keyboard,
+  AppState,
 } from 'react-native';
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import imagepath from '../../../constants/imagepath';
@@ -61,6 +62,7 @@ const BACK_BUTTON_STYLE = {
   backgroundColor: colors.modalbg,
   borderRadius: scale(5),
 };
+const REQUEST_CANCELLED = 'REQUEST_CANCELLED';
 
 function ChatScreen(props: any) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -72,6 +74,10 @@ function ChatScreen(props: any) {
   const flatListRef = useRef<FlatList>(null);
   const scrollButtonAnim = useRef(new Animated.Value(0)).current;
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isRefreshingOnResumeRef = useRef(false);
+  const pendingSendRef = useRef<{ text: string; category?: string } | null>(null);
+  const shouldRetrySendOnResumeRef = useRef(false);
+  const isLoadingRef = useRef(false);
   const [exitChatModalVisible, setExitChatModalVisible] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
@@ -205,6 +211,14 @@ function ChatScreen(props: any) {
     }
   }, [getChatMessageHistory, selectedUser]);
 
+  const refreshChatScreenData = useCallback(async () => {
+    const tasks: Promise<any>[] = [getWalletDetails({ silent: true })];
+    if (chatHistoryId) {
+      tasks.push(fetchChatHistory(chatHistoryId));
+    }
+    await Promise.all(tasks);
+  }, [chatHistoryId, fetchChatHistory, getWalletDetails]);
+
   useEffect(() => {
     if (chatType === 'viewReport') {
       setMessages(report?.map((item: any) => ({
@@ -229,6 +243,10 @@ function ChatScreen(props: any) {
   }, [chatType, report]);
 
   useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
+  useEffect(() => {
     Animated.spring(scrollButtonAnim, {
       toValue: showScrollButton ? 1 : 0,
       useNativeDriver: true,
@@ -250,6 +268,8 @@ function ChatScreen(props: any) {
     setMessages([]);
     setInputText('');
     setIsLoading(false);
+    pendingSendRef.current = null;
+    shouldRetrySendOnResumeRef.current = false;
   }, []);
 
   const smoothScrollToBottom = useCallback((delay: number = 200) => {
@@ -273,29 +293,47 @@ function ChatScreen(props: any) {
     setShowScrollButton(!isCloseToBottom);
   }, []);
 
-  const handleSendMessage = useCallback(async (text?: string, category?: string) => {
-    const messageText = text || inputText.trim();
-    setInputText('');
-    if (!messageText || isLoading) return;
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: messageText,
-      isUser: true,
-      timestamp: new Date(),
-      item: category ? { category } : null,
-      isLiked: false,
-      isDisliked: false,
-    };
+  const getConversationId = useCallback((msgs: Message[]) => {
+    const lastBotMessage = [...msgs].reverse().find(message => !message.isUser);
+    return lastBotMessage?.item?.conversation_id?.$oid ?? '';
+  }, []);
 
-    setMessages(prev => [...prev, userMessage]);
+  const handleSendMessage = useCallback(async (
+    text?: string,
+    category?: string,
+    options?: { isRetry?: boolean },
+  ) => {
+    const isRetry = options?.isRetry === true;
+    const messageText = text || inputText.trim();
+    if (!messageText) return;
+    if (!isRetry && isLoading) return;
+
+    if (!isRetry) {
+      setInputText('');
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: messageText,
+        isUser: true,
+        timestamp: new Date(),
+        item: category ? { category } : null,
+        isLiked: false,
+        isDisliked: false,
+      };
+      setMessages(prev => [...prev, userMessage]);
+      pendingSendRef.current = { text: messageText, category };
+    }
+
     Keyboard.dismiss();
     setIsLoading(true);
     setIsTypewriterComplete(true);
 
     try {
+      const conversationId = isRetry
+        ? getConversationId(messages)
+        : (messages.length > 0 ? messages[messages.length - 1]?.item?.conversation_id?.$oid ?? '' : '');
       const data = {
         user_question: messageText,
-        ...(messages.length > 0 ? { conversation_id: messages[messages?.length - 1]?.item?.conversation_id?.$oid ?? '' } : {})
+        ...(conversationId ? { conversation_id: conversationId } : {}),
       };
       if (chatType === 'viewReport') {
         const response = await generateQuery(reportId, data);
@@ -318,7 +356,11 @@ function ChatScreen(props: any) {
           setMessages(prev => [...prev, botMessage]);
         } else {
           const { message } = response;
-          ToastMessage(message || i18n.t('toast.failedToGenerateQuery'));
+          if (message === REQUEST_CANCELLED) {
+            shouldRetrySendOnResumeRef.current = true;
+          } else if (AppState.currentState === 'active') {
+            ToastMessage(message || i18n.t('toast.failedToGenerateQuery'));
+          }
         }
       } else {
         const response = await AxiosBase.post(
@@ -344,48 +386,89 @@ function ChatScreen(props: any) {
         setMessages(prev => [...prev, botMessage]);
       }
 
+      pendingSendRef.current = null;
+      shouldRetrySendOnResumeRef.current = false;
       setIsDisableSendButton(true);
       setIsTypewriterComplete(false);
       await getWalletDetails({ silent: true });
     } catch (error: any) {
-      let errorText = i18n.t('chat.requestFailed');
-
-      if (error?.response) {
-        const status = error.response.status;
-        const errorData = error.response.data;
-
-        if (status === 401) {
-          errorText = i18n.t('chat.authFailed');
-        } else if (status === 400) {
-          errorText = i18n.t('chat.insufficientCredits');
-        } else if (status === 500) {
-          errorText = i18n.t('chat.serverError');
-        } else {
-          errorText = errorData?.message || i18n.t('chat.errorWithStatus', { status });
-        }
-      } else if (error?.request) {
-        errorText = i18n.t('chat.networkError');
-      } else {
-        errorText = i18n.t('chat.sendFailed');
+      const isRequestCancelled =
+        error?.code === 'ERR_CANCELED' ||
+        error?.message === 'canceled' ||
+        error?.message === i18n.t('common.connectionError');
+      if (isRequestCancelled || !error?.response) {
+        shouldRetrySendOnResumeRef.current = true;
       }
+      console.log('handleSendMessage error : ', error);
+      // if (error?.response) {
+      //   const status = error.response.status;
+      //   const errorData = error.response.data;
 
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: errorText,
-        isUser: false,
-        timestamp: new Date(),
-        item: null,
-        isLiked: false,
-        isDisliked: false,
-      };
+      //   if (status === 401) {
+      //     errorText = i18n.t('chat.authFailed');
+      //   } else if (status === 400) {
+      //     errorText = i18n.t('chat.insufficientCredits');
+      //   } else if (status === 500) {
+      //     errorText = i18n.t('chat.serverError');
+      //   } else {
+      //     errorText = errorData?.message || i18n.t('chat.errorWithStatus', { status });
+      //   }
+      // } else if (error?.request) {
+      //   errorText = i18n.t('chat.networkError');
+      // } else {
+      //   errorText = i18n.t('chat.sendFailed');
+      // }
 
-      setMessages(prev => [...prev, errorMessage]);
+      // const errorMessage: Message = {
+      //   id: (Date.now() + 1).toString(),
+      //   text: errorText,
+      //   isUser: false,
+      //   timestamp: new Date(),
+      //   item: null,
+      //   isLiked: false,
+      //   isDisliked: false,
+      // };
+      // setMessages(prev => [...prev, errorMessage]);
+      // setIsTypewriterComplete(false);
+      // setInputText('');
+    } finally {
       setIsTypewriterComplete(false);
       setInputText('');
-    } finally {
       setIsLoading(false);
     }
-  }, [inputText, isLoading, messages, chatType, reportId, generateQuery, selectedUser, setAvailableCoins, getWalletDetails]);
+  }, [inputText, isLoading, messages, chatType, reportId, generateQuery, selectedUser, setAvailableCoins, getWalletDetails, getConversationId]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        if (isLoadingRef.current && pendingSendRef.current) {
+          shouldRetrySendOnResumeRef.current = true;
+        }
+        return;
+      }
+
+      if (nextState !== 'active' || isRefreshingOnResumeRef.current) {
+        return;
+      }
+
+      if (shouldRetrySendOnResumeRef.current && pendingSendRef.current) {
+        shouldRetrySendOnResumeRef.current = false;
+        const { text, category } = pendingSendRef.current;
+        void handleSendMessage(text, category, { isRetry: true });
+        return;
+      }
+
+      isRefreshingOnResumeRef.current = true;
+      refreshChatScreenData()
+        .finally(() => {
+          isRefreshingOnResumeRef.current = false;
+        });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [refreshChatScreenData, handleSendMessage]);
 
   const handleSuggestedQuestionPress = useCallback((question: Question) => {
     handleSendMessage(question?.text, question?.category);

@@ -1,12 +1,14 @@
 import {
+  AppState,
   FlatList,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ReportLock } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
@@ -33,7 +35,7 @@ const GRADIENT_START = { x: 0, y: 0.8 };
 const GRADIENT_END = { x: 0, y: 0 };
 
 function ExploreReports(props: any) {
-  const { isLoading } = useAuthStore();
+  const { isLoading, userDetails } = useAuthStore();
   const { selectedUser } = useProfileStore();
   const { availableCoins, setAvailableCoins } = useWalletStore();
   const { getRemainingReports, AddUserReports } = useChatStore();
@@ -45,10 +47,10 @@ function ExploreReports(props: any) {
 
   const lastFetchKeyRef = useRef<string>('');
   const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const userId = selectedUser?._id?.$oid ?? '';
-
+  const isRefreshingOnResumeRef = useRef(false);
+  const userId = (selectedUser as any)?._id?.$oid ?? userDetails?.id;
   const fetchReports = useCallback((userIdParam: string) => {
-    getRemainingReports(userIdParam).then(response => {
+    return getRemainingReports(userIdParam).then(response => {
       if (response.success) {
         setReports(response.data as any);
         lastFetchKeyRef.current = userIdParam;
@@ -62,6 +64,22 @@ function ExploreReports(props: any) {
       fetchReports(userId);
     }, [userId, fetchReports])
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState !== 'active' || isRefreshingOnResumeRef.current) {
+        return;
+      }
+      isRefreshingOnResumeRef.current = true;
+      fetchReports(userId).finally(() => {
+        isRefreshingOnResumeRef.current = false;
+      });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [fetchReports, userId]);
 
   const onPressItem = useCallback((item: any) => {
     if (availableCoins >= LOWER_LIMIT) {
@@ -86,7 +104,7 @@ function ExploreReports(props: any) {
           setSelectedReport(null);
           lastFetchKeyRef.current = '';
           fetchReports(userId);
-          setAvailableCoins(response?.coins ?? 0);
+          setAvailableCoins((response as any)?.coins ?? 0);
           setShowDownloadSuccessModal(true);
 
           if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current);

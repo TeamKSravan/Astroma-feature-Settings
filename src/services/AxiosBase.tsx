@@ -3,11 +3,15 @@ import { useAuthStore } from '../store/useAuthStore';
 import { ToastMessage } from '../components/ToastMessage';
 import NetInfo from '@react-native-community/netinfo';
 import i18n from '../translation/i18n';
+import { AppState } from 'react-native';
 
 let lastConnectionToastAt = 0;
 const CONNECTION_TOAST_COOLDOWN_MS = 2000;
 
 const showConnectionErrorToast = () => {
+  if (AppState.currentState !== 'active') {
+    return;
+  }
   const now = Date.now();
   if (now - lastConnectionToastAt < CONNECTION_TOAST_COOLDOWN_MS) {
     return;
@@ -52,6 +56,14 @@ AxiosBase.interceptors.response.use(
 
   async error => {
     console.log('API Error Response:', error.response);
+    const isRequestCancelled =
+      axios.isCancel(error) ||
+      error?.code === 'ERR_CANCELED' ||
+      error?.message === 'canceled';
+
+    if (isRequestCancelled) {
+      return Promise.reject(error);
+    }
 
     const state = await NetInfo.fetch();
     const isOffline = !state.isConnected || state.isInternetReachable === false;
@@ -59,21 +71,10 @@ AxiosBase.interceptors.response.use(
 
     if (isOffline || isNetworkError) {
       showConnectionErrorToast();
-      return Promise.reject(new Error(i18n.t('common.connectionError')));
+      // return Promise.reject(new Error(i18n.t('common.connectionError')));
     }
 
-    // const isNetworkError =
-    //   !error.response &&
-    //   (error.code === 'ERR_NETWORK' ||
-    //     error.code === 'ECONNABORTED' ||
-    //     error.message === 'Network Error');
-
-    // if (isNetworkError) {
-    //   ToastMessage(i18n.t('common.connectionError'));
-    //   return Promise.reject(new Error(i18n.t('common.connectionError')));
-    // }
-
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (error.response?.status === 401) {
       const { logout, token } = useAuthStore.getState();
       // console.log('token', token);
       if (token) {
@@ -86,7 +87,7 @@ AxiosBase.interceptors.response.use(
       return Promise.reject(new Error('Unauthorized – Please login again'));
     }
     if(error.response?.status === 500) {
-      ToastMessage(error?.response?.data?.detail || i18n.t('toast.badRequest'));
+      ToastMessage(error?.response?.data?.detail);
       return Promise.reject(new Error('Bad Request'));
     }
     return Promise.reject(error);

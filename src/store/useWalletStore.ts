@@ -94,7 +94,7 @@ export const useWalletStore = create<WalletState>()(
           const response = (await AxiosBase.post(`/subscription/`, {
             data: purchase
           })) as ApiBody;
-          console.log('Response from getPlanDetails', response);
+          console.log('Response from getPurchaseHistory', response);
           useAuthStore.getState().setLoading(false);
           return { success: true, data: response?.result, coins: response?.coins };
         } catch (error: any) {

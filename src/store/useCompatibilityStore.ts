@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AxiosBase from '../services/AxiosBase';
 import { languageMap, useAuthStore } from './useAuthStore';
 import { useWalletStore } from './useWalletStore';
+import axios from 'axios';
 
 
 export interface CompatibilityType {
@@ -37,7 +38,7 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           return { success: true, data: response.result };
         } catch (error: any) {
           setLoading(false);
-          return { success: false, data: error.response?.data?.detail || 'Error fetching compatibility' };
+          return { success: false, data: error.response?.data?.detail };
         }
       },
       createCompatibilityReport: async (withReport: boolean, data: any, isCompare?: boolean) => {
@@ -57,8 +58,16 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           setAvailableCoins(response?.coins ?? 0);
           return { success: true, data: response.result };
         } catch (error: any) {
+          const isRequestCancelled =
+            axios.isCancel(error) ||
+            error?.code === 'ERR_CANCELED' ||
+            error?.message === 'canceled';
+          if (isRequestCancelled) {
+            setLoading(false);
+            return { success: false, data: 'REQUEST_CANCELLED' };
+          }
           setLoading(false);
-          return { success: false, data: error.response?.data?.detail || 'Error fetching compatibility' };
+          return { success: false, data: error.response?.data?.detail };
         }
       },
       getRemainingReports: async () => {
@@ -71,7 +80,7 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           return { success: true, data: response.result };
         } catch (error: any) {
           setLoading(false);
-          return { success: false, message: error.response?.data?.detail || 'Error fetching compatibility' };
+          return { success: false, message: error.response?.data?.detail };
         }
       },
       getCompatibilityReportList: async (isCompare?: boolean) => {
@@ -84,7 +93,7 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           return { success: true, data: response.result };
         } catch (error: any) {
           setLoading(false);
-          return { success: false, message: error.response?.data?.detail || 'Error fetching compatibility' };
+          return { success: false, message: error.response?.data?.detail };
         }
       },
       createcompareReport: async (withReport: boolean, data: any) => {
@@ -104,7 +113,7 @@ export const useCompatibilityStore = create<CompatibilityState>()(
           return { success: true, data: response.result };
         } catch (error: any) {
           setLoading(false);
-          return { success: false, data: error.response?.data?.detail || 'Error fetching compatibility' };
+          return { success: false, data: error.response?.data?.detail };
         }
       },
     }),

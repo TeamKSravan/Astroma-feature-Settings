@@ -1,4 +1,5 @@
 import {
+  AppState,
   FlatList,
   Image,
   StyleSheet,
@@ -10,7 +11,7 @@ import {
   PermissionsAndroid,
   Alert,
 } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Love, ReportDownload, ReportQuestion, ViewReport } from '../../../constants/svgpath';
 import { colors } from '../../../constants/colors';
 import { fonts } from '../../../constants/fonts';
@@ -49,28 +50,49 @@ function DownoadedReports({ tabIndex }: DownloadedReportsProps) {
   const { selectedUser } = useProfileStore();
 
   const lastFetchKeyRef = useRef<string>('');
-  const userId = selectedUser?._id?.$oid ?? '';
+  const isRefreshingOnResumeRef = useRef(false);
+  const userId = (selectedUser as any)?._id?.$oid ?? '';
   const fetchKey = `${userId}_${tabIndex}`;
+
+  const fetchUserReports = useCallback((currentUserId: string) => {
+    return getUserReports(currentUserId).then(response => {
+      if (response.success) {
+        const reports = Array.isArray(response.data) ? response.data : [];
+        setUserReports(reports);
+        setEmptyMessage(
+          reports.length === 0 ? i18n.t('report.noDownloadedReports') : '',
+        );
+        lastFetchKeyRef.current = `${currentUserId}_${tabIndex}`;
+      } else {
+        setEmptyMessage(i18n.t('report.noDownloadedReports'));
+        setUserReports([]);
+      }
+    });
+  }, [getUserReports, tabIndex]);
 
   useFocusEffect(
     useCallback(() => {
       if (tabIndex !== 1) return;
       if (lastFetchKeyRef.current === fetchKey) return;
-      getUserReports(userId).then(response => {
-        if (response.success) {
-          const reports = Array.isArray(response.data) ? response.data : [];
-          setUserReports(reports);
-          setEmptyMessage(
-            reports.length === 0 ? i18n.t('report.noDownloadedReports') : '',
-          );
-          lastFetchKeyRef.current = fetchKey;
-        } else {
-          setEmptyMessage(i18n.t('report.noDownloadedReports'));
-          setUserReports([]);
-        }
-      });
-    }, [fetchKey, tabIndex, userId, getUserReports])
+      void fetchUserReports(userId);
+    }, [fetchKey, tabIndex, userId, fetchUserReports])
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState !== 'active' || tabIndex !== 1 || isRefreshingOnResumeRef.current) {
+        return;
+      }
+      isRefreshingOnResumeRef.current = true;
+      fetchUserReports(userId).finally(() => {
+        isRefreshingOnResumeRef.current = false;
+      });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [tabIndex, fetchUserReports, userId]);
 
   const handleViewReport = useCallback((item: any) => {
     getViewReport(item?._id?.$oid, userId)

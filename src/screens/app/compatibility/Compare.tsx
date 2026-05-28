@@ -1,4 +1,4 @@
-import { Animated, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, AppState, Image, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ModalClose, More } from '../../../constants/svgpath';
 import { moderateScale, scale, verticalScale } from '../../../utils/scale';
@@ -23,6 +23,8 @@ import EmptyCredits from '../../../components/EmptyCredits';
 import CategorySign, { Type } from '../../../components/CategorySign';
 import CoinSummaryModal from '../../../components/modals/CoinSummary';
 
+const REQUEST_CANCELLED = 'REQUEST_CANCELLED';
+
 export default function Compare(props: any) {
   const lowerLimit = 10;
   const navigation = useNavigation();
@@ -45,6 +47,10 @@ export default function Compare(props: any) {
   const [pdfUrl, setPdfUrl] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isDisabledGenerateReport, setIsDisabledGenerateReport] = useState(false);
+  const isRefreshingOnResumeRef = useRef(false);
+  const pendingReportGenerateRef = useRef<{ compareType: string; profileIds: string[] } | null>(null);
+  const shouldRetryReportOnResumeRef = useRef(false);
+  const isLoadingRef = useRef(false);
 
   // Sparkle twinkle animation refs (one per CSparkle)
   const sparkle1 = useRef(new Animated.Value(0)).current;
@@ -115,15 +121,18 @@ export default function Compare(props: any) {
   }, []);
 
   const { getCompatibilityTypeList, createCompatibilityReport } = useCompatibilityStore();
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    Promise.all([
+  const fetchCompareMeta = useCallback(async () => {
+    const [res] = await Promise.all([
       getCompatibilityTypeList(true),
       getWalletDetails(),
-    ]).then(([res]) => {
-      setcompareTypeList(res?.data?.map((item: any) => ({ label: `${item?.type ? item?.type.charAt(0).toUpperCase() + item?.type.slice(1) : ''} Compare`, value: item?.type })) || []);
-    }).finally(() => setRefreshing(false));
+    ]);
+    setcompareTypeList(res?.data?.map((item: any) => ({ label: `${item?.type ? item?.type.charAt(0).toUpperCase() + item?.type.slice(1) : ''} Compare`, value: item?.type })) || []);
   }, [getCompatibilityTypeList, getWalletDetails]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchCompareMeta().finally(() => setRefreshing(false));
+  }, [fetchCompareMeta]);
 
   const loginuser = {
     name: userDetails?.name || '',
@@ -179,11 +188,13 @@ export default function Compare(props: any) {
   }, [secondaryUserdata, userDetails]);
 
   useEffect(() => {
-    getCompatibilityTypeList(true).then((res) => {
-      console.log('Response from getcompareTypeList', res);
-      setcompareTypeList(res.data?.map((item: any) => ({ label: `${item?.type ? item?.type.charAt(0).toUpperCase() + item?.type.slice(1) : ''} Compare`, value: item?.type })));
-    });
-  }, [getCompatibilityTypeList]);
+    void fetchCompareMeta();
+  }, [fetchCompareMeta]);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
   const isToastVisible = useRef(false);
 
   const showToastOnce = (message) => {
@@ -275,22 +286,74 @@ export default function Compare(props: any) {
     }
   };
 
-  const generateCompatibilityReport = () => {
-    console.log('generateCompatibilityReport');
-    setShowCoinSummaryModal(false);
-    createCompatibilityReport(true, { type: compareType, profile_id: selectedUser.map((item: any) => item?._id?.$oid ?? '') }, true).then(async (res) => {
+  const generateCompatibilityReport = useCallback((options?: { isRetry?: boolean }) => {
+    const isRetry = options?.isRetry === true;
+
+    if (!isRetry) {
+      setShowCoinSummaryModal(false);
+      pendingReportGenerateRef.current = {
+        compareType,
+        profileIds: selectedUser.map((item: any) => item?._id?.$oid ?? ''),
+      };
+    }
+
+    const pending = pendingReportGenerateRef.current;
+    if (!pending) return;
+
+    createCompatibilityReport(
+      true,
+      { type: pending.compareType, profile_id: pending.profileIds },
+      true,
+    ).then(async (res) => {
       console.log('Response from getcompareReport', res);
       if (res.success) {
-        setErrorCompare('')
+        pendingReportGenerateRef.current = null;
+        shouldRetryReportOnResumeRef.current = false;
+        setErrorCompare('');
         setShowGenerateReportModal(true);
-        setPdfUrl(res.data || '')
+        setPdfUrl(res.data || '');
         showToastOnce(i18n.t('toast.reportGeneratedSuccess'));
         await getWalletDetails({ silent: true });
       } else {
-        showToastOnce((res.data as string) || i18n.t('common.somethingWentWrong'));
+        const errorMessage = (res.data as string) || i18n.t('common.somethingWentWrong');
+        if (errorMessage === REQUEST_CANCELLED) {
+          shouldRetryReportOnResumeRef.current = true;
+        } else if (AppState.currentState === 'active') {
+          showToastOnce(errorMessage);
+        }
       }
     });
-  };
+  }, [compareType, selectedUser, createCompatibilityReport, getWalletDetails]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        if (isLoadingRef.current && pendingReportGenerateRef.current) {
+          shouldRetryReportOnResumeRef.current = true;
+        }
+        return;
+      }
+
+      if (nextState !== 'active' || isRefreshingOnResumeRef.current) {
+        return;
+      }
+
+      if (shouldRetryReportOnResumeRef.current && pendingReportGenerateRef.current) {
+        shouldRetryReportOnResumeRef.current = false;
+        generateCompatibilityReport({ isRetry: true });
+        return;
+      }
+
+      isRefreshingOnResumeRef.current = true;
+      fetchCompareMeta().finally(() => {
+        isRefreshingOnResumeRef.current = false;
+      });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [fetchCompareMeta, generateCompatibilityReport]);
 
   const OptionItem = (option: any) => {
     return (

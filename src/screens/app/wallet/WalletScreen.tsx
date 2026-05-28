@@ -118,6 +118,7 @@ function WalletScreen(props: any) {
         purchaseSubscription(productId);
       }
     } else {
+      console.log('Step 1 : purchaseSubscription', productId);
       purchaseSubscription(productId);
     }
   }, [selectedPackage]);

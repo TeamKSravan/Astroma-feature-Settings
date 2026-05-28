@@ -3,9 +3,9 @@ import Loader from '../../../../components/Loader';
 import { fonts } from '../../../../constants/fonts';
 import { colors } from '../../../../constants/colors';
 import CCReportItem from '../../../../components/CCReportItem';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useProfileStore } from '../../../../store/useProfileStore';
-import { FlatList, Image, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { AppState, FlatList, Image, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import PdfViewerModal from '../../../../components/modals/PdfViewerModal';
 import { moderateScale, scale, verticalScale } from '../../../../utils/scale';
 import { useCompatibilityStore } from '../../../../store/useCompatibilityStore';
@@ -24,10 +24,12 @@ function Downloads(props: any) {
   const [isLoading, setIsLoading] = useState(false);
 
   const lastFetchKeyRef = useRef<string | null>(null);
+  const isRefreshingOnResumeRef = useRef(false);
+  const selectedUserId = (selectedUser as any)?._id?.$oid ?? '';
 
   const fetchReports = useCallback((userId: string, silent = false) => {
     if (!silent) setIsLoading(true);
-    return getCompatibilityReportList(false, userId).then(response => {
+    return getCompatibilityReportList(false).then(response => {
       if (response.success) {
         const list = Array.isArray(response.data) ? response.data : [];
         setReports(list);
@@ -46,18 +48,34 @@ function Downloads(props: any) {
   useFocusEffect(
     useCallback(() => {
       if (index !== 2) return;
-      const fetchKey = `${selectedUser?._id?.$oid ?? ''}_${index}`;
+      const fetchKey = `${selectedUserId}_${index}`;
       if (lastFetchKeyRef.current === fetchKey) return;
       lastFetchKeyRef.current = fetchKey;
-      fetchReports(selectedUser?._id as string);
-    }, [selectedUser?._id?.$oid, index, fetchReports])
+      fetchReports(selectedUserId);
+    }, [selectedUserId, index, fetchReports])
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState !== 'active' || index !== 2 || isRefreshingOnResumeRef.current) {
+        return;
+      }
+      isRefreshingOnResumeRef.current = true;
+      fetchReports(selectedUserId, true).finally(() => {
+        isRefreshingOnResumeRef.current = false;
+      });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [index, fetchReports, selectedUserId]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     lastFetchKeyRef.current = null;
-    fetchReports(selectedUser?._id as string, true).finally(() => setRefreshing(false));
-  }, [fetchReports, selectedUser?._id]);
+    fetchReports(selectedUserId, true).finally(() => setRefreshing(false));
+  }, [fetchReports, selectedUserId]);
 
   const onPressItem = useCallback((item: any) => {
     setPdfData(item);

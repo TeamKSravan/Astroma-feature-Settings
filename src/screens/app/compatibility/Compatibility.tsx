@@ -1,4 +1,4 @@
-import { Alert, Animated, Image, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, AppState, Image, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, use, useEffect, useRef, useState } from 'react';
 import CustomTextInput from '../../../components/CustomTextInput';
 import { Drop, ModalClose, More } from '../../../constants/svgpath';
@@ -28,6 +28,7 @@ import EmptyCredits from '../../../components/EmptyCredits';
 import CategorySign, { Type } from '../../../components/CategorySign';
 
 export default function Compatibility(props: any) {
+  const REQUEST_CANCELLED = 'REQUEST_CANCELLED';
   const lowerLimit = 10;
   const navigation = useNavigation();
   const { index } = props.route.params;
@@ -51,6 +52,10 @@ export default function Compatibility(props: any) {
   const [pdfUrl, setPdfUrl] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [isDisabledGenerateReport, setIsDisabledGenerateReport] = useState(false);
+  const isRefreshingOnResumeRef = useRef(false);
+  const pendingReportGenerateRef = useRef<{ compatibilityType: string; profileIds: string[] } | null>(null);
+  const shouldRetryReportOnResumeRef = useRef(false);
+  const isLoadingRef = useRef(false);
 
   // Sparkle twinkle animation refs (one per CSparkle)
   const sparkle1 = useRef(new Animated.Value(0)).current;
@@ -120,19 +125,22 @@ export default function Compatibility(props: any) {
     createSparkleAnimation(sparkle9, 2400);
   }, []);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    Promise.all([
+  const fetchCompatibilityMeta = useCallback(async () => {
+    const [res] = await Promise.all([
       getCompatibilityTypeList(false),
       getWalletDetails(),
-    ]).then(([res]) => {
-      setCompatibilityTypeList(res?.data?.map((item: any) => {
-        const type = item?.type || '';
-        const capitalizedType = type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
-        return { label: `${capitalizedType} Compatibility`, value: item?.type || '' };
-      }) || []);
-    }).finally(() => setRefreshing(false));
+    ]);
+    setCompatibilityTypeList(res?.data?.map((item: any) => {
+      const type = item?.type || '';
+      const capitalizedType = type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
+      return { label: `${capitalizedType} Compatibility`, value: item?.type || '' };
+    }) || []);
   }, [getCompatibilityTypeList, getWalletDetails]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchCompatibilityMeta().finally(() => setRefreshing(false));
+  }, [fetchCompatibilityMeta]);
 
   const loginuser = {
     name: userDetails?.name || '',
@@ -244,15 +252,13 @@ export default function Compatibility(props: any) {
   };
 
   useEffect(() => {
-    getCompatibilityTypeList().then((res) => {
-      console.log('Response from getCompatibilityTypeList', res);
-      setCompatibilityTypeList(res.data?.map((item: any) => {
-        const type = item?.type || '';
-        const capitalizedType = type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
-        return { label: `${capitalizedType} Compatibility`, value: item?.type || '' };
-      }) || []);
-    });
-  }, [getCompatibilityTypeList]);
+    void fetchCompatibilityMeta();
+  }, [fetchCompatibilityMeta]);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
   const isToastVisible =
     useRef(false);
 
@@ -289,22 +295,73 @@ export default function Compatibility(props: any) {
     setShowCoinSummaryModal(true);
   }
 
-  const generateCompatibilityReport = () => {
-    console.log('generateCompatibilityReport');
-    setShowCoinSummaryModal(false);
-    createCompatibilityReport(true, { type: compatibilityType, profile_id: selectedUser.map((item: any) => item?._id?.$oid ?? '') }).then(async (res) => {
+  const generateCompatibilityReport = useCallback((options?: { isRetry?: boolean }) => {
+    const isRetry = options?.isRetry === true;
+
+    if (!isRetry) {
+      setShowCoinSummaryModal(false);
+      pendingReportGenerateRef.current = {
+        compatibilityType,
+        profileIds: selectedUser.map((item: any) => item?._id?.$oid ?? ''),
+      };
+    }
+
+    const pending = pendingReportGenerateRef.current;
+    if (!pending) return;
+
+    createCompatibilityReport(true, {
+      type: pending.compatibilityType,
+      profile_id: pending.profileIds,
+    }).then(async (res) => {
       console.log('Response from getCompatibilityReport', res);
       if (res.success) {
-        setErrorCombat('')
+        pendingReportGenerateRef.current = null;
+        shouldRetryReportOnResumeRef.current = false;
+        setErrorCombat('');
         setShowGenerateReportModal(true);
-        setPdfUrl(res.data || '')
+        setPdfUrl(res.data || '');
         showToastOnce(i18n.t('toast.reportGeneratedSuccess'));
         await getWalletDetails({ silent: true });
       } else {
-        showToastOnce((res.data as string) || i18n.t('common.somethingWentWrong'));
+        const errorMessage = (res.data as string) || i18n.t('common.somethingWentWrong');
+        if (errorMessage === REQUEST_CANCELLED) {
+          shouldRetryReportOnResumeRef.current = true;
+        } else if (AppState.currentState === 'active') {
+          showToastOnce(errorMessage);
+        }
       }
     });
-  };
+  }, [compatibilityType, selectedUser, createCompatibilityReport, getWalletDetails]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'background' || nextState === 'inactive') {
+        if (isLoadingRef.current && pendingReportGenerateRef.current) {
+          shouldRetryReportOnResumeRef.current = true;
+        }
+        return;
+      }
+
+      if (nextState !== 'active' || isRefreshingOnResumeRef.current) {
+        return;
+      }
+
+      if (shouldRetryReportOnResumeRef.current && pendingReportGenerateRef.current) {
+        shouldRetryReportOnResumeRef.current = false;
+        generateCompatibilityReport({ isRetry: true });
+        return;
+      }
+
+      isRefreshingOnResumeRef.current = true;
+      fetchCompatibilityMeta().finally(() => {
+        isRefreshingOnResumeRef.current = false;
+      });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [fetchCompatibilityMeta, generateCompatibilityReport]);
   const filteredUserList = userList?.filter((item: any) => !selectedUser.some((user: any) => user?._id?.$oid === item.value));
 
   // Helper function to format user date and time

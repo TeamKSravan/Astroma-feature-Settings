@@ -1,11 +1,12 @@
 import {
+  AppState,
   StyleSheet,
   Text,
   View,
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabView } from 'react-native-tab-view';
 import BaseView from '../../../utils/BaseView';
 import imagepath from '../../../constants/imagepath';
@@ -23,10 +24,23 @@ const { width } = Dimensions.get('window');
 
 export default function ReportScreen(props: any) {
   const [index, setIndex] = useState(0);
+  const [refreshVersion, setRefreshVersion] = useState(0);
   const [routes] = useState([
     { key: 'exploreReports', title: i18n.t('report.exploreReports') },
     { key: 'downloadedReport', title: i18n.t('report.downloads') },
   ]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (nextState === 'active') {
+        setRefreshVersion(prev => prev + 1);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const renderTabBar = (props: any) => {
     return (
@@ -60,9 +74,9 @@ export default function ReportScreen(props: any) {
   const renderScene = ({ route }: any) => {
     switch (route.key) {
       case 'exploreReports':
-        return <ExploreReports />;
+        return <ExploreReports key={`explore-${refreshVersion}`} />;
       case 'downloadedReport':
-        return <DownloadedReports tabIndex={index} />;
+        return <DownloadedReports key={`download-${refreshVersion}`} tabIndex={index} />;
       default:
         return null;
     }
