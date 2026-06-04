@@ -14,6 +14,7 @@ export const languageMap: Record<string, string> = {
 export interface UserDetails {
   id?: string;
   name?: string;
+  email?: string;
   phone?: string;
   country_code?: string;
   dateOfBirth?: string;
@@ -268,6 +269,7 @@ export const useAuthStore = create<AuthState>()(
               id: user._id,
               _id: { $oid: user._id },
               name: user?.name,
+              email: user?.email,
               phone: user.phone,
               country_code: user?.country_code,
               dateOfBirth: user?.date_of_birth,
@@ -292,6 +294,7 @@ export const useAuthStore = create<AuthState>()(
           };
         } catch (error: any) {
           const errorMessage = error.response?.data?.detail || 'Invalid OTP';
+          console.log('errorMessage =>', errorMessage);
           set({ isLoading: false, error: errorMessage });
           return {
             success: false,
@@ -313,6 +316,7 @@ export const useAuthStore = create<AuthState>()(
               _id: { $oid: user._id },
               is_onboarded: user?.is_onboarded,
               name: user?.name,
+              email: user?.email,
               phone: user.phone,
               country_code: user?.country_code,
               dateOfBirth: user?.date_of_birth,

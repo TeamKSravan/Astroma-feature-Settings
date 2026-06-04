@@ -146,6 +146,7 @@ const ProfileInput = ({
 export default function Profile({ navigation }: any) {
   const [errors, setErrors] = useState({});
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [phoneNo, setPhoneNo] = useState('');
   const [gender, setGender] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -192,6 +193,7 @@ export default function Profile({ navigation }: any) {
     setIsPhoneVerified(true)
     // CustomDateInput expects digits in DDMMYYYY format (it will display as DD/MM/YYYY)
     setDateOfBirth(userDetails?.dateOfBirth ? moment(userDetails.dateOfBirth).format('DDMMYYYY') : '');
+    setEmail(userDetails?.email || '');
     setPlaceOfBirth(userDetails?.place || '');
     setLatitude(userDetails?.lat || '');
     setLongitude(userDetails?.long || '');
@@ -644,6 +646,13 @@ export default function Profile({ navigation }: any) {
                 </TouchableOpacity>
               }
               error={errors?.phone}
+            />}
+            {email && <ProfileInput
+              label={i18n.t('profile.email')}
+              placeholder={i18n.t('profile.email')}
+              value={email}
+              onChangeText={setEmail}
+              editable={false}
             />}
             <ProfileInput
               label={i18n.t('profile.dateOfBirth')}

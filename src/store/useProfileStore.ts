@@ -113,6 +113,7 @@ export const useProfileStore = create<ProfileState>()(
                     setUserDetails({
                         ...userDetails,
                         name: result.name,
+                        email: result.email,
                         phone: result.phone,
                         country_code: result.country_code,
                         dateOfBirth: result.date_of_birth,

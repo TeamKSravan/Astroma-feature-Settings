@@ -23,6 +23,8 @@ import { capitalizeFirstLetter } from '../../../utils/methods';
 import { useFocusEffect } from '@react-navigation/native';
 import { getFCMToken, requestUserPermission } from '../../../services/NotificationServices';
 import { Routes } from '../../../navigation/RouteNames';
+import OverviewLoader from '../../../components/Home/OverviewLoader';
+import ReportLoader from '../../../components/Compatibility/ReportLoader';
 
 const scrollContentStyle = { paddingBottom: verticalScale(60) };
 const ZODIAC_SIZE = scale(100);
@@ -222,7 +224,7 @@ function HomeScreen(props: any) {
           }
         >
           <View style={styles.profileView}>
-            {(isLoading || refreshing) && <Loader />}
+            {/* {(isLoading || refreshing) && <Loader />} */}
             <UserList primaryUser={userDetails ?? undefined} />
           </View>
           <View style={styles.circularView}>
@@ -241,12 +243,12 @@ function HomeScreen(props: any) {
               </View>
             </View>
           </View>
-
           <View style={styles.overView}>
             <Left />
             <Text style={styles.overText}>{i18n.t('home.overview')}</Text>
             <Right />
           </View>
+          {isLoading ? <OverviewLoader /> : null}
           <Text
             style={styles.paraText}
             numberOfLines={overviewExpanded ? undefined : 6}
@@ -264,7 +266,6 @@ function HomeScreen(props: any) {
             </TouchableOpacity>
           ) : null}
         </ScrollView>
-
         <CustomButton
           style={styles.chatWithAiButton}
           title={i18n.t('home.chatWithAi')}

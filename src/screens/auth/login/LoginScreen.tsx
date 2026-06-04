@@ -222,7 +222,7 @@ export default function LoginScreen(props: any) {
     } else {
       if (!email) {
         setError({
-          email: i18n.t('login.enterEmail'),
+          email: i18n.t('login.enterEma il'),
         });
         if (error && error?.email !== i18n.t('login.enterEmail')) {
           (scrollViewRef.current as any)?.scrollTo({
@@ -256,7 +256,7 @@ export default function LoginScreen(props: any) {
       console.log('result =>', result);
       if (result.success) {
         setError({})
-        ToastMessage(i18n.t('login.otpSent'));
+        ToastMessage(viaPhone ? i18n.t('login.otpSent') : i18n.t('login.otpSentEmail'));
         if (onBoardingResult.isOnboarded) {
           useAuthStore.setState({ isGetBonus: false });
         } else {

@@ -49,4 +49,7 @@ export default {
   google: require('../assets/images/google.png'),
   apple: require('../assets/images/apple.png'),
   DocumentIcon: require('../assets/images/document.png'),
+  ReportLoader: require('../assets/images/reportloader.png'),
+  Flower: require('../assets/images/flower.png'),
+  FlowerStar: require('../assets/images/flowerstar.png'),
 };

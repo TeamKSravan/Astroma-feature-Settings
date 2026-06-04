@@ -83,6 +83,7 @@
         "emailRequired": "Please enter your email",
         "invalidEmail": "Please enter a valid email address",
         "otpSent": "OTP has been sent to your Mobile Number",
+        "otpSentEmail": "OTP has been sent to your Email",
         "genericError": "Something went wrong. Please try again"
     },
     "emptyCredits": {
@@ -210,6 +211,7 @@
         "profile": "Profile",
         "editProfile": "Edit Profile",
         "edit": "Edit",
+        "email": "Email",
         "fullName": "Full Name",
         "phoneNo": "Phone No.",
         "gender": "Gender",

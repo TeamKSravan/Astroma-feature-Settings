@@ -86,6 +86,10 @@ AxiosBase.interceptors.response.use(
 
       return Promise.reject(new Error('Unauthorized – Please login again'));
     }
+    if(error.response?.status === 400) {
+      ToastMessage(error?.response?.data?.detail);
+      return Promise.reject(new Error('Bad Request'));
+    }
     if(error.response?.status === 500) {
       ToastMessage(error?.response?.data?.detail);
       return Promise.reject(new Error('Bad Request'));

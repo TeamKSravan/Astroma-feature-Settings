@@ -26,6 +26,7 @@ import ZodicSign from '../../../components/ZodicSign';
 import { useWalletStore } from '../../../store/useWalletStore';
 import EmptyCredits from '../../../components/EmptyCredits';
 import CategorySign, { Type } from '../../../components/CategorySign';
+import ReportLoader from '../../../components/Compatibility/ReportLoader';
 
 export default function Compatibility(props: any) {
   const REQUEST_CANCELLED = 'REQUEST_CANCELLED';
@@ -555,6 +556,7 @@ export default function Compatibility(props: any) {
         onPress={onPressGenerateReport}
       />
       {isLoading && <Loader />}
+      {/* <ReportLoader /> */}
       {availableCoins < lowerLimit && <View style={styles.emptyCreditsContainer}>
         <EmptyCredits />
       </View>}
